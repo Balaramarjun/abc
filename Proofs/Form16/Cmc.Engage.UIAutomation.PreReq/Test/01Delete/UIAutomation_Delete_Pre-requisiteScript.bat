@@ -1,0 +1,1 @@
+newman run "%TestLocation%\%projectname%\UIAutomation_Delete_Pre-requisiteScript.postman_collection.json" -r htmlextra --reporters cli,junit,htmlextra --reporter-junit-export Results\Delete\junitReport.xml --reporter--reporter-htmlextra-export newmanReport/newmantests.html -e "%TestLocation%\Common\%ApiTestConfig%.postman_environment.json"

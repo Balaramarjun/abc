@@ -1,0 +1,327 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>{{pipeline}} Tests Report</title>
+    <link rel="stylesheet" type='text/css' href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <style>
+        #TestExecutionSummary {
+            color: gray;
+        }
+
+        .passed {
+            color: green;
+        }
+
+        .failed {
+            color: red;
+        }
+
+        .skipped {
+            color: #FFD700;
+        }
+
+        .hiddenRow {
+            padding: 0 !important;
+        }
+
+        .toggleRow {
+            background-color: #ffe4e1;
+        }
+
+        .chevron, .clickable {
+            cursor: pointer
+        }
+
+
+        .gly-rotate-45 {
+            filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=0.5);
+            -webkit-transform: rotate(90deg);
+            -moz-transform: rotate(90deg);
+            -ms-transform: rotate(90deg);
+            -o-transform: rotate(90deg);
+            transform: rotate(90deg);
+            display: inline-block;
+        }
+    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Outcome', 'Count'],
+            ['Passed', {{ result.Passed }}],
+            ['Failed', {{ result.Failed }}],
+            ]);
+
+            var options = {
+                pieHole: 0.5,
+                slices: { 0: { color: 'green' }, 1: { color: 'red' } },
+                pieSliceText: 'value',
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('testresultchart'));
+            chart.draw(data, options);
+        }
+    </script>
+   
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container pt-5">
+        <div class="border">
+            <div class="row p-3">
+                <h3 id="TestExecutionSummary">Test Execution Summary - {{pipeline}} </h3>
+                <a href="{{build.Url}}" target="_blank">{{build.BuildNumber}} </a>
+            </div>
+
+            <div class="row p-3">
+                <div class="col-md-6">
+                    <div id="testresultchart"></div>
+                </div>
+                <div class="col-md-6">
+                    <b><p>Summary</p></b>
+                    <div class="row">
+                        
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Test run name: </th>
+                                    <td>{{result.Name}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">All tests: </th>
+                                    <td>{{result.Passed}}/{{result.TotalTests}} passed, {{result.Failed}} failed, {{result.Skipped}} not executed</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Ordered tests: </th>
+                                    <td>{{result.PassedOrderedTest}}/{{result.OrderedTests}} passed, {{result.FailedOrderedTest}} failed</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Pass Percentage: </th>
+                                    <td>{{result.PassPercentage}}%</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Run duration: </th>
+                                    <td>{{result.Duration}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row p-3">
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#TestResult" aria-expanded="true" aria-controls="TestResult">
+                            <h4>Test Result</h4>
+                        </button>
+                        <div id="TestResult" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">Test settings: </th>
+                                            <td>default</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Submitted by: </th>
+                                            <td>{{result.User}} </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Started on: </th>
+                                            <td>{{result.StartedOn}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Completed on: </th>
+                                            <td>{{result.CompletedOn}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+           
+            <div class="row p-3" id="testTabs">                
+                <div class="col">
+                    <button class="btn btn-primary" id="buttonToggle" style="float: right;">Expand all</button>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="total-tab" data-bs-toggle="tab"
+                                    type="button" role="tab" aria-controls="total" aria-selected="true">
+                                <i class="fas fa-chart-pie"></i> Total
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link failed" id="failed-tab" data-bs-toggle="tab"
+                                    type="button" role="tab" aria-controls="failed" aria-selected="false">
+                                <span><i class="fas fa-times-circle"></i></span> Failed
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link passed" id="passed-tab" data-bs-toggle="tab"
+                                    type="button" role="tab" aria-controls="passed" aria-selected="false">
+                                <span><i class="fas fa-check-circle"></i></span> Passed
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link skipped" id="skipped-tab" data-bs-toggle="tab"
+                                    type="button" role="tab" aria-controls="skipped" aria-selected="false">
+                                <span><i class="fas fa-exclamation-triangle"></i></span> Not Executed
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade p-2 show active" id="failed" role="tabpanel" aria-labelledby="failed-tab">
+                            {{#FailedTests}}
+                            {{> FailedTest}}
+                            {{/FailedTests}}
+                        </div>
+
+                        <div class="tab-pane fade p-2 show active" id="passed" role="tabpanel" aria-labelledby="passed-tab">
+                            {{#PassedTests}}
+                            {{> PassedTest}}
+                            {{/PassedTests}}
+                        </div>
+
+                        <div class="tab-pane fade p-2" id="skipped" role="tabpanel" aria-labelledby="skipped-tab">
+                            {{#SkippedTests}}
+                            {{> SkippedTest}}
+                            {{/SkippedTests}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var totalTab = document.querySelector('#total-tab');
+        var failedTab = document.querySelector('#failed-tab');
+        var passedTab = document.querySelector('#passed-tab');
+        var skippedTab = document.querySelector('#skipped-tab');
+
+        var failed = document.querySelector('#failed');
+        var passed = document.querySelector('#passed');
+        var skipped = document.querySelector('#skipped');
+
+        totalTab.addEventListener('click', function () {
+            failed.classList.add("show", "active");
+            passed.classList.add("show", "active");
+        });
+
+        failedTab.addEventListener('click', function () {
+            //failed.className += " show active";
+            //passed.className.replace(" show active", "");
+            failed.classList.add("show", "active");
+            passed.classList.remove("show", "active");
+            skipped.classList.remove("show", "active");
+        });
+
+        passedTab.addEventListener('click', function () {
+            //passed.className += " show active";
+            //failed.className.replace(" show active", "");
+            passed.classList.add("show", "active");
+            failed.classList.remove("show", "active");
+            skipped.classList.remove("show", "active");
+        });
+
+         skippedTab.addEventListener('click', function () {
+            //passed.className += " show active";
+            //failed.className.replace(" show active", "");
+            skipped.classList.add("show", "active");
+             failed.classList.remove("show", "active");
+             passed.classList.remove("show", "active");
+        });
+
+    </script>
+    <script type="text/javascript">
+        var buttonToggle = document.getElementById("buttonToggle");
+        buttonToggle.addEventListener('click', function () {
+            
+            if (buttonToggle.classList.contains("toggle")) {
+                collapseAll();
+            }
+            else {
+                expandAll();
+            }
+        });
+
+        var expandAll = function () {
+            buttonToggle.classList.add("toggle");
+            buttonToggle.innerText = "Collapse all";
+            var testTabs = document.querySelector("#testTabs");
+            var accordions = testTabs.getElementsByClassName("accordion");                
+            [].forEach.call(accordions, accordion => {
+                var accordionButton = accordion.getElementsByClassName("accordion-button");
+                var accordionDivs = accordion.getElementsByClassName("accordion-collapse");
+
+                [].forEach.call(accordionButton, function (el) {
+                    el.classList.remove("collapsed");
+                });
+
+
+                [].forEach.call(accordionDivs, function (el) {
+                    el.classList.add("show");
+                }); 
+            })
+                       
+        }
+
+        var collapseAll = function () {
+            buttonToggle.classList.remove("toggle");
+            buttonToggle.innerText = "Expand all";
+            var testTabs = document.querySelector("#testTabs");
+            var accordions = testTabs.getElementsByClassName("accordion");
+            
+            [].forEach.call(accordions, accordion => {
+                var accordionButton = accordion.getElementsByClassName("accordion-button");
+                var accordionDivs = accordion.getElementsByClassName("accordion-collapse");
+
+                [].forEach.call(accordionButton, function (el) {
+                    el.classList.add("collapsed");
+                });
+
+
+                [].forEach.call(accordionDivs, function (el) {
+                    el.classList.remove("show");
+                });
+            })
+        }
+    </script>
+
+    <script>
+        $('#passTable').find('tr').click(function () {            
+            var index = $(this).index() + 1;
+            var chevron = this.getElementsByClassName("chevron");            
+            if (chevron[0].classList.contains("gly-rotate-45")) {
+                chevron[0].classList.remove("gly-rotate-45");
+            } else {
+                chevron[0].classList.add("gly-rotate-45");
+            }
+        });
+
+        $('#failTable').find('tr').click(function () {
+            var index = $(this).index() + 1;
+            var chevron = this.getElementsByClassName("chevron");
+            if (chevron[0].classList.contains("gly-rotate-45")) {
+                chevron[0].classList.remove("gly-rotate-45");
+            } else {
+                chevron[0].classList.add("gly-rotate-45");
+            }
+        });
+    </script>
+</body>
+</html>
