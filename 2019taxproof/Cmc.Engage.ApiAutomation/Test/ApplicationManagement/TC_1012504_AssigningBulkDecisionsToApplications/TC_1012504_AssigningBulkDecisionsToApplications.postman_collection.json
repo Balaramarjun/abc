@@ -1,0 +1,5303 @@
+{
+	"info": {
+		"_postman_id": "32c7ffd2-0969-4838-b9b4-d40a649ca99a",
+		"name": "TC_1012504_AssigningBulkDecisionsToApplications",
+		"description": "Create Discount Code",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona - Application Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "pre-requisties",
+			"item": [
+				{
+					"name": "Create Discount Code record for Amount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var DiscountcodeidAmount;",
+									"var DiscountCodeName;",
+									"var Discounttype;",
+									"var Value;",
+									"",
+									"pm.test(\"Discount Code for Amount is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    DiscountcodeidAmount = jsonData.cmc_discountcodeid;",
+									"    DiscountCodeName=jsonData.cmc_discountcodename;",
+									"    console.log('Discount Code name is: ' +DiscountCodeName);",
+									"    Discounttype=jsonData.cmc_discounttype;",
+									"    console.log('Discount Type is: '+Discounttype);",
+									"    Value=jsonData.cmc_value;",
+									"    console.log('Value is: ' +Value);",
+									"    ",
+									"    pm.globals.set('gDiscountcodeidAmount',DiscountcodeidAmount);",
+									"    //pm.globals.set('gDiscountcodeidAmount',jsonData.cmc_discountcodeid);",
+									"});",
+									"",
+									"var cmc_discountcodename = data.cmc_discountcodename;",
+									"var cmc_description= data.cmc_description;",
+									"var cmc_discounttype = data.cmc_discounttype;",
+									"var cmc_value = data.cmc_value;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(120, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_discountcodename\":\"${{$randomInt}}{{cmc_discountcodename}}{{$randomInt}}{{$randomInt}}\",\r\n\t\"cmc_description\": \"{{cmc_description}}\",\r\n\t\"cmc_discounttype\": \"{{cmc_discounttype}}\",\r\n\t\"cmc_value\" : {{cmc_value}},\r\n       \"cmc_expirationdate\":\"{{timestamp}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_discountcodes",
+							"host": [
+								"{{Eresource_URL}}cmc_discountcodes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Discount Code record for Percentage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var DiscountcodeidPercentage;",
+									"var DiscountCodeName;",
+									"var Discounttype;",
+									"var Value;",
+									"",
+									"pm.test(\"Discount Code for Percentage is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    DiscountcodeidPercentage = jsonData.cmc_discountcodeid;",
+									"    DiscountCodeName=jsonData.cmc_discountcodename;",
+									"    console.log('Discount Code name is: ' +DiscountCodeName);",
+									"    Discounttype=jsonData.cmc_discounttype;",
+									"    console.log('Discount Type is: '+Discounttype);",
+									"    Value=jsonData.cmc_value;",
+									"    console.log('Value is: ' +Value);",
+									"    ",
+									"    pm.globals.set('gDiscountcodeidPercentage',DiscountcodeidPercentage);",
+									"});",
+									"",
+									"",
+									"var cmc_discountcodename1 = data.cmc_discountcodename1;",
+									"var cmc_description= data.cmc_description;",
+									"var cmc_discounttype1 = data.cmc_discounttype1;",
+									"var cmc_value1 = data.cmc_value1;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(120, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_discountcodename\":\"{{$randomInt}}{{cmc_discountcodename1}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"cmc_description\": \"{{cmc_description}}\",\r\n\t\"cmc_discounttype\": \"{{cmc_discounttype1}}\",\r\n\t\"cmc_value\" : {{cmc_value1}},\r\n    \"cmc_expirationdate\":\"{{timestamp}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_discountcodes",
+							"host": [
+								"{{Eresource_URL}}cmc_discountcodes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction currency",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching Transaction currency of USD\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    //console.log(\"TOdoID \" +jsonData.value[0].cmc_todoid);",
+									"    var transactioncurrencyid= jsonData.value[0].transactioncurrencyid;",
+									"    pm.globals.set('gtransactioncurrencyid',transactioncurrencyid);",
+									"    ",
+									"    var currencyname=jsonData.value[0].currencyname;",
+									"    console.log(\"Currency name is:\" +currencyname);",
+									"    ",
+									"    var isocurrencycode=jsonData.value[0].isocurrencycode;",
+									"    console.log(\"Currency Code is:\" +isocurrencycode);",
+									"    ",
+									"    var currencysymbol=jsonData.value[0].currencysymbol;",
+									"    console.log(\"Currency symbol is:\" +currencysymbol);",
+									"    ",
+									"    if(currencyname!=\"US Dollar\")",
+									"    {",
+									"        console.log(\"Check the currency again and re execute\");",
+									"    }",
+									"    ",
+									"     else",
+									"     {",
+									"     console.log(\"Transaction currency is fetched correctly\");    ",
+									"     ",
+									"     }",
+									"     ",
+									"     ",
+									"    });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}transactioncurrencies",
+							"host": [
+								"{{Eresource_URL}}transactioncurrencies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create pricelist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Pricename;",
+									"var PricelevelID;",
+									"var Currency;",
+									"",
+									"pm.test(\"PriceLevel is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    PricelevelID = jsonData.pricelevelid;",
+									"    console.log('Price level ID is: ' +PricelevelID);",
+									"    Pricename=jsonData.name;",
+									"    console.log('Price name is: '+Pricename);",
+									"    Currency=jsonData._transactioncurrencyid_value;",
+									"    console.log('Currency Used in Price list is: '+Currency);",
+									"    ",
+									"    pm.globals.set('gPricelevelID',PricelevelID);",
+									"});",
+									"",
+									"var priceName = data.Pricename;",
+									"var Date1= data.begindate;",
+									"var Date2 = data.enddate;",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\":\"{{$randomInt}}{{Pricename}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"begindate\" : \"{{timestamp}}\",\r\n\t\"enddate\": \"{{timestampEndDate}}\",\r\n\t\"transactioncurrencyid@odata.bind\": \"/transactioncurrencies({{gtransactioncurrencyid}})\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}pricelevels",
+							"host": [
+								"{{Eresource_URL}}pricelevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get UnitGroup ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching Unit Group ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    //console.log(\"TOdoID \" +jsonData.value[0].cmc_todoid);",
+									"    var uomscheduleid= jsonData.value[0].uomscheduleid;",
+									"    pm.globals.set('guomscheduleid',uomscheduleid);",
+									"    console.log(\"Unit group ID is:\" +uomscheduleid);",
+									"    ",
+									"     ",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}uomschedules",
+							"host": [
+								"{{Eresource_URL}}uomschedules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Units ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching Units ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    //console.log(\"TOdoID \" +jsonData.value[0].cmc_todoid);",
+									"    var uomid= jsonData.value[0].uomid;",
+									"    console.log(\"Units ID is:\" +uomid);",
+									"    pm.globals.set('guomid',uomid);",
+									"    ",
+									"    ",
+									"     ",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}uoms",
+							"host": [
+								"{{Eresource_URL}}uoms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Existing Product 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ProdID;",
+									"var Prodname;",
+									"var IsFee;",
+									"",
+									"pm.test(\"Existing Product is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ProdID = jsonData.productid;",
+									"    console.log('Product ID is: ' +ProdID);",
+									"    Prodname= jsonData.name;",
+									"    console.log('Name is: ' +Prodname);",
+									"    ",
+									"    IsFee = jsonData.cmc_isfeeitem;",
+									"    console.log('IsFee value is: ' +IsFee);",
+									"    ",
+									"    pm.globals.set('gProdID',ProdID);",
+									"});",
+									"",
+									"var EPName = data.EPname;",
+									"var ProdNum = data.ProdNum;",
+									"var EPUP1 = data.EPUP1;",
+									"var EPUP2 = data.EPUP2;",
+									"",
+									"setTimeout(function() {},3000); //wait 3 seconds",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"{{$randomInt}}{{EPname}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"productnumber\": \"{{ProdNum}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"defaultuomid@odata.bind\": \"/uoms({{guomid}})\",\r\n\t\"defaultuomscheduleid@odata.bind\": \"/uomschedules({{guomscheduleid}})\",\r\n\t\"pricelevelid@odata.bind\": \"/pricelevels({{gPricelevelID}})\",\r\n\t\"cmc_isfeeitem\": true,\r\n\t\"quantitydecimal\": \"{{quantitydecimal}}\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}products",
+							"host": [
+								"{{Eresource_URL}}products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Existing Product 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ProdID1;",
+									"var Prodname1;",
+									"var IsFee1;",
+									"",
+									"pm.test(\"Existing Product 2 is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ProdID1 = jsonData.productid;",
+									"    console.log('Product ID is: ' +ProdID1);",
+									"    Prodname1= jsonData.name;",
+									"    console.log('Name is: ' +Prodname1);",
+									"    ",
+									"    IsFee1 = jsonData.cmc_isfeeitem;",
+									"    console.log('IsFee value is: ' +IsFee1);",
+									"    ",
+									"    pm.globals.set('gProdID1',ProdID1);",
+									"});",
+									"",
+									"var EPName = data.EPname;",
+									"var ProdNum = data.ProdNum;",
+									"var EPUP2 = data.EPUP1;",
+									"var EPUP2 = data.EPUP2;",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"setTimeout(function() {},3000); //wait 3 seconds"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"{{$randomInt}}{{EPname}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"productnumber\": \"{{ProdNum}} {{$randomInt}}\",\r\n\t\"defaultuomid@odata.bind\": \"/uoms({{guomid}})\",\r\n\t\"defaultuomscheduleid@odata.bind\": \"/uomschedules({{guomscheduleid}})\",\r\n\t\"pricelevelid@odata.bind\": \"/pricelevels({{gPricelevelID}})\",\r\n\t\"cmc_isfeeitem\": false,\r\n\t\"quantitydecimal\": \"{{quantitydecimal1}}\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}products",
+							"host": [
+								"{{Eresource_URL}}products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Existing Product 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ProdID3;",
+									"var Prodname3;",
+									"",
+									"pm.test(\"Existing Product 1 is Activated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ProdID3 = jsonData.productid;",
+									"    console.log('Product ID is: ' +ProdID3);",
+									"    Prodname3= jsonData.name;",
+									"    console.log('Name is: ' +Prodname3);",
+									"    ",
+									"   });",
+									"",
+									"var Statecode = data.statecode;",
+									"var Statuscode= data.statuscode;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\r\n\"statecode\": \"{{statecode}}\",  \r\n\"statuscode\": \"{{statuscode}}\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}products({{gProdID}})",
+							"host": [
+								"{{Eresource_URL}}products({{gProdID}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Existing Product 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ProdID4;",
+									"var Prodname4;",
+									"",
+									"pm.test(\"Existing Product 2 is Activated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ProdID4 = jsonData.productid;",
+									"    console.log('Product ID is: ' +ProdID4);",
+									"    Prodname4= jsonData.name;",
+									"    console.log('Name is: ' +Prodname4);",
+									"  ",
+									"});",
+									"",
+									"var Statecode = data.statecode;",
+									"var Statuscode= data.statuscode;",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\r\n\"statecode\": \"{{statecode}}\",  \r\n\"statuscode\": \"{{statuscode}}\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}products({{gProdID1}})",
+							"host": [
+								"{{Eresource_URL}}products({{gProdID1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create pricelist Item 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ProdPricelevelID;",
+									"",
+									"pm.test(\"PriceLevel is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ProdPricelevelID = jsonData.productpricelevelid;",
+									"    console.log('Product Price level ID is: ' +ProdPricelevelID);",
+									"    ",
+									"    ",
+									"    pm.globals.set('gProdPricelevelID',ProdPricelevelID);",
+									"});",
+									"",
+									"var Amount = data.amount;",
+									"var PMC = data.pricingmethodcode;",
+									"var QSC = data.quantitysellingcode;",
+									"var TC = data.TransCurr;",
+									"var PLUP1 = data.PLUP1;",
+									"var PLUP2 = data.PLUP2;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"pricelevelid@odata.bind\": \"/pricelevels({{gPricelevelID}})\",\r\n\t\"amount\": {{amount}},\r\n\t\"pricingmethodcode\": \"{{pricingmethodcode}}\",\r\n\t\"productid@odata.bind\": \"/products({{gProdID}})\",\r\n\t\"quantitysellingcode\": \"{{quantitysellingcode}}\",\r\n\t\"transactioncurrencyid@odata.bind\": \"/transactioncurrencies({{gtransactioncurrencyid}})\",\r\n\t\"uomid@odata.bind\": \"/uoms({{guomid}})\",\r\n\t\"uomscheduleid@odata.bind\": \"/uomschedules({{guomscheduleid}})\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}productpricelevels",
+							"host": [
+								"{{Eresource_URL}}productpricelevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create pricelist Item 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ProdPricelevelID;",
+									"",
+									"pm.test(\"PriceLevel is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ProdPricelevelID = jsonData.productpricelevelid;",
+									"    console.log('Product Price level ID is: ' +ProdPricelevelID);",
+									"    ",
+									"    ",
+									"    pm.globals.set('gProdPricelevelID',ProdPricelevelID);",
+									"});",
+									"",
+									"var Amount1 = data.amount1;",
+									"var PMC = data.pricingmethodcode;",
+									"var QSC = data.quantitysellingcode;",
+									"var TC = data.TransCurr;",
+									"var PLUP1 = data.PLUP1;",
+									"var PLUP2 = data.PLUP2;",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"pricelevelid@odata.bind\": \"/pricelevels({{gPricelevelID}})\",\r\n\t\"amount\":{{amount1}},\r\n\t\"pricingmethodcode\": \"{{pricingmethodcode}}\",\r\n\t\"productid@odata.bind\": \"/products({{gProdID1}})\",\r\n\t\"quantitysellingcode\": \"{{quantitysellingcode}}\",\r\n\t\"transactioncurrencyid@odata.bind\": \"/transactioncurrencies({{gtransactioncurrencyid}})\",\r\n\t\"uomid@odata.bind\": \"/uoms({{guomid}})\",\r\n\t\"uomscheduleid@odata.bind\": \"/uomschedules({{guomscheduleid}})\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}productpricelevels",
+							"host": [
+								"{{Eresource_URL}}productpricelevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Invoice Definition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var InvoiceDefID;",
+									"var InvoiceDefinitionName;",
+									"var Pricelist;",
+									"",
+									"pm.test(\"Invoice Definition is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    InvoiceDefID = jsonData.cmc_invoicedefinitionid;",
+									"    console.log('Invoice Definition ID is: ' +InvoiceDefID);",
+									"    InvoiceDefinitionName=jsonData.cmc_invoicedefinitionname;",
+									"    console.log('Invoice Definition name is: '+InvoiceDefinitionName);",
+									"    Pricelist=jsonData._cmc_pricelistid_value;",
+									"    console.log('Pricelist value is: '+Pricelist);",
+									"    ",
+									"    pm.globals.set('gInvoiceDefID',InvoiceDefID);",
+									"});",
+									"",
+									"",
+									"var Idname= data.Idname;",
+									"var MinimumAmount = data.MinimumAmount;",
+									"var IT = data.cmc_invoicetype;",
+									"var PG = data.cmc_paymentgateway;",
+									"var PM = data.cmc_paymentmethod;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_invoicedefinitionname\":\"{{$randomInt}}{{Idname}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"cmc_pricelistid@odata.bind\" : \"/pricelevels({{gPricelevelID}})\",\r\n\t\"cmc_enablepartialpayment\": false,\r\n\t\"cmc_minimumamount\": {{MinimumAmount}},\r\n\t\"cmc_invoicetype\" : \"{{cmc_invoicetype}}\",\r\n\t\"cmc_paymentgateway\" : \"{{cmc_paymentgateway}}\",\r\n\t\"cmc_paymentmethod\": \"{{cmc_paymentmethod}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_invoicedefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_invoicedefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Discount Code Amount To Invoice Definition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Discount Code Amount To Invoice Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var DiscountCodename =jsonData.cmc_discountcodename;",
+									"    console.log('Discount Code that is added to Invoice definition is: ' +DiscountCodename);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n {\r\n               \r\n                \r\n                \"@odata.id\":\"{{Eresource}}api/data/{{Eversion}}/cmc_discountcodes({{gDiscountcodeidAmount}})\"\r\n                \r\n}\r\n\r\n                \r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_invoicedefinitions({{gInvoiceDefID}})/cmc_discountcode_cmc_invoicedefinition/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_invoicedefinitions({{gInvoiceDefID}})"
+							],
+							"path": [
+								"cmc_discountcode_cmc_invoicedefinition",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Discount Code Percentage To Invoice Definition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Discount Code Percentage To Invoice Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var DiscountCodename =jsonData.cmc_discountcodename;",
+									"    console.log('Discount Code that is added to Invoice definition is: ' +DiscountCodename);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n {\r\n               \r\n                \r\n                \"@odata.id\":\"{{Eresource}}api/data/{{Eversion}}/cmc_discountcodes({{gDiscountcodeidPercentage}})\"\r\n                \r\n}\r\n\r\n                \r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_invoicedefinitions({{gInvoiceDefID}})/cmc_discountcode_cmc_invoicedefinition/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_invoicedefinitions({{gInvoiceDefID}})"
+							],
+							"path": [
+								"cmc_discountcode_cmc_invoicedefinition",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppTypeID;",
+									"var AppTypeName;",
+									"",
+									"pm.test(\"Application Type is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppTypeID = jsonData.cmc_applicationtypeid;",
+									"    console.log('Application Type ID is: ' +AppTypeID);",
+									"    AppTypeName=jsonData.cmc_applicationtypename;",
+									"    console.log('Application Type name is: ' +AppTypeName);",
+									"    ",
+									"    pm.globals.set('gAppTypeID',AppTypeID);",
+									"});",
+									"",
+									"",
+									"var ATname= data.ATName;",
+									"var cmc_applicationgroup = data.cmc_applicationgroup;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationtypename\":\"{{$randomInt}}{{ATName}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"cmc_applicationgroup\": \"{{cmc_applicationgroup}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationtypes",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationtypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"create Program 1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    programid = jsonData.mshied_programid;",
+									"    ",
+									"});",
+									"pm.globals.set('gProgram1',programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"mshied_code\": \"{{$randomInt}}{{$randomInt}}3{{$randomInt}}\",\r\n\t\"mshied_name\": \"SUB{{cmc_programname}}${{$randomInt}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"create Program 2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    programid = jsonData.mshied_programid;",
+									"    ",
+									"});",
+									"pm.globals.set('gProgram2',programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"mshied_code\": \"{{$randomInt}}I$a{{$randomInt}}{{$randomInt}}\",\r\n\t\"mshied_name\": \"D{{cmc_programname}}B{{$randomInt}}%$\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Program1 to Application Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Program 1 record To Application Type\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var ProgName =jsonData.mshied_name;",
+									"    console.log('Program that is added to Applikcation Type is:' +ProgName);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n                \r\n                \"@odata.id\":\"{{Eresource}}api/data/{{Eversion}}/mshied_programs({{gProgram1}})\"\r\n}\r\n           \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_applicationtypes({{gAppTypeID}})/cmc_cmc_applicationtype_mshied_program/$ref",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_applicationtypes({{gAppTypeID}})",
+								"cmc_cmc_applicationtype_mshied_program",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Program2 to Application Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Program 1 record To Application Type\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var ProgName =jsonData.mshied_name;",
+									"    console.log('Program that is added to Applikcation Type is:' +ProgName);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n                \r\n                \"@odata.id\":\"{{Eresource}}api/data/{{Eversion}}/mshied_programs({{gProgram1}})\"\r\n}\r\n           \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_applicationtypes({{gAppTypeID}})/cmc_cmc_applicationtype_mshied_program/$ref",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_applicationtypes({{gAppTypeID}})",
+								"cmc_cmc_applicationtype_mshied_program",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid,academicPeriodname;",
+									"",
+									"pm.test(\"Academicperiodid Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"    academicPeriodname=jsonData.mshied_name;",
+									"",
+									"    console.log(\"Academic Period Name: \"+academicPeriodname);",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gacademicperiodid',academicperiodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"mshied_code\": \"C@m{{$randomInt}}{{$randomInt}}{{$randomInt}}pu$\",\r\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\r\n    \"mshied_name\": \"sem{{$randomInt}}p-1{{$randomInt}}\",\r\n    \"mshied_startdate\": \"{{timestamp}}\"\r\n \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_academicperiods",
+							"host": [
+								"{{Eresource_URL}}mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppPerID;",
+									"var AppPerName;",
+									"",
+									"pm.test(\"Application Period is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppPerID = jsonData.cmc_applicationperiodid;",
+									"    console.log('Application Period ID is: ' +AppPerID);",
+									"    ",
+									"    AppPerName = jsonData.cmc_applicationperiodname;",
+									"    console.log('Application Period name is: ' +AppPerName);",
+									"    ",
+									"    ",
+									"});",
+									"",
+									"",
+									"var APName= data.APName;",
+									"pm.globals.set('gAppPerID',AppPerID);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationperiodname\": \"{{$randomInt}}{{$randomInt}}123{{$randomInt}}{{$randomInt}}\",\r\n\t\"cmc_AcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationperiods",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppDefID;",
+									"var AppDefinitionName;",
+									"var InvoiceID;",
+									"",
+									"pm.test(\"Application Definition is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppDefID = jsonData.cmc_applicationdefinitionid;",
+									"    console.log('Application Definition ID is: ' +AppDefID);",
+									"    AppDefinitionName=jsonData.cmc_applicationdefinitionname;",
+									"    console.log('Application Definition name is: '+AppDefinitionName);",
+									"    InvoiceID=jsonData._cmc_invoicedefinitionid_value;",
+									"    console.log('Invoice ID that is associated to App definition is: '+InvoiceID);",
+									"    ",
+									"    pm.globals.set('gAppDefID',AppDefID);",
+									"});",
+									"",
+									"",
+									"var Adname= data.AppDefnName;",
+									"var cmc_statusoncompletion = data.cmc_statusoncompletion;",
+									"var cmc_statusoncreate = data.cmc_statusoncreate;",
+									"var cmc_statusonsave = data.cmc_statusonsave;",
+									"var cmc_statusonsubmit = data.cmc_statusonsubmit;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationdefinitionname\":\"{{$randomInt}}{{AppDefnName}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"cmc_invoicedefinitionid@odata.bind\": \"/cmc_invoicedefinitions({{gInvoiceDefID}})\",\r\n\t\"cmc_statusoncompletion\": \"{{cmc_statusoncompletion}}\",\r\n\t\"cmc_statusoncreate\": \"{{cmc_statusoncreate}}\",\r\n\t\"cmc_statusonsave\" : \"{{cmc_statusonsave}}\",\r\n\t\"cmc_statusonsubmit\": \"{{cmc_statusonsubmit}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition Version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppDefnVerID;",
+									"var AppDefnID;",
+									"var AppDefnVerName;",
+									"var AppTypeID;",
+									"",
+									"pm.test(\"Application Definition Version is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppDefnVerID = jsonData.cmc_applicationdefinitionversionid;",
+									"    console.log('Application Definition version ID is: ' +AppDefnVerID);",
+									"    AppDefnID = jsonData._cmc_applicationdefinitionid_value;",
+									"    console.log('Application Definition ID that is linked is: ' +AppDefnID);",
+									"    AppTypeID = jsonData._cmc_applicationtype_value;",
+									"    console.log('Application Type ID that is linked is: ' +AppTypeID);",
+									"    AppDefnVerName=jsonData.cmc_applicationdefinitionversionname;",
+									"    console.log('Application Definition Version name is: ' +AppDefnVerName);",
+									"    ",
+									"    pm.globals.set('gAppDefnVerID',AppDefnVerID);",
+									"});",
+									"",
+									"",
+									"var ADVname= data.ADVName;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationdefinitionversionname\":\"{{$randomInt}}{{$randomInt}}{{ADVName}} {{$randomInt}}\",\r\n\t\"cmc_applicationdefinitionid@odata.bind\": \"/cmc_applicationdefinitions({{gAppDefID}})\",\r\n\t\"cmc_applicationtype@odata.bind\": \"/cmc_applicationtypes({{gAppTypeID}})\",\r\n\t\"cmc_createlifecycle\": false,\r\n\t\"cmc_lifecycletype\": null,\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitionversions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitionversions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition Version Detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Application Definition Version Detail is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppDefnVerDetID = jsonData.cmc_applicationdefinitionversiondetailid;",
+									"    console.log('Application Definition version Detail ID is: ' +AppDefnVerDetID);",
+									"    var AppDefVerName = jsonData.cmc_applicationdefinitionversiondetailname;",
+									"    console.log('Application Definition Version Detail name: ' +AppDefVerName);",
+									"    ",
+									"    pm.globals.set('gAppDefnVerDetID',AppDefnVerDetID); ",
+									"    ",
+									"        ",
+									"});",
+									"",
+									"var StartDate= data.begindate;",
+									"var EndDate= data.enddate;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationdefinitionversion@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID}})\",\r\n\t\"cmc_applicationperiod@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_enddate\": \"{{timestampEndDate}}\",\r\n\t\"cmc_startdate\": \"{{timestamp}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitionversiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitionversiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition Version2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppDefnVerID2;",
+									"var AppDefnID;",
+									"var AppDefnVerName;",
+									"var AppTypeID;",
+									"",
+									"pm.test(\"Application Definition Version is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppDefnVerID2 = jsonData.cmc_applicationdefinitionversionid;",
+									"    console.log('Application Definition version ID is: ' +AppDefnVerID2);",
+									"    AppDefnID = jsonData._cmc_applicationdefinitionid_value;",
+									"    console.log('Application Definition ID that is linked is: ' +AppDefnID);",
+									"    AppTypeID = jsonData._cmc_applicationtype_value;",
+									"    console.log('Application Type ID that is linked is: ' +AppTypeID);",
+									"    AppDefnVerName=jsonData.cmc_applicationdefinitionversionname;",
+									"    console.log('Application Definition Version name is: ' +AppDefnVerName);",
+									"    ",
+									"    pm.globals.set('gAppDefnVerID2',AppDefnVerID2);",
+									"});",
+									"",
+									"",
+									"var ADVname= data.ADVName;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationdefinitionversionname\":\"{{$randomInt}}{{$randomInt}}{{ADVName}} {{$randomInt}}\",\r\n\t\"cmc_applicationdefinitionid@odata.bind\": \"/cmc_applicationdefinitions({{gAppDefID}})\",\r\n\t\"cmc_applicationtype@odata.bind\": \"/cmc_applicationtypes({{gAppTypeID}})\",\r\n\t\"cmc_createlifecycle\": false,\r\n\t\"cmc_lifecycletype\": null,\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitionversions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitionversions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition Version Detail2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Application Definition Version Detail is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppDefnVerDetID2 = jsonData.cmc_applicationdefinitionversiondetailid;",
+									"    console.log('Application Definition version Detail ID is: ' +AppDefnVerDetID2);",
+									"    var AppDefVerName = jsonData.cmc_applicationdefinitionversiondetailname;",
+									"    console.log('Application Definition Version Detail name: ' +AppDefVerName);",
+									"    ",
+									"    pm.globals.set('gAppDefnVerDetID2',AppDefnVerDetID2); ",
+									"    ",
+									"        ",
+									"});",
+									"",
+									"var StartDate= data.begindate;",
+									"var EndDate= data.enddate;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationdefinitionversion@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID2}})\",\r\n\t\"cmc_applicationperiod@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_enddate\": \"{{timestampEndDate}}\",\r\n\t\"cmc_startdate\": \"{{timestamp}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitionversiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitionversiondetails"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TestDataCreation",
+			"item": [
+				{
+					"name": "Create Contacts",
+					"item": [
+						{
+							"name": "Create Contact1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var ContactID1;",
+											"var ContactFullname;",
+											"",
+											"pm.test(\"Contact1 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ContactID1 = jsonData.contactid;",
+											"    console.log('Contact ID is: ' +ContactID1);",
+											"    ContactFullname = jsonData.fullname;",
+											"    console.log('Contact fullname is: ' +ContactFullname);",
+											"  ",
+											"    ",
+											"    pm.globals.set('gContactID1',ContactID1);",
+											"});",
+											"",
+											"var firstname= data.firstname;",
+											"var mshied_contacttype = data.mshied_contacttype;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"firstname\":\"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}contacts",
+									"host": [
+										"{{Eresource_URL}}contacts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Contact2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var ContactID2;",
+											"var ContactFullname;",
+											"",
+											"pm.test(\"Contact2 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ContactID2 = jsonData.contactid;",
+											"    console.log('Contact ID is: ' +ContactID2);",
+											"    ContactFullname = jsonData.fullname;",
+											"    console.log('Contact fullname is: ' +ContactFullname);",
+											"  ",
+											"    ",
+											"    pm.globals.set('gContactID2',ContactID2);",
+											"});",
+											"",
+											"var firstname= data.firstname;",
+											"var mshied_contacttype = data.mshied_contacttype;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"firstname\":\"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}contacts",
+									"host": [
+										"{{Eresource_URL}}contacts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Contact3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var ContactID3;",
+											"var ContactFullname;",
+											"",
+											"pm.test(\"Contact3 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ContactID3 = jsonData.contactid;",
+											"    console.log('Contact ID is: ' +ContactID3);",
+											"    ContactFullname = jsonData.fullname;",
+											"    console.log('Contact fullname is: ' +ContactFullname);",
+											"  ",
+											"    ",
+											"    pm.globals.set('gContactID3',ContactID3);",
+											"});",
+											"",
+											"var firstname= data.firstname;",
+											"var mshied_contacttype = data.mshied_contacttype;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"firstname\":\"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}contacts",
+									"host": [
+										"{{Eresource_URL}}contacts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Contact4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var ContactID4;",
+											"var ContactFullname;",
+											"",
+											"pm.test(\"Contact4 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ContactID4 = jsonData.contactid;",
+											"    console.log('Contact ID is: ' +ContactID4);",
+											"    ContactFullname = jsonData.fullname;",
+											"    console.log('Contact fullname is: ' +ContactFullname);",
+											"  ",
+											"    ",
+											"    pm.globals.set('gContactID4',ContactID4);",
+											"});",
+											"",
+											"var firstname= data.firstname;",
+											"var mshied_contacttype = data.mshied_contacttype;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"firstname\":\"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}contacts",
+									"host": [
+										"{{Eresource_URL}}contacts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Contact5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var ContactID5;",
+											"var ContactFullname;",
+											"",
+											"pm.test(\"Contact5 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ContactID5 = jsonData.contactid;",
+											"    console.log('Contact ID is: ' +ContactID5);",
+											"    ContactFullname = jsonData.fullname;",
+											"    console.log('Contact fullname is: ' +ContactFullname);",
+											"  ",
+											"    ",
+											"    pm.globals.set('gContactID5',ContactID5);",
+											"});",
+											"",
+											"var firstname= data.firstname;",
+											"var mshied_contacttype = data.mshied_contacttype;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"firstname\":\"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}contacts",
+									"host": [
+										"{{Eresource_URL}}contacts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Contact6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var ContactID6;",
+											"var ContactFullname;",
+											"",
+											"pm.test(\"Contact6 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ContactID6 = jsonData.contactid;",
+											"    console.log('Contact ID is: ' +ContactID6);",
+											"    ContactFullname = jsonData.fullname;",
+											"    console.log('Contact fullname is: ' +ContactFullname);",
+											"  ",
+											"    ",
+											"    pm.globals.set('gContactID6',ContactID6);",
+											"});",
+											"",
+											"var firstname= data.firstname;",
+											"var mshied_contacttype = data.mshied_contacttype;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"firstname\":\"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}contacts",
+									"host": [
+										"{{Eresource_URL}}contacts"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Application Registrations",
+					"item": [
+						{
+							"name": "Create Application Registration1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppRegID1;",
+											"var AppDefnVerID;",
+											"var AppRegName;",
+											"var ContactID1;",
+											"",
+											"pm.test(\"Application Registration1 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppRegID1 = jsonData.cmc_applicationregistrationid;",
+											"    console.log('Application1 Registration ID is: ' +AppRegID1);",
+											"    AppDefnVerID = jsonData._cmc_applicationdefinitionversionid_value;",
+											"    console.log('Application Definition version ID that is linked is: ' +AppDefnVerID);",
+											"    AppRegName = jsonData.cmc_applicationregistration;",
+											"    console.log('Application Registration name is: ' +AppRegName);",
+											"    ContactID1=jsonData._cmc_contactid_value;",
+											"    console.log('Contact ID that is linked is: ' +ContactID1);",
+											"    ",
+											"    pm.globals.set('gAppRegID1',AppRegID1);",
+											"});",
+											"",
+											"var cmc_applicationstatus= data.cmc_applicationstatus;",
+											"var cmc_sourceofrecord = data.cmc_sourceofrecord;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationdefinitionversionid@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID1}})\",\r\n\t\"cmc_applicationstatus\": \"{{cmc_applicationstatus}}\",\r\n\t\"cmc_applicationsubmitted\": false,\r\n\t\"cmc_sourceofrecord\":\"{{cmc_sourceofrecord}}\", \r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationregistrations",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationregistrations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application Registration2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppRegID2;",
+											"var AppDefnVerID;",
+											"var AppRegName;",
+											"var ContactID2;",
+											"",
+											"pm.test(\"Application Registration2 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppRegID2 = jsonData.cmc_applicationregistrationid;",
+											"    console.log('Application2 Registration ID is: ' +AppRegID2);",
+											"    AppDefnVerID = jsonData._cmc_applicationdefinitionversionid_value;",
+											"    console.log('Application Definition version ID that is linked is: ' +AppDefnVerID);",
+											"    AppRegName = jsonData.cmc_applicationregistration;",
+											"    console.log('Application Registration name is: ' +AppRegName);",
+											"    ContactID2=jsonData._cmc_contactid_value;",
+											"    console.log('Contact ID that is linked is: ' +ContactID2);",
+											"    ",
+											"    pm.globals.set('gAppRegID2',AppRegID2);",
+											"});",
+											"",
+											"var cmc_applicationstatus= data.cmc_applicationstatus;",
+											"var cmc_sourceofrecord = data.cmc_sourceofrecord;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationdefinitionversionid@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID2}})\",\r\n\t\"cmc_applicationstatus\": \"{{cmc_applicationstatus}}\",\r\n\t\"cmc_applicationsubmitted\": false,\r\n\t\"cmc_sourceofrecord\":\"{{cmc_sourceofrecord}}\", \r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationregistrations",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationregistrations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application Registration3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppRegID3;",
+											"var AppDefnVerID;",
+											"var AppRegName;",
+											"var ContactID3;",
+											"",
+											"pm.test(\"Application Registration3 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppRegID3 = jsonData.cmc_applicationregistrationid;",
+											"    console.log('Application3 Registration ID is: ' +AppRegID3);",
+											"    AppDefnVerID = jsonData._cmc_applicationdefinitionversionid_value;",
+											"    console.log('Application Definition version ID that is linked is: ' +AppDefnVerID);",
+											"    AppRegName = jsonData.cmc_applicationregistration;",
+											"    console.log('Application Registration name is: ' +AppRegName);",
+											"    ContactID3=jsonData._cmc_contactid_value;",
+											"    console.log('Contact ID that is linked is: ' +ContactID3);",
+											"    ",
+											"    pm.globals.set('gAppRegID3',AppRegID3);",
+											"});",
+											"",
+											"var cmc_applicationstatus= data.cmc_applicationstatus;",
+											"var cmc_sourceofrecord = data.cmc_sourceofrecord;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationdefinitionversionid@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID3}})\",\r\n\t\"cmc_applicationstatus\": \"{{cmc_applicationstatus}}\",\r\n\t\"cmc_applicationsubmitted\": false,\r\n\t\"cmc_sourceofrecord\":\"{{cmc_sourceofrecord}}\", \r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationregistrations",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationregistrations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application Registration4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppRegID4;",
+											"var AppDefnVerID;",
+											"var AppRegName;",
+											"var ContactID4;",
+											"",
+											"pm.test(\"Application Registration4 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppRegID4 = jsonData.cmc_applicationregistrationid;",
+											"    console.log('Application4 Registration ID is: ' +AppRegID4);",
+											"    AppDefnVerID = jsonData._cmc_applicationdefinitionversionid_value;",
+											"    console.log('Application Definition version ID that is linked is: ' +AppDefnVerID);",
+											"    AppRegName = jsonData.cmc_applicationregistration;",
+											"    console.log('Application Registration name is: ' +AppRegName);",
+											"    ContactID4=jsonData._cmc_contactid_value;",
+											"    console.log('Contact ID that is linked is: ' +ContactID4);",
+											"    ",
+											"    pm.globals.set('gAppRegID4',AppRegID4);",
+											"});",
+											"",
+											"var cmc_applicationstatus= data.cmc_applicationstatus;",
+											"var cmc_sourceofrecord = data.cmc_sourceofrecord;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationdefinitionversionid@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID4}})\",\r\n\t\"cmc_applicationstatus\": \"{{cmc_applicationstatus}}\",\r\n\t\"cmc_applicationsubmitted\": false,\r\n\t\"cmc_sourceofrecord\":\"{{cmc_sourceofrecord}}\", \r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationregistrations",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationregistrations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application Registration5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppRegID5;",
+											"var AppDefnVerID;",
+											"var AppRegName;",
+											"var ContactID5;",
+											"",
+											"pm.test(\"Application Registration5 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppRegID5 = jsonData.cmc_applicationregistrationid;",
+											"    console.log('Application6 Registration ID is: ' +AppRegID5);",
+											"    AppDefnVerID2 = jsonData._cmc_applicationdefinitionversionid_value;",
+											"    console.log('Application Definition version ID that is linked is: ' +AppDefnVerID2);",
+											"    AppRegName = jsonData.cmc_applicationregistration;",
+											"    console.log('Application Registration name is: ' +AppRegName);",
+											"    ContactID5=jsonData._cmc_contactid_value;",
+											"    console.log('Contact ID that is linked is: ' +ContactID5);",
+											"    ",
+											"    pm.globals.set('gAppRegID5',AppRegID5);",
+											"});",
+											"",
+											"var cmc_applicationstatus= data.cmc_applicationstatus;",
+											"var cmc_sourceofrecord = data.cmc_sourceofrecord;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationdefinitionversionid@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID2}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID5}})\",\r\n\t\"cmc_applicationstatus\": \"{{cmc_applicationstatus}}\",\r\n\t\"cmc_applicationsubmitted\": false,\r\n\t\"cmc_sourceofrecord\":\"{{cmc_sourceofrecord}}\", \r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationregistrations",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationregistrations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application Registration6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppRegID6;",
+											"var AppDefnVerID;",
+											"var AppRegName;",
+											"var ContactID6;",
+											"",
+											"pm.test(\"Application Registration6 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppRegID6 = jsonData.cmc_applicationregistrationid;",
+											"    console.log('Application5 Registration ID is: ' +AppRegID6);",
+											"    AppDefnVerID = jsonData._cmc_applicationdefinitionversionid_value;",
+											"    console.log('Application Definition version ID that is linked is: ' +AppDefnVerID);",
+											"    AppRegName = jsonData.cmc_applicationregistration;",
+											"    console.log('Application Registration name is: ' +AppRegName);",
+											"    ContactID6=jsonData._cmc_contactid_value;",
+											"    console.log('Contact ID that is linked is: ' +ContactID6);",
+											"    ",
+											"    pm.globals.set('gAppRegID6',AppRegID6);",
+											"});",
+											"",
+											"var cmc_applicationstatus= data.cmc_applicationstatus;",
+											"var cmc_sourceofrecord = data.cmc_sourceofrecord;",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationdefinitionversionid@odata.bind\": \"/cmc_applicationdefinitionversions({{gAppDefnVerID}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID6}})\",\r\n\t\"cmc_applicationstatus\": \"{{cmc_applicationstatus}}\",\r\n\t\"cmc_applicationsubmitted\": false,\r\n\t\"cmc_sourceofrecord\":\"{{cmc_sourceofrecord}}\", \r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationregistrations",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationregistrations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Applications",
+					"item": [
+						{
+							"name": "Create Application1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppID1;",
+											"var AppName1;",
+											"",
+											"pm.test(\"Application1 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppID1 = jsonData.cmc_applicationid;",
+											"    console.log('Application ID is: ' +AppID1);",
+											"    ",
+											"    AppName1 = jsonData.cmc_applicationname;",
+											"    console.log('Application1 name is: ' +AppName1);",
+											"    ",
+											"    pm.globals.set('gAppID1',AppID1);",
+											"    pm.globals.set('gAppName1',AppName1)",
+											"});",
+											"",
+											"var cmc_sourceofrecord= data.cmc_sourceofrecord;",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationperiodid@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_applicationregistration@odata.bind\": \"/cmc_applicationregistrations({{gAppRegID1}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID1}})\",\r\n\t\"cmc_programid@odata.bind\": \"/mshied_programs({{gProgram1}})\",\r\n\t\"cmc_sourceofrecord\": \"{{cmc_sourceofrecord}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications",
+									"host": [
+										"{{Eresource_URL}}cmc_applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppID2;",
+											"var AppName2;",
+											"",
+											"pm.test(\"Application2 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppID2 = jsonData.cmc_applicationid;",
+											"    console.log('Application ID is: ' +AppID2);",
+											"    ",
+											"    AppName2 = jsonData.cmc_applicationname;",
+											"    console.log('Application2 name is: ' +AppName2);",
+											"    ",
+											"    pm.globals.set('gAppID2',AppID2);",
+											"    pm.globals.set('gAppName2',AppName2)",
+											"});",
+											"",
+											"var cmc_sourceofrecord= data.cmc_sourceofrecord;",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationperiodid@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_applicationregistration@odata.bind\": \"/cmc_applicationregistrations({{gAppRegID2}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID2}})\",\r\n\t\"cmc_programid@odata.bind\": \"/mshied_programs({{gProgram1}})\",\r\n\t\"cmc_sourceofrecord\": \"{{cmc_sourceofrecord}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications",
+									"host": [
+										"{{Eresource_URL}}cmc_applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppID3;",
+											"var AppName3;",
+											"",
+											"pm.test(\"Application3 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppID3 = jsonData.cmc_applicationid;",
+											"    console.log('Application ID is: ' +AppID3);",
+											"    ",
+											"    AppName3 = jsonData.cmc_applicationname;",
+											"    console.log('Application3 name is: ' +AppName3);",
+											"    ",
+											"    pm.globals.set('gAppID3',AppID3);",
+											"    pm.globals.set('gAppName3',AppName3)",
+											"});",
+											"",
+											"var cmc_sourceofrecord= data.cmc_sourceofrecord;",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationperiodid@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_applicationregistration@odata.bind\": \"/cmc_applicationregistrations({{gAppRegID3}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID3}})\",\r\n\t\"cmc_programid@odata.bind\": \"/mshied_programs({{gProgram1}})\",\r\n\t\"cmc_sourceofrecord\": \"{{cmc_sourceofrecord}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications",
+									"host": [
+										"{{Eresource_URL}}cmc_applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppID4;",
+											"var AppName4;",
+											"",
+											"pm.test(\"Application4 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppID4 = jsonData.cmc_applicationid;",
+											"    console.log('Application ID is: ' +AppID4);",
+											"    ",
+											"    AppName4 = jsonData.cmc_applicationname;",
+											"    console.log('Application4 name is: ' +AppName4);",
+											"    ",
+											"    pm.globals.set('gAppID4',AppID4);",
+											"    pm.globals.set('gAppName4',AppName4);",
+											"});",
+											"",
+											"var cmc_sourceofrecord= data.cmc_sourceofrecord;",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationperiodid@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_applicationregistration@odata.bind\": \"/cmc_applicationregistrations({{gAppRegID4}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID4}})\",\r\n\t\"cmc_programid@odata.bind\": \"/mshied_programs({{gProgram1}})\",\r\n\t\"cmc_sourceofrecord\": \"{{cmc_sourceofrecord}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications",
+									"host": [
+										"{{Eresource_URL}}cmc_applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppID5;",
+											"var AppName5;",
+											"",
+											"pm.test(\"Application5 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppID5 = jsonData.cmc_applicationid;",
+											"    console.log('Application ID is: ' +AppID5);",
+											"    ",
+											"    AppName5 = jsonData.cmc_applicationname;",
+											"    console.log('Application5 name is: ' +AppName5);",
+											"    ",
+											"    pm.globals.set('gAppID5',AppID5);",
+											"    pm.globals.set('gAppName5',AppName5);",
+											"});",
+											"",
+											"var cmc_sourceofrecord= data.cmc_sourceofrecord;",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationperiodid@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_applicationregistration@odata.bind\": \"/cmc_applicationregistrations({{gAppRegID5}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID5}})\",\r\n\t\"cmc_programid@odata.bind\": \"/mshied_programs({{gProgram1}})\",\r\n\t\"cmc_sourceofrecord\": \"{{cmc_sourceofrecord}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications",
+									"host": [
+										"{{Eresource_URL}}cmc_applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Application6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppID6;",
+											"var AppName6;",
+											"",
+											"pm.test(\"Application6 is Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppID6 = jsonData.cmc_applicationid;",
+											"    console.log('Application ID is: ' +AppID6);",
+											"    ",
+											"    AppName6 = jsonData.cmc_applicationname;",
+											"    console.log('Application6 name is: ' +AppName6);",
+											"    pm.globals.set('gAppID6',AppID6);",
+											"    pm.globals.set('gAppName6',AppName6);",
+											"});",
+											"",
+											"var cmc_sourceofrecord= data.cmc_sourceofrecord;",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"cmc_applicationperiodid@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\t\"cmc_applicationregistration@odata.bind\": \"/cmc_applicationregistrations({{gAppRegID6}})\",\r\n\t\"cmc_contactid@odata.bind\": \"/contacts({{gContactID6}})\",\r\n\t\"cmc_programid@odata.bind\": \"/mshied_programs({{gProgram1}})\",\r\n\t\"cmc_sourceofrecord\": \"{{cmc_sourceofrecord}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications",
+									"host": [
+										"{{Eresource_URL}}cmc_applications"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Decision Definition",
+					"item": [
+						{
+							"name": "Create Decision Definition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var appdecdefid;",
+											"",
+											"pm.test(\"Decision Definition Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    appdecdefid = jsonData.cmc_applicationdecisiondefinitionid;",
+											" ",
+											"});",
+											"",
+											"pm.globals.set('gappdecdefid',appdecdefid); "
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+											"pm.environment.set(\"timestampEndDate\", moment().add(6, 'days').format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"cmc_applicationdecisiondefinitionname\":\"{{$randomInt}}test decision1{{$randomInt}} ACC {{$randomInt}}\",\r\n\"cmc_decisionpublishdate\":\"{{timestamp}}\",\r\n\"cmc_enrollmentcutoffdate\":\"{{timestampEndDate}}\",\r\n\"cmc_enrollmentcutoffmessage\":\"sss\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationdecisiondefinitions",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationdecisiondefinitions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Decision Definition Details",
+					"item": [
+						{
+							"name": "Create Admit Decision Definition Detail -1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppDecDefDetID1;",
+											"var AppDefDetName1;",
+											"var Decstatus1;",
+											"",
+											"pm.test(\"Application Decision Definition Detail - Admit Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"   ",
+											"    AppDecDefDetID1 =jsonData.cmc_applicationdecisiondefinitiondetailid;",
+											"    console.log(\"Application Decision Definition Detail ID: \",+AppDecDefDetID1);",
+											"    ",
+											"    AppDefDetName1 =jsonData.cmc_applicationdecisiondefinitiondetailname;",
+											"    console.log(\"Application Decision Definition Detail Name: \",+AppDefDetName1);",
+											"    ",
+											"    Decstatus1=jsonData.cmc_decisionstatus;",
+											"    console.log(\"Decision Status Name: \",+Decstatus1);",
+											"    ",
+											"    pm.globals.set('gAppDecDefDetID1',AppDecDefDetID1);",
+											"    pm.globals.set('gDecstatus1',Decstatus1);",
+											"    ",
+											" ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n\r\n{\r\n\"cmc_applicationdecisiondefinitiondetailname\":\"{{$randomInt}}DecDefDetName {{$randomInt}} First {{$randomInt}}\",\r\n\"cmc_applicationdecisiondefinition@odata.bind\":\"/cmc_applicationdecisiondefinitions({{gappdecdefid}})\",\r\n\"cmc_decisionstatus\":175490000,\r\n\"cmc_invoicedefinitionid@odata.bind\":\"/cmc_invoicedefinitions({{gInvoiceDefID}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationdecisiondefinitiondetails",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationdecisiondefinitiondetails"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Reject Decision Definition Detail -2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppDecDefDetID2;",
+											"var AppDefDetName2;",
+											"var Decstatus2;",
+											"",
+											"pm.test(\"Application Decision Definition Detail - Reject Created\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    AppDecDefDetID2 =jsonData.cmc_applicationdecisiondefinitiondetailid;",
+											"    console.log(\"Application Decision Definition Detail ID: \",+AppDecDefDetID2);",
+											"    ",
+											"    AppDefDetName2 =jsonData.cmc_applicationdecisiondefinitiondetailname;",
+											"    console.log(\"Application Decision Definition Detail Name: \",+AppDefDetName2);",
+											"    ",
+											"    Decstatus2=jsonData.cmc_decisionstatus;",
+											"    console.log(\"Decision Status Name: \",+Decstatus2);",
+											"    ",
+											"    pm.globals.set('gAppDecDefDetID2',AppDecDefDetID2);",
+											"    pm.globals.set('gDecstatus2',Decstatus2);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"cmc_applicationdecisiondefinitiondetailname\":\"{{$randomInt}}DecDefDetName {{$randomInt}} Second {{$randomInt}}\",\r\n\"cmc_applicationdecisiondefinition@odata.bind\":\"/cmc_applicationdecisiondefinitions({{gappdecdefid}})\",\r\n\"cmc_decisionstatus\":175490001,\r\n\"cmc_invoicedefinitionid@odata.bind\":\"/cmc_invoicedefinitions({{gInvoiceDefID}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationdecisiondefinitiondetails",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationdecisiondefinitiondetails"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "AssociateDecisionDefntoAppDefn",
+					"item": [
+						{
+							"name": "Update Application Definition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var AppDefID;",
+											"var AppDefinitionName;",
+											"var InvoiceID;",
+											"",
+											"pm.test(\"Application Definition is updated with Decision Definition ID\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    AppDefID = jsonData.cmc_applicationdefinitionid;",
+											"    console.log('Application Definition ID is: ' +AppDefID);",
+											"    AppDefinitionName=jsonData.cmc_applicationdefinitionname;",
+											"    console.log('Application Definition name is: '+AppDefinitionName);",
+											"    InvoiceID=jsonData._cmc_invoicedefinitionid_value;",
+											"    console.log('Invoice ID that is associated to App definition is: '+InvoiceID);",
+											"    ",
+											"    pm.globals.set('gAppDefID',AppDefID);",
+											"});",
+											"",
+											"",
+											"var Adname= data.AppDefnName;",
+											"var cmc_statusoncompletion = data.cmc_statusoncompletion;",
+											"var cmc_statusoncreate = data.cmc_statusoncreate;",
+											"var cmc_statusonsave = data.cmc_statusonsave;",
+											"var cmc_statusonsubmit = data.cmc_statusonsubmit;",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\r\n\t\"cmc_decisiondefinitionid@odata.bind\": \"/cmc_applicationdecisiondefinitions({{gappdecdefid}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applicationdefinitions({{gAppDefID}})",
+									"host": [
+										"{{Eresource_URL}}cmc_applicationdefinitions({{gAppDefID}})"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CreateDecisionFromSameAppVersion",
+			"item": [
+				{
+					"name": "CreateDecisionToSingleApplication",
+					"item": [
+						{
+							"name": "Assign Admit Decision to App1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Assigning Admit decision to the Application1 \", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+											"    //var jsonData =JSON.parse(responseBody);",
+											"    console.log(\"Assigning Admit decision to the one applications successfully\");",
+											"   ",
+											"});",
+											"    ",
+											"    ",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var current_timestamp = new Date();\r",
+											"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"ApplicationId\":\n\t\n\t[\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID1}}\"}\n\t],\n\t\t\n\t\t\"DecisionStatus\":175490000,\"DecisionDate\":\"{{current_timestamp}}\",\"DecisionPublishStatus\":1\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_ApplicationCreateDecision",
+									"host": [
+										"{{Eresource_URL}}cmc_ApplicationCreateDecision"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate Decision under App1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Verify Admin Decision must be created to App1\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    var result =jsonData.cmc_application_applicationdecision_application;",
+											"    var count=0;",
+											"    var errors=[];",
+											"    var success=[];",
+											"    var successcount=0;",
+											"    ",
+											"    if (result.length===0)",
+											"     {",
+											"            console.log('Decision is not assigned to App1 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+											"            ",
+											"     }",
+											"     else",
+											"     {",
+											"            var applicationdecisionid= result[0].cmc_applicationdecisionid;",
+											"            console.log('Application Decision ID is:' +applicationdecisionid);",
+											"            pm.globals.set('gapplicationdecisionid', applicationdecisionid); ",
+											"            ",
+											"            var decisionname= result[0].cmc_decisionname;",
+											"            console.log('Decision Name is:'+decisionname);",
+											"            ",
+											"            var decisionautoname= pm.globals.get('gAppName1')+\"\"+\"-\"+\" \"+\"Admit\";",
+											"            //pm.globals.get('gDecstatus1');",
+											"            console.log('Decision Auto Name is: ' +decisionautoname);",
+											"            ",
+											"            var StateCode=result[0].statecode;",
+											"            console.log('Decison State Code is : ', +StateCode);",
+											"            ",
+											"     ",
+											"    if (StateCode===0)",
+											"    {",
+											"        console.log(\"The App1 Decision record is in Active State\");",
+											"        successcount++;",
+											"        success.add(\"source of record is set as 'Import' successfully\");",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"The App1 Decision record is Inactive State\");",
+											"        count++;",
+											"        errors.add(\"Tha App1 Decision record is Inactive state'. please check again\");",
+											"    }",
+											"    ",
+											"    if(decisionname === decisionautoname)",
+											"    {",
+											"        console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+											"        console.log(\"Auto Name creation for Decision created successfully\");",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"plugin might not be registered. Please register plugin and check again\");",
+											"        ",
+											"    }",
+											"    ",
+											"    //matches",
+											"    console.log(\"Below are the list of matching that occurred in this entity: \");",
+											"    ",
+											"    for(l=0;l<successcount;l++)",
+											"    {",
+											"        console.log(success[l]);",
+											"    }",
+											"    ",
+											"    if(successcount>0)",
+											"    {",
+											"        console.log(\"Number of matches:\" +successcount);",
+											"    }",
+											"    ",
+											"    //mismatches",
+											"    console.log(\"Below are the list of mismatches that occurred in this entity: \");",
+											"    for(k=0;k<count;k++)",
+											"    {",
+											"       console.log(errors[k]);",
+											"        ",
+											"    }",
+											"     ",
+											"    if(count>0)",
+											"    {",
+											"        console.log(\"Number of mismatches:\" +count);",
+											"        pm.expect.fail('Somewhere mismatch occured');",
+											"    }",
+											"    ",
+											"}});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID1}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID1}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "UpdateDifferentDecisionToSingleApp",
+					"item": [
+						{
+							"name": "Update Reject Decision to App1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Update Reject decision to the Application1 \", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+											"    //var jsonData =JSON.parse(responseBody);",
+											"    console.log(\"Update Reject decision to the application1 successfully\");",
+											"   ",
+											"});",
+											"    ",
+											"    ",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var current_timestamp = new Date();\r",
+											"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"ApplicationId\":\n\t\n\t[\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID1}}\"}\n\t],\n\t\t\n\t\t\"DecisionStatus\":175490001,\"DecisionDate\":\"{{current_timestamp}}\",\"DecisionPublishStatus\":1\n\t\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_ApplicationCreateDecision",
+									"host": [
+										"{{Eresource_URL}}cmc_ApplicationCreateDecision"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate updated decision under App1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Once update the \"Admit\" decision to \"Rejected\" decision to the application1 validating with the below points:",
+											"// 1. Validate the updated \"Rejected\" decision must be created and must in active state.",
+											"// 2. Validate the previous decision (admit) must go to inactive state.",
+											"",
+											"pm.test(\"Verify Reject Decision must be updated to App1\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    var result =jsonData.cmc_application_applicationdecision_application;",
+											"    ",
+											"    if (result.length!=0)",
+											"     {",
+											"            console.log('Decision is not updated to App1 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+											"     }",
+											"     else",
+											"     {",
+											"            var applicationdecisionid = result[1].cmc_applicationdecisionid;",
+											"            console.log('Application Decision ID is:' +applicationdecisionid);",
+											"            pm.globals.set('gapplicationdecisionid', applicationdecisionid); ",
+											"            ",
+											"            var decisionname= result[1].cmc_decisionname;",
+											"            console.log('Decision Name is:'+decisionname);",
+											"            ",
+											"            var decisionautoname= pm.globals.get('gAppName1')+\"\"+\"-\"+\" \"+\"Rejected\";",
+											"            //pm.globals.get('gDecstatus1');",
+											"            console.log('Decision Auto Name is: ' +decisionautoname);",
+											"            ",
+											"            var StateCode=result[1].statecode;",
+											"            console.log('Decison State Code is : ', +StateCode);",
+											"            ",
+											"    if (StateCode===0)",
+											"    {",
+											"        console.log(\"The Decision record is in Active State\");",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"The Decision record is Inactive State\");",
+											"    }",
+											"    ",
+											"    if (decisionname === decisionautoname)",
+											"    {",
+											"        console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+											"        console.log(\"Auto Name creation for Decision updated successfully\");",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"plugin might not be registered. Please register plugin and check again\");",
+											"    }",
+											"    ",
+											"}});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID1}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID1}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CreateDecisionsToMultipleApplications",
+					"item": [
+						{
+							"name": "Assign Admit Decision to App2 and App3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Assigning Admit decision to the two applications App2 and App3 \", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+											"  //  var jsonData =JSON.parse(responseBody);",
+											"   console.log(\"Assigning Admit decision to the two applications App2 and App3 successfully\");",
+											"   ",
+											"});",
+											"    ",
+											"    ",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var current_timestamp = new Date();\r",
+											"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"ApplicationId\":\n\t\n\t[\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID2}}\"},\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID3}}\"}\n\t],\n\t\t\n\t\t\"DecisionStatus\":175490000,\"DecisionDate\":\"{{current_timestamp}}\",\"DecisionPublishStatus\":0\n\t\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_ApplicationCreateDecision",
+									"host": [
+										"{{Eresource_URL}}cmc_ApplicationCreateDecision"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate Decision under App2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"// Create \"Admit\" decision to the App2 validating with the below points:",
+											"// 1. Validate the \"Admit\" decision must be created to App1 and must in active state.",
+											"pm.test(\"Verify Admin Decisions must be created for App2\", function() {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    var result = jsonData.cmc_application_applicationdecision_application;",
+											"",
+											"    if (result.length === 0) {",
+											"        console.log('Decision is not assigned to App2 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+											"",
+											"    } else {",
+											"        var applicationdecisionid = result[0].cmc_applicationdecisionid;",
+											"        console.log('Application Decision ID is:' + applicationdecisionid);",
+											"        pm.globals.set('gapplicationdecisionid', applicationdecisionid);",
+											"",
+											"        var decisionname = result[0].cmc_decisionname;",
+											"        console.log('Decision Name is:' + decisionname);",
+											"",
+											"        var decisionautoname = pm.globals.get('gAppName2')+\"\"+\"-\"+\" \"+\"Admit\";",
+											"        console.log('Decision Auto Name is: ' + decisionautoname);",
+											"            ",
+											"        var StateCode=result[0].statecode;",
+											"        console.log('Decison State Code is : ', +StateCode);",
+											"        ",
+											"        if (StateCode===0)",
+											"    {",
+											"        console.log(\"The App2 Decision record is in Active State\");",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"The App2 Decision record is Inactive State\");",
+											"    }    ",
+											"",
+											"        if (decisionname === decisionautoname) {",
+											"            console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+											"            console.log(\"Auto Name creation for Decision created successfully\");",
+											"        } else {",
+											"            console.log(\"plugin might not be registered. Please register plugin and check again\");",
+											"        }",
+											"",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID2}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID2}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate Decision under App3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"// Create \"Admit\" decision to the App3 validating with the below points:",
+											"// 1. Validate the \"Admit\" decision must be created to App1 and must in active state.",
+											"pm.test(\"Verify Admin Decisions must be created for App3\", function() {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    var result = jsonData.cmc_application_applicationdecision_application;",
+											"",
+											"    if (result.length === 0) {",
+											"        console.log('Decision is not assigned to App2 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+											"",
+											"    } else {",
+											"        var applicationdecisionid = result[0].cmc_applicationdecisionid;",
+											"        console.log('Application Decision ID is:' + applicationdecisionid);",
+											"        pm.globals.set('gapplicationdecisionid', applicationdecisionid);",
+											"",
+											"        var decisionname = result[0].cmc_decisionname;",
+											"        console.log('Decision Name is:' + decisionname);",
+											"",
+											"        var decisionautoname = pm.globals.get('gAppName3')+\"\"+\"-\"+\" \"+\"Admit\";",
+											"        console.log('Decision Auto Name is: ' + decisionautoname);",
+											"            ",
+											"        var StateCode=result[0].statecode;",
+											"        console.log('Decison State Code is : ', +StateCode);",
+											"        ",
+											"        if (StateCode===0)",
+											"    {",
+											"        console.log(\"The App3 Decision record is in Active State\");",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"The App3 Decision record is Inactive State\");",
+											"    }    ",
+											"",
+											"        if (decisionname === decisionautoname) {",
+											"            console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+											"            console.log(\"Auto Name creation for Decision created successfully\");",
+											"        } else {",
+											"            console.log(\"plugin might not be registered. Please register plugin and check again\");",
+											"        }",
+											"",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID3}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID3}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "UpdateDecisionsToMultipleApplications",
+					"item": [
+						{
+							"name": "Update Reject Decision to App2 and App3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Update Reject decision to the two applications App2 and App3 \", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+											"  //  var jsonData =JSON.parse(responseBody);",
+											"   console.log(\"Update Reject decision to the two applications App2 and App3 successfully\");",
+											"   ",
+											"});",
+											"    ",
+											"    ",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var current_timestamp = new Date();\r",
+											"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"ApplicationId\":\n\t\n\t[\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID2}}\"},\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID3}}\"}\n\t],\n\t\t\n\t\t\"DecisionStatus\":175490001,\"DecisionDate\":\"{{current_timestamp}}\",\"DecisionPublishStatus\":0\n\t\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_ApplicationCreateDecision",
+									"host": [
+										"{{Eresource_URL}}cmc_ApplicationCreateDecision"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate Decision under App2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Once update the \"Admit\" decision to \"Rejected\" decision to the App2 validating with the below points:",
+											"// 1. Validate the updated \"Rejected\" decision must be created and must in active state.",
+											"// 2. Validate the previous decision (admit) must go to inactive state.",
+											"",
+											"pm.test(\"Verify Reject Decisions must be created for App2\", function() {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    var result = jsonData.cmc_application_applicationdecision_application;",
+											"",
+											"    if (result.length === 0) {",
+											"        pm.expect.fail(\"your message whatever you want to display\");",
+											"        console.log('Decision is not assigned to App2 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+											"",
+											"    } else {",
+											"        var applicationdecisionid = result[1].cmc_applicationdecisionid;",
+											"        console.log('Application Decision ID is:' + applicationdecisionid);",
+											"        pm.globals.set('gapplicationdecisionid', applicationdecisionid);",
+											"",
+											"        var decisionname = result[1].cmc_decisionname;",
+											"        console.log('Decision Name is:' + decisionname);",
+											"",
+											"        var decisionautoname = pm.globals.get('gAppName2')+\"\"+\"-\"+\" \"+\"Rejected\";",
+											"        console.log('Decision Auto Name is: ' + decisionautoname);",
+											"            ",
+											"        var StateCode=result[1].statecode;",
+											"        console.log('Decison State Code is : ', +StateCode);",
+											"        ",
+											"        if (StateCode===0)",
+											"    {",
+											"        console.log(\"The App2 Decision record is in Active State\");",
+											"    }",
+											"    else",
+											"    {",
+											"        pm.expect.fail(\"your message whatever you want to display\");",
+											"        console.log(\"The App2 Decision record is Inactive State\");",
+											"    }    ",
+											"",
+											"        if (decisionname === decisionautoname) {",
+											"            console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+											"            console.log(\"Auto Name creation for Decision created successfully\");",
+											"        } else {",
+											"            pm.expect.fail(\"your message whatever you want to display\");",
+											"            console.log(\"plugin might not be registered. Please register plugin and check again\");",
+											"        }",
+											"",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID2}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID2}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate Decision under App3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Once update the \"Admit\" decision to \"Rejected\" decision to the App3 validating with the below points:",
+											"// 1. Validate the updated \"Rejected\" decision must be created and must in active state.",
+											"// 2. Validate the previous decision (admit) must go to inactive state.",
+											"pm.test(\"Verify Admin Decisions must be created for App3\", function() {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    var result = jsonData.cmc_application_applicationdecision_application;",
+											"",
+											"    if (result.length === 0) {",
+											"        console.log('Decision is not assigned to App2 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+											"",
+											"    } else {",
+											"        var applicationdecisionid = result[1].cmc_applicationdecisionid;",
+											"        console.log('Application Decision ID is:' + applicationdecisionid);",
+											"        pm.globals.set('gapplicationdecisionid', applicationdecisionid);",
+											"",
+											"        var decisionname = result[1].cmc_decisionname;",
+											"        console.log('Decision Name is:' + decisionname);",
+											"",
+											"        var decisionautoname = pm.globals.get('gAppName3')+\"\"+\"-\"+\" \"+\"Admit\";",
+											"        console.log('Decision Auto Name is: ' + decisionautoname);",
+											"            ",
+											"        var StateCode=result[1].statecode;",
+											"        console.log('Decison State Code is : ', +StateCode);",
+											"        ",
+											"        if (StateCode===0)",
+											"    {",
+											"        console.log(\"The App3 Decision record is in Active State\");",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"The App3 Decision record is Inactive State\");",
+											"    }    ",
+											"",
+											"        if (decisionname === decisionautoname) {",
+											"            console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+											"            console.log(\"Auto Name creation for Decision created successfully\");",
+											"        } else {",
+											"            console.log(\"plugin might not be registered. Please register plugin and check again\");",
+											"        }",
+											"",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID3}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID3}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CreateDecisionFromDifferentAppVersions",
+			"item": [
+				{
+					"name": "CreateDecisionsToMultipleApplications",
+					"item": [
+						{
+							"name": "Assign Admit Decision to App4 and App5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Assigning desicion to App4 and App5 from different AppDefinitionVerion.",
+											"pm.test(\"Assigning 'Admit' decision to App4 and App5 of diffecent app definition version\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+											"  //  var jsonData =JSON.parse(responseBody);",
+											"   console.log(\"Assigning 'Admit' decision from different AppDefinitionVerion to App4 and App5\");",
+											"   ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var current_timestamp = new Date();\r",
+											"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"ApplicationId\":\n\t\n\t[\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID4}}\"},\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID5}}\"}\n\t],\n\t\t\n\t\t\"DecisionStatus\":175490000,\"DecisionDate\":\"{{current_timestamp}}\",\"DecisionPublishStatus\":1\n\t\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_ApplicationCreateDecision",
+									"host": [
+										"{{Eresource_URL}}cmc_ApplicationCreateDecision"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate Decision under App4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Decisions can be created to App4 validating with the below points:",
+											"// 1. Validate the \"Admit\" decision must not be created to App4.",
+											"",
+											"pm.test(\"Verify Admin Decision must not be created for App4\", function() {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    var result = jsonData.cmc_application_applicationdecision_application;",
+											"",
+											"    if (result.length === 0) {",
+											"        console.log('Decision is not created to App4 since different application definition version of applications cannot be assigned at bulk');",
+											"",
+											"    } else {",
+											"        console.log(\"Issue in the decision making\");",
+											"    }});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID4}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID4}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate Decision under App5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Decisions can be created to App5 validating with the below points:",
+											"// 1. Validate the \"Admit\" decision must not be created to App5.",
+											"",
+											"pm.test(\"Verify Admin Decision must not be created for App5\", function() {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    var result = jsonData.cmc_application_applicationdecision_application;",
+											"",
+											"    if (result.length === 0) {",
+											"        console.log('Decision is not created to App5 since different application definition version of applications cannot be assigned at bulk');",
+											"",
+											"    } else {",
+											"        console.log(\"Issue in the decision making\");",
+											"    }});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_applications({{gAppID5}})?$expand=cmc_application_applicationdecision_application",
+									"host": [
+										"{{Eresource_URL}}cmc_applications({{gAppID5}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_application_applicationdecision_application"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ValidateDecisionOnTopofPublishedDecision",
+			"item": [
+				{
+					"name": "Assign Admit Decision to App6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppDecName;",
+									"var AppDecID;",
+									"var publishstatus;",
+									"pm.test(\"Assigning Admit decision to the App6 \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+									"   ",
+									"    ",
+									"console.log(\"Assigning Admit decision to the App6 successfully\");",
+									"",
+									"",
+									"    ",
+									"});",
+									"",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();\r",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"ApplicationId\":\n\t\n\t[\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID6}}\"}\n\t],\n\t\t\n\t\t\"DecisionStatus\":175490000,\"DecisionDate\":\"{{current_timestamp}}\",\"DecisionPublishStatus\":1\n\t\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_ApplicationCreateDecision",
+							"host": [
+								"{{Eresource_URL}}cmc_ApplicationCreateDecision"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Decision under App6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify Admin Decision must be created to App6\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_application_applicationdecision_application;",
+									"    ",
+									"    ",
+									"    if (result.length===0)",
+									"     {",
+									"            console.log('Decision is not assigned to App1 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+									"            ",
+									"     }",
+									"     else",
+									"     {",
+									"            var applicationdecisionid= result[0].cmc_applicationdecisionid;",
+									"            console.log('Application Decision ID is:' +applicationdecisionid);",
+									"            pm.globals.set('gapplicationdecisionid', applicationdecisionid); ",
+									"            ",
+									"            var decisionname= result[0].cmc_decisionname;",
+									"            console.log('Decision Name is:'+decisionname);",
+									"            ",
+									"            var decisionautoname= pm.globals.get('gAppName6')+\"\"+\"-\"+\" \"+\"Admit\";",
+									"            console.log('Decision Auto Name is: ' +decisionautoname);",
+									"            ",
+									"            var StateCode=result[0].statecode;",
+									"            console.log('Decison State Code is : ', +StateCode);",
+									"            ",
+									"            var publishstatus = result[0].cmc_publishstatus;",
+									"            console.log('Decision Publish status is:' +publishstatus);",
+									"        ",
+									"     ",
+									"    if (StateCode===0)",
+									"    {",
+									"        console.log(\"The App1 Decision record is in Active State\");",
+									"",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"The App1 Decision record is Inactive State\");",
+									"",
+									"    }",
+									"    ",
+									"    if(decisionname === decisionautoname)",
+									"    {",
+									"        console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+									"        console.log(\"Auto Name creation for Decision created successfully\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"plugin might not be registered. Please register plugin and check again\");",
+									"        ",
+									"    }",
+									"    ",
+									"",
+									"}});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gAppID6}})?$expand=cmc_application_applicationdecision_application",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gAppID6}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_application_applicationdecision_application"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Decision Status under App6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify Admin Decision must be created to App6\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_applicationdecisionid;",
+									"    ",
+									"    ",
+									"    if (result.length===0)",
+									"     {",
+									"            console.log('Decision is not assigned to App1 since plugin is not working or not registered, hence Decison details cannot be retrieved');",
+									"            ",
+									"     }",
+									"     else",
+									"     {",
+									"            var applicationdecisionid= result[0].cmc_applicationdecisionid;",
+									"            console.log('Application Decision ID is:' +applicationdecisionid);",
+									"            pm.globals.set('gapplicationdecisionid', applicationdecisionid); ",
+									"            ",
+									"            var decisionname= result[0].cmc_decisionname;",
+									"            console.log('Decision Name is:'+decisionname);",
+									"            ",
+									"            var decisionautoname= pm.globals.get('gAppName6')+\"\"+\"-\"+\" \"+\"Admit\";",
+									"            console.log('Decision Auto Name is: ' +decisionautoname);",
+									"            ",
+									"            var StateCode=result[0].statecode;",
+									"            console.log('Decison State Code is : ', +StateCode);",
+									"            ",
+									"            var publishstatus = result[0].cmc_publishstatus;",
+									"            console.log('Decision Publish status is:' +publishstatus);",
+									"        ",
+									"     ",
+									"    if (StateCode===0)",
+									"    {",
+									"        console.log(\"The App1 Decision record is in Active State\");",
+									"",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"The App1 Decision record is Inactive State\");",
+									"",
+									"    }",
+									"    ",
+									"    if(decisionname === decisionautoname)",
+									"    {",
+									"        console.log(\"Decison Plugin 'Cmc.Engage.Application.Extension.Plugins.ApplicationDecisionPlugin' is working successfully\");",
+									"        console.log(\"Auto Name creation for Decision created successfully\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"plugin might not be registered. Please register plugin and check again\");",
+									"        ",
+									"    }",
+									"    ",
+									"",
+									"}});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"cmc_publishstatus\": true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdecisions({{gapplicationdecisionid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdecisions({{gapplicationdecisionid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Reject Decision to App6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppDecName;",
+									"var AppDecID;",
+									"var publishstatus;",
+									"pm.test(\"Assigning Rejected decision to the App6 \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+									"   ",
+									"    ",
+									"console.log(\"Assigning Rejected decision to the App6 not assigned\");",
+									"",
+									"",
+									"    ",
+									"});",
+									"",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();\r",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"ApplicationId\":\n\t\n\t[\n\t\t{\"@odata.type\":\"Microsoft.Dynamics.CRM.cmc_application\",\"cmc_applicationid\":\"{{gAppID6}}\"}\n\t],\n\t\t\n\t\t\"DecisionStatus\":175490001,\"DecisionDate\":\"{{current_timestamp}}\",\"DecisionPublishStatus\":1\n\t\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_ApplicationCreateDecision",
+							"host": [
+								"{{Eresource_URL}}cmc_ApplicationCreateDecision"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Reject Decision under App6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify Admin Decision must be created to App6\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_application_applicationdecision_application;",
+									"    ",
+									"    ",
+									"    if (result.length>1)",
+									"     {",
+									"            throw new error(\"Duplicate decision is created\");",
+									"            ",
+									"     }",
+									"    ",
+									"    else{",
+									"        console.log(\"decision is not created with rejected status\");",
+									"    }",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gAppID6}})?$expand=cmc_application_applicationdecision_application",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gAppID6}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_application_applicationdecision_application"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

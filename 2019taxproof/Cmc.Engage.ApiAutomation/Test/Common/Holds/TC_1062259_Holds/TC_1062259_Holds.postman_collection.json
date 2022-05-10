@@ -1,0 +1,435 @@
+{
+	"info": {
+		"_postman_id": "31386133-948e-4c73-a97e-0df20a54db43",
+		"name": "TC_1062259_Holds",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken_DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Eadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Eadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    ",
+							"});",
+							"pm.globals.set('gownerid',userid);",
+							"console.log('Ownerid/Systemuser/staffid:'+userid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var crm1 = data.crm2;",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress  eq 'anthologydev1@campusnexus.dev'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "systemuserid"
+						},
+						{
+							"key": "$filter",
+							"value": "internalemailaddress  eq 'anthologydev1@campusnexus.dev'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DepartmentName",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var departmentname,departmentid;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    departmentname = jsonData.cmc_departmentname;",
+							"    departmentid = jsonData.cmc_departmentid;",
+							"});",
+							"pm.globals.set('gdepartmentname',departmentname);",
+							"pm.globals.set('gdepartmentid',departmentid);",
+							"console.log('Departmentname:'+departmentname);",
+							"console.log('DepartmentID:'+departmentid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cmc_code\": \"API-Dept-{{$randomInt}}\",\r\n    \"cmc_departmentname\": \"API-Holds-{{$randomInt}}{{$randomInt}}{{$randomInt}}\"\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_departments",
+					"host": [
+						"{{Eresource_URL}}cmc_departments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create holds",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var holdid, impacts, modules, code, holdname, holdimpact;",
+							"",
+							"var externalidentifier;",
+							"pm.test(\"Holds Created\", function () {",
+							"     pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"     var jsonData = JSON.parse(responseBody);",
+							"",
+							"     holdid = jsonData.cmc_holdid;",
+							"     console.log('holdID :' + holdid);",
+							"",
+							"     holdname = jsonData.cmc_name;",
+							"     console.log('holdname :' + holdname);",
+							"",
+							"     impacts = jsonData.cmc_impacts;",
+							"     console.log('impacts :' + impacts);",
+							"",
+							"     holdimpact = jsonData.cmc_holdimpact;",
+							"     pm.variables.get(\"variable_key\");",
+							"     console.log('holdimpacts :' + holdimpact);",
+							"",
+							"     modules = jsonData.cmc_module;",
+							"     console.log('module :' + modules);",
+							"",
+							"     code = jsonData.cmc_code;",
+							"     console.log('code :' + code);",
+							"",
+							"     var cmc_description = jsonData.cmc_description;",
+							"     console.log('cmc_description :' + cmc_description);",
+							"",
+							"",
+							"     externalidentifier = jsonData.cmc_externalidentifier;",
+							"     console.log('cmc_externalidentifier :' + externalidentifier);",
+							"",
+							"",
+							"});",
+							"",
+							"var cmc_name = data.cmc_name;",
+							"var cmc_code = data.cmc_code;",
+							"var cmc_isstudentfacing = data.cmc_isstudentfacing;",
+							"var cmc_module = data.cmc_module;",
+							"var cmc_holdimpact = data.cmc_holdimpact;",
+							"",
+							"pm.globals.set('gholdid', holdid);",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"cmc_description\":\"HoldHold{{$randomProductName}}\",\r\n   \"cmc_holdimpact\":175490005,\r\n   \"cmc_module\":175490004,\r\n   \"cmc_departmentid@odata.bind\":\"/cmc_departments({{gdepartmentid}})\",\r\n   \"cmc_name\":\"{{randomFirstName}}{{$timestamp}}\",\r\n   \"cmc_code\":\"HLD{{$randomInt}}\",\r\n   \"cmc_isstudentfacing\":false,\r\n   \"ownerid@odata.bind\":\"/systemusers({{gownerid}})\"\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_holds",
+					"host": [
+						"{{Eresource_URL}}cmc_holds"
+					]
+				},
+				"description": "Create Account with new Address"
+			},
+			"response": []
+		},
+		{
+			"name": "Update holds",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var holdid,impacts,modules,code,holdname,holdimpact; ",
+							"",
+							"var externalidentifier;",
+							"pm.test(\"Account Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"  ",
+							"     holdid = jsonData.cmc_holdid;",
+							"    console.log('holdID :' +holdid);",
+							"    ",
+							"    holdname = jsonData.cmc_name;",
+							"    console.log('Updatedholdname :' +holdname);",
+							"    ",
+							"     impacts=jsonData.cmc_impacts;",
+							"     console.log('Updatedholdnameimpacts :' +impacts);",
+							"     ",
+							"     holdimpact=jsonData.cmc_holdimpact;",
+							"     console.log('Updatedholdnameholdimpacts :' +holdimpact);",
+							"     ",
+							"     modules=jsonData.cmc_module;",
+							"     console.log('Updatedholdnamemodule :' +modules);",
+							"     ",
+							"     code=jsonData.cmc_code;",
+							"     console.log('Updatedholdnamecode :' +code);",
+							"",
+							"     var cmc_description=jsonData.cmc_description;",
+							"     console.log('cmc_description :' +cmc_description);",
+							"     ",
+							"     ",
+							"     externalidentifier=jsonData.cmc_externalidentifier;",
+							"     console.log('cmc_externalidentifier :' +externalidentifier);",
+							"",
+							"",
+							"});",
+							"",
+							"var cmc_nameupd=data.cmc_nameupdate;",
+							"var cmc_codeupd=data.cmc_codeupdate;",
+							"var cmc_isstudentfacingupd=data.cmc_isstudentfacingupdate;",
+							"var cmc_moduleupd=data.cmc_moduleupdate;",
+							"var cmc_holdimpactupd=data.cmc_holdimpactupdate;"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"cmc_description\":\"HoldHold{{$randomProductName}}\",\r\n   \"cmc_holdimpact\":175490008,\r\n   \"cmc_module\":175490000,\r\n   \"cmc_departmentid@odata.bind\":\"/cmc_departments({{gdepartmentid}})\",\r\n   \"cmc_name\":\"Holds{{$randomInt}}\",\r\n   \"cmc_code\":\"HLD{{$randomInt}}\",\r\n   \"cmc_isstudentfacing\":true,\r\n   \"ownerid@odata.bind\":\"/systemusers({{gownerid}})\"\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_holds({{gholdid}})",
+					"host": [
+						"{{Eresource_URL}}cmc_holds({{gholdid}})"
+					]
+				},
+				"description": "Create Account with new Address"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,621 @@
+{
+	"info": {
+		"_postman_id": "a345ff47-aeb1-4df2-8bff-e561ead841e6",
+		"name": "TC_999317_TestScoreOldSAT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken_DCRM Student Advisor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Estudentadvisor_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Estudentadvisor_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser - DCRM Student Advisor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid,fullname;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    fullname=jsonData.value[0].fullname;",
+							"",
+							"    console.log(\"Application User name: \" +fullname);",
+							"    ",
+							"});",
+							"pm.globals.set('gownerid',userid);",
+							"console.log('Systemuser:'+userid);",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq 'studentadvisor@api.com'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contact_id;",
+							"pm.test(\"Contact Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contact_id = jsonData.contactid;",
+							"    var fullname = jsonData.fullname;",
+							"    console.log('Contact:' +fullname);",
+							"    console.log('Contact id:' +contact_id);",
+							"    ",
+							"});",
+							"pm.globals.set('gcontactid',contact_id);",
+							"",
+							"",
+							"//   \"firstname\": \"API{{$randomInt}}\",",
+							"//     \"mshied_maidenname\": \"{{$randomInt}}\",",
+							"//     \"lastname\": \"A{{$randomInt}}\",",
+							"//  \t\"preferredcontactmethodcode\": 1,",
+							"//  \t\"donotemail\": \"false\",",
+							"//  \t\"emailaddress1\": \"bala{{$randomInt}}@gmail.com\",",
+							"//  \t\"donotfax\": \"false\",",
+							"//  \t\"donotphone\": \"false\",",
+							"//  \t\"familystatuscode\": \"2\",",
+							"//  \t\"birthdate\": \"1985-04-01\",",
+							"//  \t\"spousesname\": \"ABC\",",
+							"//  \t\"donotbulkemail\": \"false\",",
+							"//  \t\"gendercode\": 1,",
+							"//  \t\"donotpostalmail\": \"false\",",
+							"//  \t\"mshied_nationality\": \"494280000\",",
+							"//  \t\"mshied_legacy\": \"false\",",
+							"//  \t\"mshied_firstgeneration\": \"false\",",
+							"//  \t\"mshied_miltarystatus\": \"494280004\",",
+							"//  \t\"mshied_race\": \"494280000\",",
+							"//  \t\"mshied_externalsourcesystem\": \"494280000\",",
+							"//  \t\"mshied_ferpaprivacy\": \"false\",",
+							"//  \t\"mshied_lastpermanentresidencecountry\": \"494280000\",",
+							"//  \t\"mshied_externalidentifier\": \"ABC\",",
+							"//  \t\"mshied_hipaaindicator\": \"false\",",
+							"//  \t\"mshied_ethnicgroup\": \"494280000\",",
+							"//  \t\"mshied_isdeceased\": \"false\",",
+							"//  \t\"ownerid@odata.bind\": \"/systemusers(138F2C60-D4C0-E811-A952-000D3A4E761D)\","
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"firstname\": \"{{firstname}}\",\r\n\t\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\":\"494280011,494280003,494280004\",\r\n\t\"emailaddress1\":\"bala{{$randomInt}}@test.com\",\r\n\t\"cmc_sourcedate\":\"{{current_timestamp}}\",\r\n\t\"cmc_recentsat\":266,\r\n\t\"cmc_recentact\":100,\r\n\t\"gendercode\":\"1\",\r\n\t\"shippingmethodcode\":\"1\",\r\n\t\"preferredcontactmethodcode\": \"1\",\r\n\t\"statecode\": 0,\r\n\t\"cmc_sourcecategoryid@odata.bind\":\"/contacts({{cmc_sourcecategoryid}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\":\"/contacts({{cmc_sourcemethodid}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n }"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}contacts",
+					"host": [
+						"{{Eresource_URL}}contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get OLD SAT Test Types",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var satid;",
+							"var Testtypename;",
+							"pm.test(\"get SAT id\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    satid = jsonData.value[0].mshied_testtypeid;",
+							"    Testtypename = jsonData.value[0].mshied_name;",
+							"  ",
+							"    console.log('TesttypeID:'+satid);",
+							"    console.log('Testtype:'+Testtypename);",
+							"});",
+							"pm.globals.set('goldsatid',satid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'OLD SAT'",
+					"host": [
+						"{{Eresource_URL}}mshied_testtypes"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "mshied_testtypeid,mshied_name "
+						},
+						{
+							"key": "$filter",
+							"value": "mshied_name eq 'OLD SAT'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create TestScoreOLDSAT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var SATtestscoreid;",
+							"var testscorevalue;",
+							"var actequivalentscore1;",
+							"var includeincalculations;",
+							"var Autoname;",
+							"var math;",
+							"var evidencebasedreadingandwritingsection;",
+							"var essayreading;",
+							"var essayanalysis;",
+							"var equivalentscore;",
+							"",
+							"pm.test(\"OLD SAT TestScore Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    SATtestscoreid = jsonData.mshied_testscoreid;",
+							"    console.log(\"Score id: \"+SATtestscoreid);",
+							"    equivalentscore = jsonData.cmc_newsatequivalentscore;",
+							"    console.log(\"SAT Equivalent score: \"+equivalentscore);",
+							" ",
+							"});",
+							"",
+							"var csv_newsatequivalent = data.newsatequivalent;",
+							"var csv_newsatequivalent = data.newsatequivalent;",
+							"var csv_newsatequivalent = data.newsatequivalent;",
+							"var csv_newsatequivalent = data.newsatequivalent;",
+							"var csv_newsatequivalent = data.newsatequivalent;",
+							"    ",
+							"    pm.test(\"Validate new sat equivalent\", function()",
+							"    {",
+							"        pm.expect(equivalentscore).to.equal(csv_newsatequivalent);",
+							"    });",
+							"",
+							"pm.globals.set('goldsatid',SATtestscoreid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{goldsatid}})\",\n    \"mshied_testsource\": {{testsource}},\n    \"mshied_testlocation\": \"{{cmc_testlocation}}\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"cmc_oldsatcriticalreading\":{{oldsatcriticalreading}},\n    \"cmc_oldsatmathematics\":{{oldsatmathematics}},\n    \"cmc_oldsatwriting\":{{oldsatwriting}},\n    \"cmc_oldsatessay\":{{oldsatessay}},\n    \"cmc_oldsattotalcompositescore\":{{oldsattotalcompositescore}},\n    \"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_testscores",
+					"host": [
+						"{{Eresource_URL}}mshied_testscores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get SAT Super score & Best score from contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var satscore;",
+							"var satbest;",
+							"pm.test(\"SAT Super scores getting from contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    satscore = jsonData.cmc_satsuperscore;",
+							"   ",
+							"    satbest = jsonData.cmc_satbest;",
+							"    ",
+							"    });",
+							"  ",
+							"  console.log('SATSuperScore:'+satscore);",
+							"  ",
+							"  console.log('SATBest:'+satbest);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.log('Request 3 pre-request script');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource_URL}}contacts({{gcontactid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create TestScoreSAT lower limit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var message;",
+							"pm.test(\"SAT TestScore lower limit validation\", function() ",
+							"{",
+							"   pm.expect(pm.response.code).to.be.oneOf([400]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"  message = jsonData.error.message;",
+							"    console.log(message);",
+							" ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{goldsatid}})\",\n    \"mshied_testsource\": 494280003,\n    \"mshied_testlocation\": \"Bangalore\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"cmc_oldsatcriticalreading\":199.5,\n    \"cmc_oldsatmathematics\":198.5,\n    \"cmc_oldsatwriting\":199,\n    \"cmc_oldsatessay\":1,\n    \"cmc_oldsattotalcompositescore\":599,\n    \"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_testscores",
+					"host": [
+						"{{Eresource_URL}}mshied_testscores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create TestScoreSAT Upper limit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var message;",
+							"pm.test(\"SAT TestScore upper limit validation\", function() ",
+							"{",
+							"   pm.expect(pm.response.code).to.be.oneOf([400]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"  message = jsonData.error.message;",
+							"    console.log(message);",
+							" ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{goldsatid}})\",\n    \"mshied_testsource\": 494280004,\n    \"mshied_testlocation\": \"Bangalore\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"cmc_oldsatcriticalreading\":801,\n    \"cmc_oldsatmathematics\":801,\n    \"cmc_oldsatwriting\":800.5,\n    \"cmc_oldsatessay\":13,\n    \"cmc_oldsattotalcompositescore\":2401,\n    \"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_testscores",
+					"host": [
+						"{{Eresource_URL}}mshied_testscores"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,1 @@
+newman run "%TestLocation%\%projectname%\Test\Common\Groups\StudentGroupStatic_TC750096\TC_750096_StudentGroupStatic.postman_collection.json" -r htmlextra --reporters cli,junit,htmlextra --reporter-junit-export Results\TC_750096\junitReport.xml --reporter--reporter-htmlextra-export newmanReport/newmantests.html -e "%TestLocation%\Common\%ApiTestConfig%.postman_environment.json"

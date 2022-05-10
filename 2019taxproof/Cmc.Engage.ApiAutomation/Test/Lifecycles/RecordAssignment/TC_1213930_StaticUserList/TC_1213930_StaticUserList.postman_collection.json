@@ -1,0 +1,513 @@
+{
+	"info": {
+		"_postman_id": "89028498-6204-464d-9233-3d39990086f9",
+		"name": "TC_1213930_StaticUserList",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Static User List",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "242c050e-974e-424c-ab85-e9b5e21443e4",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e21c6f0d-507e-4372-a1f8-66ffaa755ffa",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Static User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf9852c6-9dd1-44e8-88e5-bf1613cfa11a",
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistid = jsonData.cmc_userlistid;    ",
+									"});",
+									"pm.globals.set('guserlistid', userlistid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_description\": \"Api created description\",\r\n    \"cmc_listtype\": 175490000,\r\n    \"cmc_name\": \"StaticList API {{$randomInt}}\",\r\n    \"cmc_purpose\": \"Static User List\",\r\n    \"statecode\": 0,\r\n    \"statuscode\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get System User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d5aa2c1c-f6c8-4db2-89e0-5a882130d294",
+								"exec": [
+									"var systemuserid;",
+									"var firstname;",
+									"pm.test(\"Get User\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    systemuserid = jsonData.value[0].systemuserid; ",
+									"    firstname = jsonData.value[0].firstname;",
+									"});",
+									"pm.globals.set('gsystemuserid', systemuserid);",
+									"pm.globals.set('gsystemusername', firstname);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Weight to Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "47885b5c-8aaf-44f7-8eb0-1b392a928df8",
+								"exec": [
+									"var userlistmemberid;",
+									"pm.test(\"User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistmemberid = jsonData.cmc_userlistmemberid;    ",
+									"});",
+									"pm.globals.set('guserlistmemberid', userlistmemberid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_userid@odata.bind\": \"/systemusers({{gsystemuserid}})\",\r\n    \"cmc_UserMember@odata.bind\": \"/cmc_userlists({{guserlistid}})\",\r\n    \"cmc_roundrobinweight\": 5,\r\n    \"cmc_name\": \"User List Member {{$randomInt}}\",\r\n    \"cmc_description\":\"This is generated through API.\",\r\n    \"statecode\": 0,\r\n    \"statuscode\": 1\r\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlistmembers",
+							"host": [
+								"{{Eresource_URL}}cmc_userlistmembers"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Update User List",
+			"item": [
+				{
+					"name": "Update Static User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f764a461-9be9-4d2c-82ae-d33c9c62c52c",
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_description\": \"Api created description Updated\"\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists({{guserlistid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists({{guserlistid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Deactivate User List",
+			"item": [
+				{
+					"name": "Deactivate Static User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9a3118f-059a-42f1-8a06-8d9e6cb30468",
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statecode\": 1,\r\n    \"statuscode\": 2    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists({{guserlistid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists({{guserlistid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Delete User List",
+			"item": [
+				{
+					"name": "Delete Static User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "16c6f77e-288d-4faa-b530-008ab5a8338b",
+								"exec": [
+									"",
+									"pm.test(\"User List Deleted\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"      ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists({{guserlistid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists({{guserlistid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

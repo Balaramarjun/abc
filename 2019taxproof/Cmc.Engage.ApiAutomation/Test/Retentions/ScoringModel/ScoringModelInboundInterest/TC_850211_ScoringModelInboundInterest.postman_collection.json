@@ -1,0 +1,4547 @@
+{
+	"info": {
+		"_postman_id": "6261cd5b-1ba2-4c8f-a21f-6e6e5de6c788",
+		"name": "TC_850211_ScoringModelInboundInterest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Academic Period,Contact and Marketing List",
+			"item": [
+				{
+					"name": "Create AcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"var academicperiodname",
+									"pm.test(\"Academicperiodid Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"    academicperiodname = jsonData.mshied_name;",
+									"    console.log(\"academicperiodname \", academicperiodname);",
+									"});",
+									"",
+									"pm.globals.set('gacademicperiodname', academicperiodname);",
+									"pm.globals.set('gacademicperiodid',academicperiodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"mshied_code\": \"{{$randomInt}}Sc2-01-{{$randomInt}}\",\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\n    \"mshied_name\": \"API-ScoringModel-{{$randomInt}}\",\n    \"mshied_startdate\": \"{{timestamp}}\"\n \n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.fullname;",
+									"});",
+									" ",
+									"pm.globals.set('gcontactid',contact_id);",
+									"console.log('Contact name is:'+Name);",
+									"console.log('Contactid:'+contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Scoring1{{$randomInt}}Inb\",\r\n    \"lastname\": \"API\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\r\n    \"cmc_recentsat\": 20\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.fullname;",
+									"});",
+									"",
+									"pm.globals.set('gcontactid1',contact_id);",
+									"console.log('Contact name is:'+Name);",
+									"console.log('Contactid:'+contact_id);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Scoring2{{$randomInt}}Inb\",\r\n    \"lastname\": \"API\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"cmc_recentact\": 50\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.fullname;",
+									"});",
+									" ",
+									"pm.globals.set('gcontactid2',contact_id);",
+									"console.log('Contact name is:'+Name);",
+									"console.log('Contactid:'+contact_id);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Scoring3{{$randomInt}}Inb\",\r\n    \"lastname\": \"API\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"cmc_recentsat\": 20\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account_N/A 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id;",
+									"var Accname;",
+									"var numberofemployees;",
+									"",
+									"pm.test(\"Account record is created\", function() {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    // pm.globals.set('gaccountId', jsonData.accountid);",
+									"    account_id = jsonData.accountid;",
+									"    Accname = jsonData.name;",
+									"    console.log('Account name is: ' + Accname);",
+									"    numberofemployees=jsonData.numberofemployees;",
+									"  ",
+									"});",
+									"",
+									"//1st record",
+									"pm.globals.set('gaccountId', account_id);",
+									"pm.globals.set('gnumberofemployees',numberofemployees);",
+									"pm.globals.set('gAccname',Accname);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_accounttype\": 494280005,\n    \"name\": \"Scoring {{$randomInt}} Account-N/A{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}accounts",
+							"host": [
+								"{{Eresource_URL}}accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account_N/A 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id;",
+									"var Accname;",
+									"var numberofemployees;",
+									"",
+									"pm.test(\"Account record is created\", function() {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    // pm.globals.set('gaccountId', jsonData.accountid);",
+									"    account_id = jsonData.accountid;",
+									"    Accname = jsonData.name;",
+									"    console.log('Account name is: ' + Accname);",
+									"    numberofemployees=jsonData.numberofemployees;",
+									"  ",
+									"});",
+									"",
+									"",
+									"//1st record",
+									"pm.globals.set('gaccountId1', account_id);",
+									"pm.globals.set('gnumberofemployees',numberofemployees);",
+									"pm.globals.set('gAccname',Accname);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_accounttype\": 494280005,\n    \"name\": \"Scoring {{$randomInt}} Account-N/A 2{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}accounts",
+							"host": [
+								"{{Eresource_URL}}accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account_N/A 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id;",
+									"var Accname;",
+									"var numberofemployees;",
+									"",
+									"pm.test(\"Account record is created\", function() {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    // pm.globals.set('gaccountId', jsonData.accountid);",
+									"    account_id = jsonData.accountid;",
+									"    Accname = jsonData.name;",
+									"    console.log('Account name is: ' + Accname);",
+									"    numberofemployees=jsonData.numberofemployees;",
+									"   ",
+									"});",
+									"",
+									"",
+									"//1st record",
+									"pm.globals.set('gaccountId2', account_id);",
+									"pm.globals.set('gnumberofemployees',numberofemployees);",
+									"pm.globals.set('gAccname',Accname);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_accounttype\": 494280005,\n    \"name\": \"Scoring {{$randomInt}} Account-N/A 3{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}accounts",
+							"host": [
+								"{{Eresource_URL}}accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Education Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var eduId;",
+									"var eduname;",
+									"//var numberofemployees;",
+									"",
+									"pm.test(\"Education level fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    eduId = jsonData.mshied_educationlevelid;",
+									"    eduname = jsonData.mshied_name;",
+									"    console.log('education level name is: ' + eduname);",
+									"});",
+									"",
+									"pm.globals.set('geduId', eduId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mshied_code\": \"{{$randomInt}}Sc2-01{{$randomInt}}\",\r\n    \"mshied_name\": \"{{$randomInt}}-EduLevel-{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_educationlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_educationlevels"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Previous Education under Account1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var prevEduId;",
+									"var prevEduname;",
+									"//var numberofemployees;",
+									"",
+									"pm.test(\"Previous education fetched\", function() {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    // pm.globals.set('gaccountId', jsonData.accountid);",
+									"    prevEduId = jsonData.mshied_previouseducationid;",
+									"    prevEduname = jsonData.mshied_name;",
+									"    console.log('Previous education name is: ' + prevEduname);",
+									"   ",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gprevEduId', prevEduId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_EducationLevelId@odata.bind\": \"/mshied_educationlevels({{geduId}})\",\n    \"mshied_SchoolNameId@odata.bind\": \"/accounts({{gaccountId}})\",\n    \"mshied_StudentId@odata.bind\": \"/contacts({{gcontactid}})\",\n    \"mshied_gpa\": 10,\n    \"mshied_graduated\": false,\n    \"mshied_rank\": 1\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_previouseducations",
+							"host": [
+								"{{Eresource_URL}}mshied_previouseducations"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Marketing List 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var listid;",
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    listid = jsonData.listid;",
+									"    ",
+									" var SGName =jsonData.listname;   ",
+									" var stateid = jsonData.statecode;",
+									" console.log('Listname:'+SGName);",
+									" ",
+									" if(stateid ===0)",
+									"   {  ",
+									"       var  active=\"is Activated\";",
+									"   console.log('SGName' +active);",
+									"   } ",
+									" else{ ",
+									"      var deactive=\"is De-Activated\";",
+									"     console.log('SGName' +deactive);",
+									"     }",
+									"});",
+									"",
+									"pm.globals.set('glistid', listid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listname\": \"Marketing list SD {{$randomInt}}API {{$randomInt}} \",\r\n    \"type\": false,\r\n    \"createdfromcode\": 4,\r\n    \"cmc_marketinglisttype\": 175490000\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}lists",
+							"host": [
+								"{{Eresource_URL}}lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Marketing List 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var listid;",
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    listid = jsonData.listid;",
+									"    ",
+									" var SGName =jsonData.listname;   ",
+									" var stateid = jsonData.statecode;",
+									" console.log('Listname:'+SGName);",
+									" ",
+									" if(stateid ===0)",
+									"   {  ",
+									"       var  active=\"is Activated\";",
+									"   console.log('SGName' +active);",
+									"   } ",
+									" else{ ",
+									"      var deactive=\"is De-Activated\";",
+									"     console.log('SGName' +deactive);",
+									"     }",
+									"});",
+									"",
+									"pm.globals.set('glistid1', listid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listname\": \"Marketing list SD {{$randomInt}}API {{$randomInt}} \",\r\n    \"type\": false,\r\n    \"createdfromcode\": 4,\r\n    \"cmc_marketinglisttype\": 175490000\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}lists",
+							"host": [
+								"{{Eresource_URL}}lists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DCRM Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Inbound Interest",
+			"item": [
+				{
+					"name": "Get SourceCategory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceCategoryid,sourceCategoryid1,sourceCategoryid2, sourceCategoryName,sourceCategoryName1,sourceCategoryName2;",
+									"",
+									"pm.test(\"Scource Category \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sourceCategoryid = jsonData.value[0].cmc_sourcecategoryid;",
+									"    sourceCategoryName=jsonData.value[0].cmc_sourcecategoryname;",
+									"    console.log('Source Category name is: '+sourceCategoryName);",
+									"    ",
+									"    //2nd record",
+									"    sourceCategoryid1 = jsonData.value[1].cmc_sourcecategoryid;",
+									"    sourceCategoryName1=jsonData.value[1].cmc_sourcecategoryname;",
+									"    console.log('Source Category name is: '+sourceCategoryName1);",
+									"    ",
+									"    //3rd record",
+									"    sourceCategoryid2 = jsonData.value[2].cmc_sourcecategoryid;",
+									"    sourceCategoryName2=jsonData.value[2].cmc_sourcecategoryname;",
+									"    console.log('Source Category name is: '+sourceCategoryName2);",
+									"   ",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									"pm.globals.set('gsourceCategoryid',sourceCategoryid);",
+									"pm.globals.set('gsourceCategoryid1',sourceCategoryid1);",
+									"pm.globals.set('gsourceCategoryid2',sourceCategoryid2);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceMethod_Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceMethodid,sourceMethodid1,sourceMethodid2,sourceMethodid3, sourceMethodName,sourceMethodName1,sourceMethodName2,sourceMethodName3;",
+									"",
+									"pm.test(\"Fetching Source Method\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+									"    sourceMethodName=jsonData.value[0].cmc_sourcemethodname;",
+									"    console.log('Source Method name is: '+sourceMethodName);",
+									"     ",
+									"});",
+									"",
+									"",
+									"",
+									"pm.globals.set('gsourceMethodid',sourceMethodid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods?$filter=cmc_sourcemethodname eq 'Email'",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "cmc_sourcemethodname eq 'Email'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceMethod_Online",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceMethodid;",
+									"",
+									"pm.test(\"Fetching Source Method\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+									"    sourceMethodName=jsonData.value[0].cmc_sourcemethodname;",
+									"    console.log('Source Method name is: '+sourceMethodName);",
+									"     ",
+									"});",
+									"",
+									"",
+									"",
+									"pm.globals.set('gsourceMethodid1',sourceMethodid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods?$filter=cmc_sourcemethodname eq 'Online'",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "cmc_sourcemethodname eq 'Online'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create InBoundInterest 1 with Acc1 & cont1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Inboundid1 ;",
+									"var contactid ;",
+									"var accountid;",
+									"var Inboundname;",
+									"",
+									"pm.test(\"Lead Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  Inboundid1  = jsonData.leadid ;",
+									"  contactid = jsonData._customerid_value;",
+									"  accountid = jsonData._cmc_sourcecampusid_value;",
+									"  Inboundname = jsonData.fullname;",
+									"  console.log('InboundID:' +Inboundid1);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('InBoundName:' +Inboundname);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('ginboundid1',Inboundid1);",
+									"pm.globals.set('ginboundname1',Inboundname);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_sourcecampusid@odata.bind\": \"/accounts({{gaccountId}})\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid}})\",\r\n    \"cmc_sourcedate\": \"{{current_timestamp}}\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid}})\",\r\n    \"cmc_domstatus\": \"175490001\",\r\n    \"customerid_contact@odata.bind\": \"/contacts({{gcontactid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}leads",
+							"host": [
+								"{{Eresource_URL}}leads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create InBoundInterest 2 with Acc2 & Cont1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Inboundid1 ;",
+									"var contactid ;",
+									"var accountid;",
+									"var Inboundname;",
+									"",
+									"pm.test(\"Lead Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  Inboundid1  = jsonData.leadid ;",
+									"  contactid = jsonData._customerid_value;",
+									"  accountid = jsonData._cmc_sourcecampusid_value;",
+									"  Inboundname = jsonData.fullname;",
+									"  console.log('InboundID:' +Inboundid1);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('InBoundName:' +Inboundname);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('ginboundid2',Inboundid1);",
+									"pm.globals.set('ginboundname2',Inboundname);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_sourcedate\": \"{{current_timestamp}}\",\r\n    \"cmc_sourcecampusid@odata.bind\": \"/accounts({{gaccountId1}})\",\r\n    \"cmc_primary\": \"false\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"customerid_contact@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"cmc_domstatus\": \"175490001\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}leads",
+							"host": [
+								"{{Eresource_URL}}leads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create InBoundInterest 3 with Acc1 & Cont2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Inboundid1 ;",
+									"var contactid ;",
+									"var accountid;",
+									"var Inboundname;",
+									"",
+									"pm.test(\"Lead Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  Inboundid1  = jsonData.leadid ;",
+									"  contactid = jsonData._customerid_value;",
+									"  accountid = jsonData._cmc_sourcecampusid_value;",
+									"  Inboundname = jsonData.fullname;",
+									"  console.log('InboundID:' +Inboundid1);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('InBoundName:' +Inboundname);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('ginboundid3',Inboundid1);",
+									"pm.globals.set('ginboundname3',Inboundname);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_sourcedate\": \"{{current_timestamp}}\",\r\n    \"cmc_sourcecampusid@odata.bind\": \"/accounts({{gaccountId1}})\",\r\n    \"cmc_primary\": \"false\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid2}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid}})\",\r\n    \"customerid_contact@odata.bind\": \"/contacts({{gcontactid1}})\",\r\n    \"cmc_domstatus\": \"175490001\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}leads",
+							"host": [
+								"{{Eresource_URL}}leads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create InBoundInterest 4 with Acc3 & Cont3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Inboundid1 ;",
+									"var contactid ;",
+									"var accountid;",
+									"var Inboundname;",
+									"",
+									"pm.test(\"Lead Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  Inboundid1  = jsonData.leadid ;",
+									"  contactid = jsonData._customerid_value;",
+									"  accountid = jsonData._cmc_sourcecampusid_value;",
+									"  Inboundname = jsonData.fullname;",
+									"  console.log('InboundID:' +Inboundid1);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('InBoundName:' +Inboundname);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('ginboundid4',Inboundid1);",
+									"pm.globals.set('ginboundname4',Inboundname);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_sourcedate\": \"{{current_timestamp}}\",\r\n    \"cmc_sourcecampusid@odata.bind\": \"/accounts({{gaccountId2}})\",\r\n    \"cmc_primary\": \"false\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"customerid_contact@odata.bind\": \"/contacts({{gcontactid2}})\",\r\n    \"cmc_domstatus\": \"175490001\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}leads",
+							"host": [
+								"{{Eresource_URL}}leads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create InBoundInterest 5 with only Cont1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Inboundid1 ;",
+									"var contactid ;",
+									"var accountid;",
+									"var Inboundname;",
+									"",
+									"pm.test(\"Lead Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  Inboundid1  = jsonData.leadid ;",
+									"  contactid = jsonData._customerid_value;",
+									"  accountid = jsonData._cmc_sourcecampusid_value;",
+									"  Inboundname = jsonData.fullname;",
+									"  console.log('InboundID:' +Inboundid1);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('InBoundName:' +Inboundname);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('ginboundid5',Inboundid1);",
+									"pm.globals.set('ginboundname5',Inboundname);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_sourcedate\": \"{{current_timestamp}}\",\r\n    \"cmc_primary\": \"false\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid2}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"customerid_contact@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"cmc_domstatus\": \"175490000\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}leads",
+							"host": [
+								"{{Eresource_URL}}leads"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Scoring Definition and Scoring Factor",
+			"item": [
+				{
+					"name": "Create Scoring Factor 1 with Query1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var scoringfactor1;",
+									"pm.test(\"Scoring factor is Created\", function()",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    scoringfactor1 = jsonData.cmc_scoringfactorid;",
+									"    console.log('Scoring factor ID:' +scoringfactor1);",
+									"    var scoringfactorname= jsonData.cmc_scoringfactorname;",
+									"    console.log('Scoring factor that is created is:' +scoringfactorname);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gscoringfactorid1',scoringfactor1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoringfactorname\": \"SF-Inbound {{$randomInt}} Query1 {{$randomInt}}\",\r\n    \"cmc_baseentity\": \"lead\",\r\n    \"cmc_conditionxml\": \"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"lead\\\"><attribute name=\\\"leadid\\\"/><attribute name=\\\"createdon\\\"/><attribute name=\\\"fullname\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"cmc_domstatus\\\" operator=\\\"ne\\\" value=\\\"175490000\\\"/></filter></entity></fetch>\",\r\n    \r\n    \"cmc_points\": 60,\r\n    \"cmc_baseentityname\": \"Inbound Interest\",\r\n    \"cmc_description\": \"Risk factor for inbound{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoringfactors",
+							"host": [
+								"{{Eresource_URL}}cmc_scoringfactors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Scoring Factor 2 with Query2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var scoringfactor1;",
+									"pm.test(\"Scoring factor is Created\", function()",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    scoringfactor1 = jsonData.cmc_scoringfactorid;",
+									"    console.log('Scoring factor ID:' +scoringfactor1);",
+									"    var scoringfactorname= jsonData.cmc_scoringfactorname;",
+									"    console.log('Scoring factor that is created is:' +scoringfactorname);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gscoringfactorid2',scoringfactor1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoringfactorname\": \"SF-Inbound {{$randomInt}} Query2 {{$randomInt}}\",\r\n    \"cmc_baseentity\": \"lead\",\r\n    \"cmc_conditionxml\": \"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"lead\\\"><attribute name=\\\"leadid\\\"/><attribute name=\\\"createdon\\\"/><attribute name=\\\"fullname\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"cmc_sourcemethodidname\\\" operator=\\\"like\\\" value=\\\"%ail\\\"/></filter></entity></fetch>\",\r\n    \"cmc_points\": 30,\r\n    \"cmc_baseentityname\": \"Inbound Interest\",\r\n    \"cmc_description\": \"Risk factor for lead{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoringfactors",
+							"host": [
+								"{{Eresource_URL}}cmc_scoringfactors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Scoring Factor 3 with Query3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var scoringfactor1;",
+									"pm.test(\"Scoring factor is Created\", function()",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    scoringfactor1 = jsonData.cmc_scoringfactorid;",
+									"    console.log('Scoring factor ID:' +scoringfactor1);",
+									"    var scoringfactorname= jsonData.cmc_scoringfactorname;",
+									"    console.log('Scoring factor that is created is:' +scoringfactorname);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gscoringfactorid3',scoringfactor1);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoringfactorname\": \"SF-Inbound {{$randomInt}}Existing Query {{$randomInt}}\",\r\n    \"cmc_baseentity\": \"lead\",\r\n    \"cmc_conditionxml\": \"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"lead\\\"><attribute name=\\\"fullname\\\"/><attribute name=\\\"statuscode\\\"/><attribute name=\\\"createdon\\\"/><attribute name=\\\"subject\\\"/><attribute name=\\\"leadid\\\"/><order attribute=\\\"createdon\\\" descending=\\\"true\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"cmc_sourceprgmid\\\" operator=\\\"not-null\\\"/></filter></entity></fetch>\",\r\n    \r\n    \"cmc_points\": 40,\r\n    \"cmc_baseentityname\": \"Inbound Interest\",\r\n    \"cmc_description\": \"Risk factor for inbound{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoringfactors",
+							"host": [
+								"{{Eresource_URL}}cmc_scoringfactors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create ScoreDefinitions 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Score Definition for Application is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    ",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval',scheduleinterval);",
+									"});",
+									"pm.globals.set('gscoredefinitionid',scoredefinitionid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoredefinitionname\": \"SD-API{{$randomInt}} SD {{$randomInt}}{{$randomInt}}\",\r\n    \"cmc_scheduleinterval\": 0,\r\n    \"cmc_redscorethreshold\": 20,\r\n    \"cmc_yellowscorethreshold\": 30,\r\n    \"cmc_greenscorethreshold\": 40,\r\n    \"cmc_baseentity\": \"lead\",\r\n    \"cmc_targetattributename\": \"lead.numberofemployees\",\r\n    \"cmc_baseentityname\": \"Inbound Interest\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create ScoreDefinitions 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Score Definition for Application is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    ",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval2',scheduleinterval);",
+									"});",
+									"pm.globals.set('gscoredefinitionid2',scoredefinitionid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0",
+								"description": " "
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoredefinitionname\": \"SD-API{{$randomInt}} SD {{$randomInt}}{{$randomInt}}\",\r\n    \"cmc_scheduleinterval\": 0,\r\n    \"cmc_baseentity\": \"lead\",\r\n    \"cmc_targetattributename\": \"lead.msdyncrm_scores\",\r\n    \"cmc_baseentityname\": \"Inbound Interest\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create ScoreDefinitions 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Score Definition for Application is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    ",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval3',scheduleinterval);",
+									"});",
+									"pm.globals.set('gscoredefinitionid3',scoredefinitionid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0",
+								"description": " "
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoredefinitionname\": \"SD-API{{$randomInt}} SD {{$randomInt}}{{$randomInt}}\",\r\n    \"cmc_scheduleinterval\": 0,\r\n    \"cmc_baseentity\": \"lead\",\r\n    \"cmc_targetattributename\": \"lead.utcconversiontimezonecode\",\r\n    \"cmc_baseentityname\": \"Inbound Interest\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Association of ML and SF to ScoreDefinition",
+			"item": [
+				{
+					"name": "Association to ScoreDefinition 1",
+					"item": [
+						{
+							"name": "Adding Inbound1,2 & 3 to Marketing List1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Inbound Interest record Addedd to Marketing list\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+											"  ",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"List\": {\r\n        \"listid\": \"{{glistid}}\",\r\n        \"@odata.type\": \"Microsoft.Dynamics.CRM.list\"\r\n    },\r\n    \"Members\": [\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.lead\",\r\n            \"leadid\": \"{{ginboundid1}}\"\r\n        },\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.lead\",\r\n            \"leadid\": \"{{ginboundid2}}\"\r\n        },\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.lead\",\r\n            \"leadid\": \"{{ginboundid3}}\"\r\n        }\r\n    ]\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}AddListMembersList",
+									"host": [
+										"{{Eresource_URL}}AddListMembersList"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding Marketing List1 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Marketing List To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    ",
+											"    var listname = jsonData.listname;",
+											"    console.log(\"Marketing list which is added to Score definition is:\"  +listname);",
+											"",
+											"  ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}lists({{glistid}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})/cmc_scoredefinition_list/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+									],
+									"path": [
+										"cmc_scoredefinition_list",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor1 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid1}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor2 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid2}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor3 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid3}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Association to ScoreDefinition 2",
+					"item": [
+						{
+							"name": "Adding Inbound4 & 5 to Marketing List2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Inbound Interest record Addedd to Marketing list\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+											"  ",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"List\": {\r\n        \"listid\": \"{{glistid1}}\",\r\n        \"@odata.type\": \"Microsoft.Dynamics.CRM.list\"\r\n    },\r\n    \"Members\": [\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.lead\",\r\n            \"leadid\": \"{{ginboundid4}}\"\r\n        },\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.lead\",\r\n            \"leadid\": \"{{ginboundid5}}\"\r\n        }\r\n    ]\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}AddListMembersList",
+									"host": [
+										"{{Eresource_URL}}AddListMembersList"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding Marketing List2 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Marketing List To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    ",
+											"    var listname = jsonData.listname;",
+											"    console.log(\"Marketing list which is added to Score definition is:\"  +listname);",
+											"   ",
+											"  ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}lists({{glistid1}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})/cmc_scoredefinition_list/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})"
+									],
+									"path": [
+										"cmc_scoredefinition_list",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor1 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid1}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor2 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid2}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor3 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid3}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Association to ScoreDefinition 3",
+					"item": [
+						{
+							"name": "Adding Marketing List1 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Marketing List To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    ",
+											"    var listname = jsonData.listname;",
+											"    console.log(\"Marketing list which is added to Score definition is:\"  +listname);",
+											"",
+											"  ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}lists({{glistid}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})/cmc_scoredefinition_list/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})"
+									],
+									"path": [
+										"cmc_scoredefinition_list",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding Marketing List2 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Marketing List To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    ",
+											"    var listname = jsonData.listname;",
+											"    console.log(\"Marketing list which is added to Score definition is:\"  +listname);",
+											"   ",
+											"  ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}lists({{glistid1}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})/cmc_scoredefinition_list/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})"
+									],
+									"path": [
+										"cmc_scoredefinition_list",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor1 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid1}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor2 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid2}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding ScoringFactor3 ToScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Scoring Factor To Score Definition\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    Scoringfactorname =jsonData.cmc_scoringfactorname;",
+											"    console.log('Scoring factor that is added to Score definition is:' +Scoringfactorname);",
+											"    ",
+											"  ",
+											"});",
+											"",
+											"setTimeout(function(){}, 130000); "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "OData-MaxVersion",
+										"value": "4.0"
+									},
+									{
+										"description": " ",
+										"key": "OData-Version",
+										"value": "4.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid3}})\"\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})/cmc_scoredefinition_scoringfactor/$ref",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})"
+									],
+									"path": [
+										"cmc_scoredefinition_scoringfactor",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Scenario 1- Verify Score calculation",
+			"item": [
+				{
+					"name": "Verify Target Attribute and Score history in Inbound record",
+					"item": [
+						{
+							"name": "Verify target Attribute value in Inbound1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var currentretentionscoredate;",
+											"pm.test(\"Retention Score\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    currentretentionscoredate =jsonData.cmc_currentretentionscoredate;",
+											"    console.log('currentretentionscoredate:'+currentretentionscoredate);",
+											"    var  Scores= jsonData.utcconversiontimezonecode; ",
+											"     var Scores1= jsonData.numberofemployees;",
+											"    console.log('Scores:'+Scores);",
+											" ",
+											"    pm.test(\"Scores awarded to Inbound 1\", function()",
+											"        {",
+											"            pm.expect(Scores).to.equal(90);",
+											"        });",
+											"    ",
+											"    pm.test(\"Scores awarded to Inbound 1\", function()",
+											"        {",
+											"            pm.expect(Scores1).to.equal(90);",
+											"        });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid1}})",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid1}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Active ScoreHistories for Inbound1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var score,scoreHistoryName, retentionScoreHistoryId, targetAttribute,lastCalculatedDate, createdOn,autoname,scoreDefinition ;",
+											"",
+											"pm.test(\"Check the score history record for Inbound\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    var result=jsonData.cmc_lead_retentionscorehistory_inboundinteres;",
+											"",
+											"    if(result.length===2)",
+											"    {",
+											"        for(var i=0;i<result.length;i++)",
+											"        {",
+											"        retentionScoreHistoryId= result[i].cmc_retentionscorehistoryid;",
+											"        score= result[i].cmc_score;",
+											"        scoreHistoryName= result[i].cmc_retentionscorehistoryname;",
+											"        targetAttribute= result[i].cmc_targetattribute;",
+											"        lastCalculatedDate= result[i].cmc_lastcalculateddate;",
+											"        createdOn= result[i].createdon;",
+											"        scoreDefinition=result[i]._cmc_scoredefinitionid_value;",
+											"",
+											"        var dateFromResponse = new Date(lastCalculatedDate);",
+											"        var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"        ",
+											"        console.log(\"Target score in Score history record is:\" +score);",
+											"        console.log(\"Score history name is:\" +scoreHistoryName);",
+											"        console.log(\"Target Attribute is:\" +targetAttribute);",
+											"        console.log(\"Last Calculated date is:\" +lastCalculatedDate);",
+											"        console.log(\"created on is:\" +createdOn);",
+											"",
+											"        var actualScoreDefintion1=pm.globals.get('gscoredefinitionid');",
+											"        var actualScoreDefintion2=pm.globals.get('gscoredefinitionid3');",
+											"        var actualTargetAttribute=\"utcconversiontimezonecode\";",
+											"        var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"        /*pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        });  */",
+											"         ",
+											"        pm.test(\"Score value in Score History record\", function()",
+											"        {",
+											"            pm.expect(score).to.equal(90);",
+											"        }); ",
+											"",
+											"        if(result[i].cmc_targetattribute===\"numberofemployees\")",
+											"        {",
+											"            console.log(\"Target Attribute 1 is matching\");",
+											"        }",
+											"         if(result[i].cmc_targetattribute===\"utcconversiontimezonecode\")",
+											"        {",
+											"            console.log(\"Target Attribute 2 is matching\");",
+											"        }",
+											"",
+											"        if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion1)",
+											"            {",
+											"             console.log(\"Score definition 1 is matching\");",
+											"            }",
+											"       ",
+											"       if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion2)",
+											"            {",
+											"                console.log(\"Score definition 2 is matching\");",
+											"            }",
+											"        ",
+											"        }",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"Active Score history record does't exist\");",
+											"        throw new Error();",
+											"    }",
+											"",
+											"    ",
+											"});",
+											"",
+											"pm.globals.set('gretentionScoreHistoryId1',retentionScoreHistoryId);",
+											"pm.globals.set('gscore1',score);",
+											"pm.globals.set('lastCalculatedDate1',lastCalculatedDate);",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"  var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid1}})?$expand=cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid1}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify target Attribute value in Inbound2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var currentretentionscoredate;",
+											"pm.test(\"Retention Score\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    currentretentionscoredate =jsonData.cmc_currentretentionscoredate;",
+											"    console.log('currentretentionscoredate:'+currentretentionscoredate);",
+											"    var  Scores= jsonData.numberofemployees; ",
+											"    var  Scores1= jsonData.utcconversiontimezonecode; ",
+											"    console.log('Scores:'+Scores);",
+											"",
+											" pm.test(\"Scores awarded to Inbound 2\", function()",
+											"        {",
+											"            pm.expect(Scores).to.equal(60);",
+											"        });",
+											"    pm.test(\"Scores awarded to Inbound 2\", function()",
+											"        {",
+											"            pm.expect(Scores1).to.equal(60);",
+											"        });",
+											" ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid2}})",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid2}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Active ScoreHistories for Inbound2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var score,scoreHistoryName, retentionScoreHistoryId, targetAttribute,lastCalculatedDate, createdOn,autoname,scoreDefinition ;",
+											"",
+											"pm.test(\"Check the score history record for Inbound\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    var result=jsonData.cmc_lead_retentionscorehistory_inboundinteres;",
+											"",
+											"    if(result.length===2)",
+											"    {",
+											"        for(var i=0;i<result.length;i++)",
+											"        {",
+											"        retentionScoreHistoryId= result[i].cmc_retentionscorehistoryid;",
+											"        score= result[i].cmc_score;",
+											"        scoreHistoryName= result[i].cmc_retentionscorehistoryname;",
+											"        targetAttribute= result[i].cmc_targetattribute;",
+											"        lastCalculatedDate= result[i].cmc_lastcalculateddate;",
+											"        createdOn= result[i].createdon;",
+											"        scoreDefinition=result[i]._cmc_scoredefinitionid_value;",
+											"",
+											"        var dateFromResponse = new Date(lastCalculatedDate);",
+											"        var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"        ",
+											"        console.log(\"Target score in Score history record is:\" +score);",
+											"        console.log(\"Score history name is:\" +scoreHistoryName);",
+											"        console.log(\"Target Attribute is:\" +targetAttribute);",
+											"        console.log(\"Last Calculated date is:\" +lastCalculatedDate);",
+											"        console.log(\"created on is:\" +createdOn);",
+											"",
+											"        var actualScoreDefintion1=pm.globals.get('gscoredefinitionid');",
+											"        var actualScoreDefintion2=pm.globals.get('gscoredefinitionid3');",
+											"        var actualTargetAttribute=\"msdyncrm_scores\";",
+											"        var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"        /*pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        }); */ ",
+											"",
+											"        pm.test(\"Score value in Score History record\", function()",
+											"        {",
+											"            pm.expect(score).to.equal(60);",
+											"        });",
+											"",
+											"         if(result[i].cmc_targetattribute===\"numberofemployees\")",
+											"        {",
+											"            console.log(\"Target Attribute 1 is matching\");",
+											"        }",
+											"         if(result[i].cmc_targetattribute===\"utcconversiontimezonecode\")",
+											"        {",
+											"            console.log(\"Target Attribute 2 is matching\");",
+											"        }",
+											"",
+											"        if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion1)",
+											"            {",
+											"             console.log(\"Score definition 1 is matching\");",
+											"            }",
+											"       ",
+											"       if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion2)",
+											"            {",
+											"                console.log(\"Score definition 2 is matching\");",
+											"            }",
+											"        ",
+											"        }",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"Active Score history record does't exist\");",
+											"        throw new Error();",
+											"    }",
+											"",
+											"    ",
+											"});",
+											"",
+											"pm.globals.set('gretentionScoreHistoryId2',retentionScoreHistoryId);",
+											"pm.globals.set('gscore2',score);",
+											"pm.globals.set('lastCalculatedDate2',lastCalculatedDate);",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"  var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid2}})?$expand=cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid2}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify target Attribute value in Inbound3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var currentretentionscoredate;",
+											"pm.test(\"Retention Score\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    currentretentionscoredate =jsonData.cmc_currentretentionscoredate;",
+											"    console.log('currentretentionscoredate:'+currentretentionscoredate);",
+											"    var  Scores= jsonData.numberofemployees; ",
+											"    var  Scores1= jsonData.utcconversiontimezonecode; ",
+											"    console.log('Scores:'+Scores);",
+											" ",
+											" pm.test(\"Scores awarded to Inbound 3\", function()",
+											"        {",
+											"            pm.expect(Scores).to.equal(90);",
+											"        });",
+											"",
+											" pm.test(\"Scores awarded to Inbound 3\", function()",
+											"        {",
+											"            pm.expect(Scores1).to.equal(90);",
+											"        });",
+											" ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid3}})",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid3}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Active ScoreHistories for Inbound3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var score,scoreHistoryName, retentionScoreHistoryId, targetAttribute,lastCalculatedDate, createdOn,autoname,scoreDefinition ;",
+											"",
+											"pm.test(\"Check the score history record for Inbound\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    var result=jsonData.cmc_lead_retentionscorehistory_inboundinteres;",
+											"",
+											"    if(result.length===2)",
+											"    {",
+											"        for(var i=0;i<result.length;i++)",
+											"        {",
+											"        retentionScoreHistoryId= result[i].cmc_retentionscorehistoryid;",
+											"        score= result[i].cmc_score;",
+											"        scoreHistoryName= result[i].cmc_retentionscorehistoryname;",
+											"        targetAttribute= result[i].cmc_targetattribute;",
+											"        lastCalculatedDate= result[i].cmc_lastcalculateddate;",
+											"        createdOn= result[i].createdon;",
+											"        scoreDefinition=result[i]._cmc_scoredefinitionid_value;",
+											"",
+											"        var dateFromResponse = new Date(lastCalculatedDate);",
+											"        var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"        ",
+											"        console.log(\"Target score in Score history record is:\" +score);",
+											"        console.log(\"Score history name is:\" +scoreHistoryName);",
+											"        console.log(\"Target Attribute is:\" +targetAttribute);",
+											"        console.log(\"Last Calculated date is:\" +lastCalculatedDate);",
+											"        console.log(\"created on is:\" +createdOn);",
+											"",
+											"        var actualScoreDefintion1=pm.globals.get('gscoredefinitionid');",
+											"        var actualScoreDefintion2=pm.globals.get('gscoredefinitionid3');",
+											"        var actualTargetAttribute=\"msdyncrm_scores\";",
+											"        var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"       /* pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        });*/  ",
+											"     ",
+											"        pm.test(\"Score value in Score History record\", function()",
+											"        {",
+											"            pm.expect(score).to.equal(90);",
+											"        });",
+											"",
+											"           if(result[i].cmc_targetattribute===\"numberofemployees\")",
+											"        {",
+											"            console.log(\"Target Attribute 1 is matching\");",
+											"        }",
+											"         if(result[i].cmc_targetattribute===\"utcconversiontimezonecode\")",
+											"        {",
+											"            console.log(\"Target Attribute 2 is matching\");",
+											"        }",
+											"  ",
+											"",
+											"        if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion1)",
+											"            {",
+											"             console.log(\"Score definition 1 is matching\");",
+											"            }",
+											"       ",
+											"       if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion2)",
+											"            {",
+											"                console.log(\"Score definition 2 is matching\");",
+											"            }",
+											"        ",
+											"        }",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"Active Score history record does't exist\");",
+											"        throw new Error();",
+											"    }",
+											"",
+											"    ",
+											"});",
+											"",
+											"pm.globals.set('gretentionScoreHistoryId3',retentionScoreHistoryId);",
+											"pm.globals.set('gscore3',score);",
+											"pm.globals.set('lastCalculatedDate3',lastCalculatedDate);",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"  var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid3}})?$expand=cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid3}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify target Attribute value in Inbound4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var currentretentionscoredate;",
+											"pm.test(\"Retention Score\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    currentretentionscoredate =jsonData.cmc_currentretentionscoredate;",
+											"    console.log('currentretentionscoredate:'+currentretentionscoredate);",
+											"    var  Scores= jsonData.msdyncrm_scores; ",
+											"    var  Scores1= jsonData.utcconversiontimezonecode; ",
+											"     ",
+											"    console.log('Scores:'+Scores);",
+											" ",
+											"pm.test(\"Scores awarded to Inbound 4\", function()",
+											"        {",
+											"            pm.expect(Scores).to.equal(60);",
+											"        });",
+											"pm.test(\"Scores awarded to Inbound 4\", function()",
+											"        {",
+											"            pm.expect(Scores1).to.equal(60);",
+											"        });",
+											" ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid4}})",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid4}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Active ScoreHistories for Inbound4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var score,scoreHistoryName, retentionScoreHistoryId, targetAttribute,lastCalculatedDate, createdOn,autoname,scoreDefinition ;",
+											"",
+											"pm.test(\"Check the score history record for Inbound\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    var result=jsonData.cmc_lead_retentionscorehistory_inboundinteres;",
+											"",
+											"    if(result.length===2)",
+											"    {",
+											"        for(var i=0;i<result.length;i++)",
+											"        {",
+											"        retentionScoreHistoryId= result[i].cmc_retentionscorehistoryid;",
+											"        score= result[i].cmc_score;",
+											"        scoreHistoryName= result[i].cmc_retentionscorehistoryname;",
+											"        targetAttribute= result[i].cmc_targetattribute;",
+											"        lastCalculatedDate= result[i].cmc_lastcalculateddate;",
+											"        createdOn= result[i].createdon;",
+											"        scoreDefinition=result[i]._cmc_scoredefinitionid_value;",
+											"",
+											"        var dateFromResponse = new Date(lastCalculatedDate);",
+											"        var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"        ",
+											"        console.log(\"Target score in Score history record is:\" +score);",
+											"        console.log(\"Score history name is:\" +scoreHistoryName);",
+											"        console.log(\"Target Attribute is:\" +targetAttribute);",
+											"        console.log(\"Last Calculated date is:\" +lastCalculatedDate);",
+											"        console.log(\"created on is:\" +createdOn);",
+											"",
+											"        var actualScoreDefintion2=pm.globals.get('gscoredefinitionid3');",
+											"        var actualTargetAttribute=\"msdyncrm_scores\";",
+											"        var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"        /*pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        }); */ ",
+											"         ",
+											"        pm.test(\"Score value in Score History record\", function()",
+											"        {",
+											"            pm.expect(score).to.equal(60);",
+											"        });",
+											"",
+											"          if(result[i].cmc_targetattribute===\"msdyncrm_scores\")",
+											"        {",
+											"            console.log(\"Target Attribute 1 is matching\");",
+											"        }",
+											"         if(result[i].cmc_targetattribute===\"utcconversiontimezonecode\")",
+											"        {",
+											"            console.log(\"Target Attribute 2 is matching\");",
+											"        }  ",
+											"",
+											"           ",
+											"       if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion2)",
+											"            {",
+											"                console.log(\"Score definition 2 is matching\");",
+											"            }",
+											"        ",
+											"        }",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"Active Score history record does't exist\");",
+											"        throw new Error();",
+											"    }",
+											"",
+											"    ",
+											"});",
+											"",
+											"pm.globals.set('gretentionScoreHistoryId4',retentionScoreHistoryId);",
+											"pm.globals.set('gscore4',score);",
+											"pm.globals.set('lastCalculatedDate4',lastCalculatedDate);",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"  var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid4}})?$expand=cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid4}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify target Attribute value in Inbound5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var currentretentionscoredate;",
+											"pm.test(\"Retention Score\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    currentretentionscoredate =jsonData.cmc_currentretentionscoredate;",
+											"    console.log('currentretentionscoredate:'+currentretentionscoredate);",
+											"    var  Scores= jsonData.msdyncrm_scores; ",
+											"    var  Scores1= jsonData.utcconversiontimezonecode; ",
+											"    console.log('Scores:'+Scores);",
+											" ",
+											"pm.test(\"Scores awarded to Inbound 5\", function()",
+											"        {",
+											"            pm.expect(Scores).to.equal(null);",
+											"        });",
+											"",
+											"pm.test(\"Scores awarded to Inbound 5\", function()",
+											"        {",
+											"            pm.expect(Scores1).to.equal(null);",
+											"        });",
+											" ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid5}})",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid5}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Active ScoreHistories for Inbound5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var score,scoreHistoryName, retentionScoreHistoryId, targetAttribute,lastCalculatedDate, createdOn,autoname,scoreDefinition ;",
+											"",
+											"pm.test(\"Check the score history record for Inbound\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    var result=jsonData.cmc_lead_retentionscorehistory_inboundinteres;",
+											"",
+											"    if(result.length===2)",
+											"    {",
+											"        for(var i=0;i<result.length;i++)",
+											"        {",
+											"        retentionScoreHistoryId= result[i].cmc_retentionscorehistoryid;",
+											"        score= result[i].cmc_score;",
+											"        scoreHistoryName= result[i].cmc_retentionscorehistoryname;",
+											"        targetAttribute= result[i].cmc_targetattribute;",
+											"        lastCalculatedDate= result[i].cmc_lastcalculateddate;",
+											"        createdOn= result[i].createdon;",
+											"        scoreDefinition=result[i]._cmc_scoredefinitionid_value;",
+											"",
+											"        var dateFromResponse = new Date(lastCalculatedDate);",
+											"        var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"        ",
+											"        console.log(\"Target score in Score history record is:\" +score);",
+											"        console.log(\"Score history name is:\" +scoreHistoryName);",
+											"        console.log(\"Target Attribute is:\" +targetAttribute);",
+											"        console.log(\"Last Calculated date is:\" +lastCalculatedDate);",
+											"        console.log(\"created on is:\" +createdOn);",
+											"",
+											"        var actualScoreDefintion2=pm.globals.get('gscoredefinitionid3');",
+											"        var actualTargetAttribute=\"msdyncrm_scores\";",
+											"        var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"        /*pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        }); */ ",
+											"",
+											"        pm.test(\"Score value in Score History record\", function()",
+											"        {",
+											"            pm.expect(score).to.equal(null);",
+											"        });",
+											"",
+											"          if(result[i].cmc_targetattribute===\"msdyncrm_scores\")",
+											"        {",
+											"            console.log(\"Target Attribute 1 is matching\");",
+											"        }",
+											"         if(result[i].cmc_targetattribute===\"utcconversiontimezonecode\")",
+											"        {",
+											"            console.log(\"Target Attribute 2 is matching\");",
+											"        }  ",
+											"",
+											"           ",
+											"       if(result[i]._cmc_scoredefinitionid_value===actualScoreDefintion2)",
+											"            {",
+											"                console.log(\"Score definition 2 is matching\");",
+											"            }",
+											"        ",
+											"        }",
+											"    }",
+											"    else",
+											"    {",
+											"        console.log(\"Active Score history record does't exist\");",
+											"        throw new Error();",
+											"    }",
+											"",
+											"    ",
+											"});",
+											"",
+											"pm.globals.set('gretentionScoreHistoryId4',retentionScoreHistoryId);",
+											"pm.globals.set('gscore4',score);",
+											"pm.globals.set('lastCalculatedDate4',lastCalculatedDate);",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}leads({{ginboundid5}})?$expand=cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)",
+									"host": [
+										"{{Eresource_URL}}leads({{ginboundid5}})"
+									],
+									"query": [
+										{
+											"key": "$expand",
+											"value": "cmc_lead_retentionscorehistory_inboundinteres($filter=statecode eq 0)"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Verify 'Date Last Run' & 'last recalculation date'",
+					"item": [
+						{
+							"name": "Verify 'Date Last Run' & 'last recalculation date' in Score Definition 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var dateLastRun,lastRecalculationDate;",
+											" ",
+											"pm.test(\"Fetch Score definition Record\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    dateLastRun=jsonData.cmc_datelastrun;",
+											"    lastRecalculationDate=jsonData.cmc_lastrecalculationdate;",
+											"",
+											"    var dateFromResponse = new Date(dateLastRun);",
+											"    var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"",
+											"    var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"        /*pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        });*/ ",
+											"",
+											"    var dateFromResponse1 = new Date(lastRecalculationDate);",
+											"    var convertedLastRecalculationDate =dateFromResponse1.getFullYear()+\"-\"+(\"0\" + (dateFromResponse1.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse1.getDate())).slice(-2);",
+											"   ",
+											"       /* pm.test(\"Last reCalculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastRecalculationDate);",
+											"        }); */",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"  var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify 'Date Last Run' & 'last recalculation date' in Score Definition 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var dateLastRun,lastRecalculationDate;",
+											" ",
+											"pm.test(\"Fetch Score definition Record\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    dateLastRun=jsonData.cmc_datelastrun;",
+											"    lastRecalculationDate=jsonData.cmc_lastrecalculationdate;",
+											"",
+											"    var dateFromResponse = new Date(dateLastRun);",
+											"    var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"",
+											"    var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"        /*pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        }); */",
+											"",
+											"    var dateFromResponse1 = new Date(lastRecalculationDate);",
+											"    var convertedLastRecalculationDate =dateFromResponse1.getFullYear()+\"-\"+(\"0\" + (dateFromResponse1.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse1.getDate())).slice(-2);",
+											"   ",
+											"        /*pm.test(\"Last reCalculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastRecalculationDate);",
+											"        }); */",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"  var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify 'Date Last Run' & 'last recalculation date' in Score Definition 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var dateLastRun,lastRecalculationDate;",
+											" ",
+											"pm.test(\"Fetch Score definition Record\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    dateLastRun=jsonData.cmc_datelastrun;",
+											"    lastRecalculationDate=jsonData.cmc_lastrecalculationdate;",
+											"",
+											"    var dateFromResponse = new Date(dateLastRun);",
+											"    var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"",
+											"    var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"       /* pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        });*/ ",
+											"",
+											"    var dateFromResponse1 = new Date(lastRecalculationDate);",
+											"    var convertedLastRecalculationDate =dateFromResponse1.getFullYear()+\"-\"+(\"0\" + (dateFromResponse1.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse1.getDate())).slice(-2);",
+											"   ",
+											"       /* pm.test(\"Last reCalculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastRecalculationDate);",
+											"        }); */",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"  var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Scenario 2: Link with Score history table validation",
+			"item": [
+				{
+					"name": "Update ScoreDefinition and ScoringFactor",
+					"item": [
+						{
+							"name": "Update ScoreDefinition",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var scoredefinitionid,targetAttribute;",
+											"pm.test(\"Score Definition updated\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+											"    console.log('Score definition ID:' +scoredefinitionid);",
+											"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+											"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+											"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+											"    pm.globals.set('gscheduleinterval',scheduleinterval);",
+											"",
+											"    targetAttribute=jsonData.cmc_targetattributename;",
+											"});",
+											"",
+											"setTimeout(function(){}, 130000); ",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var dt = new Date();\r",
+											"        dt.setDate( dt.getDate() - 1 );\r",
+											"\r",
+											"         console.log(\"date: \"+dt);\r",
+											"\r",
+											"    var convertedLastCalculatedDate =dt.getFullYear()+\"-\"+(\"0\" + (dt.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dt.getDate())).slice(-2);\r",
+											"     console.log(\"date: \"+convertedLastCalculatedDate);\r",
+											"\r",
+											"     var concatenatetime=convertedLastCalculatedDate+\"T18:30:00.000Z\";\r",
+											"     console.log(\"datetime: \"+concatenatetime);\r",
+											"\r",
+											"     pm.environment.set('LastCalculatedDate',concatenatetime);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cmc_recalculaterecords\": true,\n    \"cmc_recalculationinterval\": 1,\n    \"cmc_datelastrun\":\"{{LastCalculatedDate}}\",\n    \"cmc_lastrecalculationdate\":\"{{LastCalculatedDate}}\"\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Verify 'Date Last Run' & 'last recalculation date'",
+					"item": [
+						{
+							"name": "Verify 'Date Last Run' & 'last recalculation date' in Score Definition 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var dateLastRun,lastRecalculationDate;",
+											" ",
+											"pm.test(\"Fetch Score definition Record\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    dateLastRun=jsonData.cmc_datelastrun;",
+											"    lastRecalculationDate=jsonData.cmc_lastrecalculationdate;",
+											"",
+											"    //var dateFromResponse = new Date(dateLastRun);",
+											"    //var convertedLastCalculatedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+											"    var dateFromResponse = new Date(dateLastRun);",
+											"        console.log(\"new date : \"+dateFromResponse);",
+											"        var utc=dateFromResponse.toISOString();",
+											"        console.log(\"utc: \"+utc);",
+											"        var convertedLastCalculatedDate=utc.slice(0, -14);",
+											"",
+											"    var actualcalculatedDate=pm.environment.get('timestamp');",
+											"",
+											"        console.log(\"actual calculated date is: \"+actualcalculatedDate);",
+											"",
+											"        /*pm.test(\"Last Calculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastCalculatedDate);",
+											"        }); */",
+											"",
+											"    //var dateFromResponse1 = new Date(lastRecalculationDate);",
+											"    //var convertedLastRecalculationDate =dateFromResponse1.getFullYear()+\"-\"+(\"0\" + (dateFromResponse1.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse1.getDate())).slice(-2);",
+											"    var dateFromResponse1 = new Date(lastRecalculationDate);",
+											"        console.log(\"new date : \"+dateFromResponse1);",
+											"        var utc=dateFromResponse1.toISOString();",
+											"        console.log(\"utc: \"+utc);",
+											"        var convertedLastRecalculationDate=utc.slice(0, -14);",
+											"   ",
+											"       /* pm.test(\"Last reCalculated Date check\", function()",
+											"        {",
+											"            pm.expect(actualcalculatedDate).to.equal(convertedLastRecalculationDate);",
+											"        }); */",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											" var moment = require('moment');\r",
+											"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})",
+									"host": [
+										"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Deactivate ScoreDefinition record",
+			"item": [
+				{
+					"name": "Deactivate ScoreDefinition record 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Deactivate Score Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval',scheduleinterval);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statecode\": 1,\r\n    \"statuscode\": 2\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate ScoreDefinition record 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Deactivate Score Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval',scheduleinterval);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statecode\": 1,\r\n    \"statuscode\": 2\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate ScoreDefinition record 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Deactivate Score Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval',scheduleinterval);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statecode\": 1,\r\n    \"statuscode\": 2\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid3}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

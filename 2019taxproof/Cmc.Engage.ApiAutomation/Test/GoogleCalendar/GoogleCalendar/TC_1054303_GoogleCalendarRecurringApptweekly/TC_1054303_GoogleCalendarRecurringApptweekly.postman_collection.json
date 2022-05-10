@@ -1,0 +1,1241 @@
+{
+	"info": {
+		"_postman_id": "fee4638c-dd88-4d97-bbfa-778ebce34ced",
+		"name": "TC_1054303_GoogleCalendarRecurringApptweekly",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona-Roles",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM API -System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid1',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'sysadmin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'sysadmin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SetGoogleIntegrationConfig",
+			"item": [
+				{
+					"name": "FetchConfiguration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var syncapptswithgooglecalendar;",
+									"var syncapptattachmentswithgooglecalendar;",
+									"var googlesendeventnotifications;",
+									"var configurationid;",
+									"",
+									"pm.test(\"Google Calender Default Configuration IVP\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    ",
+									"    syncapptswithgooglecalendar = jsonData.value [0].cmc_googlesyncappointments;",
+									"    syncapptattachmentswithgooglecalendar = jsonData.value [0].cmc_syncapptattachmentswithgooglecalendar;",
+									"    googlesendeventnotifications = jsonData.value [0].cmc_googlesendeventnotifications;",
+									"    configurationid = jsonData.value [0].cmc_configurationid;",
+									"    ",
+									"    console.log('Sync Appointment with Google Calendar is: ' +syncapptswithgooglecalendar);",
+									"    console.log('Sync Appointment Attachments with Google Calendar is: ' +syncapptattachmentswithgooglecalendar);",
+									"    console.log('Google Send Event Notifications is: ' +googlesendeventnotifications);",
+									"    console.log('Configuration ID is: ' +configurationid);",
+									"",
+									"    ",
+									"});",
+									" pm.globals.set(\"gconfigurationid\",configurationid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_configurations",
+							"host": [
+								"{{Eresource_URL}}cmc_configurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SetPrimaryCalendarConfiguration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"cmc_googlesyncappointments\": 393310000,\n\t\"cmc_googlesendeventnotifications\": 393310001,\n\t\"cmc_syncapptattachmentswithgooglecalendar\": false\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_configurations({{gconfigurationid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_configurations({{gconfigurationid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ValidateConfigurationSettings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var syncapptswithgooglecalendar;",
+									"var syncapptattachmentswithgooglecalendar;",
+									"var googlesendeventnotifications;",
+									"",
+									"pm.test(\"Google Calender Default Configuration IVP\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    ",
+									"    syncapptswithgooglecalendar = jsonData.value [0].cmc_googlesyncappointments;",
+									"    syncapptattachmentswithgooglecalendar = jsonData.value [0].cmc_syncapptattachmentswithgooglecalendar;",
+									"    googlesendeventnotifications = jsonData.value [0].cmc_googlesendeventnotifications;",
+									"    ",
+									"    console.log('Sync Appointment with Google Calendar is: ' +syncapptswithgooglecalendar);",
+									"    console.log('Sync Appointment Attachments with Google Calendar is: ' +syncapptattachmentswithgooglecalendar);",
+									"    console.log('Google Send Event Notifications is: ' +googlesendeventnotifications);",
+									"",
+									"    if(syncapptswithgooglecalendar === 393310000 && syncapptattachmentswithgooglecalendar === false && googlesendeventnotifications === 393310001)",
+									"    {",
+									"    console.log(\"Default Configuration for Google Integration is Correct\");",
+									"    }",
+									"    else",
+									"    {",
+									"    console.log(\"Default Configuration for Google Integration is Incorrect\");",
+									"    throw new Error(\"Default Configuration for Google Integration is Incorrect\");",
+									"    }",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_configurations",
+							"host": [
+								"{{Eresource_URL}}cmc_configurations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AppointmentOwner",
+			"item": [
+				{
+					"name": "GetUser - DCRM Faculty/Instructor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid5',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'bill@engageuniversity.org'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'bill@engageuniversity.org'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EnableGoogleSyncAppointment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Enable Googel Sync Appointment to this Appointment Owner \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var status=jsonData.cmc_googlesyncappointments;",
+									"    console.log(\"Googel Sync Appointment Status: \" +status);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n\"cmc_googlesyncappointments\": true\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid5}})",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid5}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Prerequisties",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"//Genarate global session value",
+									"",
+									"var number = Math.floor(Math.random() * 1000);",
+									"pm.globals.set('globalsessionvalue',number)",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CreateRecurringAppointment",
+			"item": [
+				{
+					"name": "CreateRecurringAppointmentWeekly",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appointmentid;",
+									"var appointmentsubject;",
+									"var appointmentlocation;",
+									"var appointmentdescription;",
+									"var appointmentendtime;",
+									"pm.test(\" Recurring Appointment Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  appointmentid  = jsonData.activityid ;",
+									"  appointmentsubject = jsonData.subject;",
+									"  appointmentlocation=jsonData.location;",
+									"  appointmentdescription=jsonData.description;",
+									"  appointmentendtime=jsonData.endtime;",
+									"   console.log(\"Recurring Appointment Name: \"+appointmentsubject);",
+									"   console.log(\"Recurring Appointment Location: \",appointmentlocation);",
+									"   console.log(\"Recurring Appointment Description: \",appointmentdescription);",
+									"   console.log(\"Recurring Appointment End Time: \",appointmentendtime);",
+									"",
+									"});",
+									"",
+									"  pm.globals.set('gappointmentid',appointmentid);",
+									"  pm.globals.set('gappointmentsubject',appointmentsubject);",
+									"  pm.globals.set('gappointmentlocation',appointmentlocation);",
+									"  pm.globals.set('gappointmentdescription',appointmentdescription);",
+									"  pm.globals.set('gappointmentendtime',appointmentendtime);",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"var startDate=moment().format(\"YYYY-MM-DD\");\r",
+									"var startTime=\"T10:00:00Z\";\r",
+									"var startDateAndTime=startDate+startTime;\r",
+									"console.log(\"Concatenated value of start date and time: \"+startDateAndTime);\r",
+									"pm.environment.set(\"timestamp\", startDateAndTime);\r",
+									"\r",
+									"var endDate=moment().add(30, 'minutes').format(\"YYYY-MM-DD\");\r",
+									"var endTime=\"T10:30:00Z\"\r",
+									"var endDateAndTime=endDate+endTime\r",
+									"console.log(\"Concatenated value of end date and time: \"+endDateAndTime);\r",
+									"pm.environment.set(\"timestampEndDate\", endDateAndTime);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"subject\": \"{{appt}}-{{globalsessionvalue}}\",\r\n \"location\": \"{{apptloc}}\",\r\n \"description\":\"{{apptdesc}}\",\r\n \"patternstartdate\":\"{{timestamp}}\",\r\n \"patternenddate\":{{patternenddate}},\r\n \"starttime\": \"{{timestamp}}\",\r\n \"endtime\": \"{{timestampEndDate}}\",\r\n \"recurrencepatterntype\": {{recurrencepatterntype}},\r\n \"interval\":  {{interval}},\r\n \"daysofweekmask\": {{daysofweekmask}},\r\n \"patternendtype\": {{patternendtype}},\r\n \"occurrences\": {{occurrences}},\r\n \"seriesstatus\": true,\r\n \"prioritycode\": 1,\r\n \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}/recurringappointmentmasters",
+							"host": [
+								"{{Eresource_URL}}"
+							],
+							"path": [
+								"recurringappointmentmasters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ValidateRecurringAppointmentWeekly",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Validating Recurring Appointment - Weekly\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var errorcount=0;",
+									"    var errors=[];",
+									"    var success=[];",
+									"    var successcount=0;",
+									"    var tmp_message;",
+									"    ",
+									"    //Data from Csv",
+									"    var csv_appt=data.appt;",
+									"    var csv_apptloc=data.apptloc;",
+									"    var csv_apptdesc=data.apptdesc;",
+									"    //var csv_scheduledend=data.endtime;",
+									"    var csv_recurrencepatterntype=data.recurrencepatterntype;",
+									"    var csv_patternendtype=data.patternendtype;",
+									"    ",
+									"",
+									"    //Data from Response(Json)",
+									"    var engage_appt=jsonData.subject;",
+									"    var engage_location=jsonData.location;",
+									"    var engage_description=jsonData.description;",
+									"    var engage_scheduledend=jsonData.endtime;",
+									"    var engage_recurrencepatterntype=jsonData.recurrencepatterntype;",
+									"    var engage_patternendtype=jsonData.patternendtype;",
+									"",
+									"//Validating Appointment Name ",
+									"    var tmp_EngageData = engage_appt;",
+									"    var globalsessionvalue=pm.globals.get('globalsessionvalue');",
+									"    var tmp_csvData = csv_appt.toString()+\"-\"+globalsessionvalue;",
+									"    console.log(\"appointment name with global session value: \"+tmp_csvData);",
+									"",
+									"    tmp_message = 'Appointment name from actual: '+tmp_EngageData + ' and from Csv import file:'+tmp_csvData;",
+									"           if((tmp_csvData===tmp_EngageData) || (tmp_csvData==='' && tmp_EngageData===null))",
+									"            {",
+									"                successcount++;",
+									"                tmp_message = 'Matching' + ' ' + tmp_message ;",
+									"                success.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"                ",
+									"            }",
+									"            else",
+									"            {",
+									"                errorcount++;",
+									"                tmp_message = 'Not matching' + ' ' + tmp_message ;",
+									"                errors.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"            }",
+									"            ",
+									"//Validating Appointment Location",
+									"        tmp_EngageData = engage_location;",
+									"        tmp_csvData = csv_apptloc.toString();",
+									"    tmp_message = 'Appointment Location from actual: '+tmp_EngageData + ' and from Csv import file:'+tmp_csvData;",
+									"           if((tmp_csvData===tmp_EngageData) || (tmp_csvData==='' && tmp_EngageData===null))",
+									"            {",
+									"                successcount++;",
+									"                tmp_message = 'Matching' + ' ' + tmp_message ;",
+									"                success.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"                ",
+									"            }",
+									"            else",
+									"            {",
+									"                errorcount++;",
+									"                tmp_message = 'Not matching' + ' ' + tmp_message ;",
+									"                errors.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"            }     ",
+									"   ",
+									"//Validating Appointment Description",
+									"        tmp_EngageData = engage_description;",
+									"        tmp_csvData = csv_apptdesc.toString();",
+									"    tmp_message = 'Appointment Description from actual:'+tmp_EngageData + ' and from Csv import file:'+tmp_csvData;",
+									"        ",
+									"        if((tmp_csvData===tmp_EngageData) || (tmp_csvData==='' && tmp_EngageData===null))",
+									"            {",
+									"                successcount++;",
+									"                tmp_message = 'Matching' + ' ' + tmp_message ;",
+									"                success.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"                ",
+									"            }",
+									"            else",
+									"            {",
+									"                errorcount++;",
+									"                tmp_message = 'Not matching' + ' ' + tmp_message ;",
+									"                errors.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"            }",
+									"        ",
+									"//Validating Appointment ScheduledDate",
+									"",
+									"    var dateFromResponse = new Date(engage_scheduledend);",
+									"        var convertedDate =dateFromResponse.getFullYear()+\"-\"+(\"0\" + (dateFromResponse.getMonth() + 1)).slice(-2)+\"-\"+(\"0\" + (dateFromResponse.getDate())).slice(-2);",
+									"",
+									"",
+									"        var csv_scheduledend=pm.environment.get('timestamp')",
+									"        tmp_EngageData = convertedDate;",
+									"        tmp_csvData = csv_scheduledend.toString();",
+									"    tmp_message = 'Appointment scheduled Date from actual:'+tmp_EngageData + ' and from Csv import file:'+tmp_csvData;",
+									"        ",
+									"        if((tmp_csvData===tmp_EngageData) || (tmp_csvData==='' && tmp_EngageData===null))",
+									"            {",
+									"                successcount++;",
+									"                tmp_message = 'Matching' + ' ' + tmp_message ;",
+									"                success.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"                ",
+									"            }",
+									"            else",
+									"            {",
+									"                errorcount++;",
+									"                tmp_message = 'Not matching' + ' ' + tmp_message ;",
+									"                errors.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"            }",
+									"//Validating Recurring Appointment - Revcurring Pattern Type",
+									"        tmp_EngageData = engage_recurrencepatterntype;",
+									"        tmp_csvData = csv_recurrencepatterntype;",
+									"    tmp_message = 'Appointment scheduled Date from actual:'+tmp_EngageData + ' and from Csv import file:'+tmp_csvData;",
+									"        ",
+									"        if((tmp_csvData===tmp_EngageData) || (tmp_csvData==='' && tmp_EngageData===null))",
+									"            {",
+									"                successcount++;",
+									"                tmp_message = 'Matching' + ' ' + tmp_message ;",
+									"                success.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"                ",
+									"            }",
+									"            else",
+									"            {",
+									"                errorcount++;",
+									"                tmp_message = 'Not matching' + ' ' + tmp_message ;",
+									"                errors.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"            }        ",
+									"            ",
+									"//Validating Recurring Appointment - Revcurring Pattern Type",
+									"        tmp_EngageData = engage_patternendtype;",
+									"        tmp_csvData = csv_patternendtype;",
+									"    tmp_message = 'Appointment scheduled Date from actual:'+tmp_EngageData + ' and from Csv import file:'+tmp_csvData;",
+									"        ",
+									"        if((tmp_csvData===tmp_EngageData) || (tmp_csvData==='' && tmp_EngageData===null))",
+									"            {",
+									"                successcount++;",
+									"                tmp_message = 'Matching' + ' ' + tmp_message ;",
+									"                success.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"                ",
+									"            }",
+									"            else",
+									"            {",
+									"                errorcount++;",
+									"                tmp_message = 'Not matching' + ' ' + tmp_message ;",
+									"                errors.add(tmp_message);",
+									"                console.log(tmp_message);",
+									"            }                   ",
+									"       //matches",
+									"        if(successcount>0)",
+									"        {",
+									"            tmp_message = \"List of Matching fields:\"+successcount;",
+									"            console.log(tmp_message);",
+									"            for(l=0;l<successcount;l++)",
+									"              console.log('  '+success[l]);",
+									"        }",
+									"        ",
+									"        //Mismatches",
+									"        if(errorcount>0)",
+									"        {",
+									"            tmp_message = \"List of Mismatching fields:\"+errorcount;",
+									"            console.log(tmp_message);",
+									"            for(l=0;l<errorcount;l++)",
+									"            {",
+									"                console.log('  '+errors[l]);",
+									"            }",
+									"            pm.expect.fail(tmp_message);",
+									"        }",
+									"        ",
+									"       ",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}/recurringappointmentmasters({{gappointmentid}})",
+							"host": [
+								"{{Eresource_URL}}"
+							],
+							"path": [
+								"recurringappointmentmasters({{gappointmentid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UpdateAppointment_Subject",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var appointmentid;",
+							"pm.test(\" Recurring Appointment Update - Subject\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"        appointmentid  = jsonData.activityid;",
+							"        var updatesubject  = jsonData.subject;",
+							"        var oldappointmentsubject =pm.globals.get(\"gappointmentsubject\");",
+							"",
+							"if (updatesubject===oldappointmentsubject)",
+							"{",
+							"    console.log(\"Recurring Appointment subject is not update\");",
+							"    throw new error('Recurring Appointment subject is not updated');",
+							"}",
+							"else",
+							"{",
+							"    console.log(\" Recurring Appointment subject is updated successfully.\", updatesubject);",
+							"}",
+							"  ",
+							"});",
+							"",
+							" pm.globals.set('gappointmentid',appointmentid);",
+							"  ",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"subject\": \"{{gappointmentsubject}} {{$timestamp}}\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}/recurringappointmentmasters({{gappointmentid}})",
+					"host": [
+						"{{Eresource_URL}}"
+					],
+					"path": [
+						"recurringappointmentmasters({{gappointmentid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateAppointment_Location",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var appointmentid;",
+							"pm.test(\"Recurring Appointment Update - Location\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    appointmentid  = jsonData.activityid;",
+							"    var updateappointmentlocation = jsonData.location;",
+							"    var oldappointmentlocation=pm.globals.get(\"gappointmentlocation\");",
+							" if (updateappointmentlocation===oldappointmentlocation)",
+							" {",
+							"     console.log(\"Recurring Appointment Location is not updated\");",
+							"     throw new error (\"Recurring Appointment Location is not updated\");",
+							" }",
+							" else",
+							" {",
+							"     console.log(\"Recurring Appointment Location is updated successfully\",updateappointmentlocation);",
+							" }",
+							"  ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"location\": \"{{gappointmentlocation}} {{$timestamp}}\"\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}/recurringappointmentmasters({{gappointmentid}})",
+					"host": [
+						"{{Eresource_URL}}"
+					],
+					"path": [
+						"recurringappointmentmasters({{gappointmentid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateRecAppointment_Description",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var appointmentid;",
+							"pm.test(\"Recurring Appointment Update - Description\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"        appointmentid  = jsonData.activityid ;",
+							"    var updateappointmentdescription = jsonData.description;",
+							"    var oldappointmentdescription=pm.globals.get(\"gappointmentdescription\");",
+							" if (updateappointmentdescription===oldappointmentdescription)",
+							" {",
+							"     console.log(\"Recurring Appointment Description is not updated\");",
+							"     throw new error (\"Recurring Appointment Description is not updated\");",
+							" }",
+							" else",
+							" {",
+							"     console.log(\"Recurring Appointment Description is updated successfully\",updateappointmentdescription);",
+							" }",
+							"});",
+							"",
+							" pm.globals.set('gappointmentid',appointmentid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"description\": \"{{gappointmentdescription}} {{$timestamp}}\"\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}/recurringappointmentmasters({{gappointmentid}})",
+					"host": [
+						"{{Eresource_URL}}"
+					],
+					"path": [
+						"recurringappointmentmasters({{gappointmentid}})"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

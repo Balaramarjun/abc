@@ -1,0 +1,387 @@
+{
+	"info": {
+		"_postman_id": "2c6b65b8-18a6-4ec6-9378-d91c63cce620",
+		"name": "TC_1096252_PrivateNotes",
+		"description": "Validate Private Note creation, fields, Dashboard, permissions. end-to-end functionality",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c36f21ad-95d2-4eb3-bc6a-719d629c8ecf",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8b54188f-5722-4e32-ae6b-923c68b03b62",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f567f443-eab4-49f8-87cd-5f98ccae76d1",
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "97eb6c2c-e294-43e2-bbb7-fc256ab3b51e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Create Private Notes",
+			"item": [
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "abc93390-8bcb-4aa1-98f9-fa79527f7573",
+								"exec": [
+									"var contact_id;",
+									"var contactname;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"  pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"  var jsonData =JSON.parse(responseBody);",
+									"  contact_id = jsonData.contactid;",
+									"  contactname = jsonData.fullname;",
+									"});",
+									"",
+									"pm.globals.set('gcontactid',contact_id);",
+									"console.log(contactname);",
+									"console.log('Contactid:'+contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}\",\r\n    \"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n    \"mshied_contacttype\": \"{{contacttype}}\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{cmc_sourcecategoryid}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{cmc_sourcemethodid}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Private Notes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "08e8e3a5-1119-40ac-9ffa-447d7fe6ca08",
+								"exec": [
+									"var privatenoteid;",
+									"",
+									"pm.test(\"Private Notes Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    privatenoteid = jsonData.cmc_privatenoteid;    ",
+									"});",
+									"",
+									"pm.globals.set('gprivatenoteid',privatenoteid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5d12b7b2-7536-47f2-922f-1f40647f7ad0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_meetingtype\": \"{{cmc_meetingtype}}\",\r\n    \"cmc_note\": \"{{cmc_note}}\",\r\n    \"cmc_othertopics\": \"{{cmc_othertopics}}\",\r\n    \"cmc_studentid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"cmc_subject\": \"{{cmc_subject}}\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_privatenotes",
+							"host": [
+								"{{Eresource_URL}}cmc_privatenotes"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Share Private Notes to User 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "25a2fb54-dbfe-4d62-9451-5950f3653b88",
+								"exec": [
+									"pm.test(\"Private Notes Shared\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c28fc75d-464d-4478-989f-d9dd273a6b11",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Target\": {\r\n        \"@odata.type\": \"Microsoft.Dynamics.CRM.cmc_privatenote\",\r\n        \"cmc_privatenoteid\": \"{{gprivatenoteid}}\"\r\n    },\r\n    \"PrincipalAccess\": {\r\n        \"AccessMask\": \"3\",\r\n        \"Principal\": {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.systemuser\",\r\n            \"systemuserid\": \"{{guserid4}}\"\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}GrantAccess",
+							"host": [
+								"{{Eresource_URL}}GrantAccess"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

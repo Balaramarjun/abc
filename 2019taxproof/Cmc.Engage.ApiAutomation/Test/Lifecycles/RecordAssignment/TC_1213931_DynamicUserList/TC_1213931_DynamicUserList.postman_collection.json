@@ -1,0 +1,572 @@
+{
+	"info": {
+		"_postman_id": "c281cf99-47b7-4cf2-909a-1595d2759908",
+		"name": "TC_1213931_DynamicUserList",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Dynamic User List",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get System User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var systemuserid;",
+									"var firstname;",
+									"pm.test(\"Get User\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    systemuserid = jsonData.value[0].systemuserid; ",
+									"    firstname = jsonData.value[0].firstname;",
+									"});",
+									"pm.globals.set('gsystemuserid', systemuserid);",
+									"pm.globals.set('gsystemusername', firstname);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Dynamic User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"Dynamic User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistid = jsonData.cmc_userlistid; ",
+									"    ",
+									"});",
+									"pm.globals.set('gdynamicuserlistid', userlistid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_description\": \"Api created description\",\r\n    \"cmc_listtype\": 175490001,\r\n    \"cmc_name\": \"DynamicList API {{$randomInt}}\",\r\n    \"cmc_purpose\": \"Dynamic User List\",\r\n    \"statecode\": 0,\r\n    \"statuscode\": 1,\r\n    \"cmc_fetchxml\":\"<fetch distinct=\\\"false\\\" mapping=\\\"logical\\\" output-format=\\\"xml-platform\\\" version=\\\"1.0\\\">\\n<entity name=\\\"systemuser\\\">\\n<attribute name=\\\"systemuserid\\\"/>\\n<attribute name=\\\"fullname\\\"/>\\n<attribute name=\\\"createdon\\\"/>\\n<order attribute=\\\"createdon\\\" descending=\\\"false\\\"/>\\n<filter type=\\\"and\\\">\\n<condition attribute=\\\"firstname\\\" operator=\\\"like\\\" value=\\\"%DCRM%\\\"/>\\n</filter>\\n</entity>\\n</fetch>\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FetchXml from Dynamic List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var cmc_fetchxml;",
+									"pm.test(\"Dynamic User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    cmc_fetchxml = jsonData.cmc_fetchxml;",
+									"});",
+									"pm.globals.set('gfetchxml', cmc_fetchxml);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify users in Dynamic User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var systemuserid, fullname;",
+									"pm.test(\"Get Dynamic User List Members\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    systemuserid = jsonData.value[0].systemuserid;",
+									"    fullname = jsonData.value[0].fullname;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var fetchxml=\"%3Cfetch%20version%3D%221.0%22%20output-format%3D%22xml-platform%22%20mapping%3D%22logical%22%20distinct%3D%22false%22%3E%0A%3Centity%20name%3D%22systemuser%22%3E%0A%3Cattribute%20name%3D%22systemuserid%22%20%2F%3E%0A%3Cattribute%20name%3D%22fullname%22%20%2F%3E%0A%3Cattribute%20name%3D%22createdon%22%20%2F%3E%0A%3Corder%20attribute%3D%22createdon%22%20descending%3D%22false%22%20%2F%3E%0A%3Cfilter%20type%3D%22and%22%3E%0A%3Ccondition%20attribute%3D%22firstname%22%20operator%3D%22like%22%20value%3D%22%25DCRM%25%22%20%2F%3E%0A%3C%2Ffilter%3E%0A%3C%2Fentity%3E%0A%3C%2Ffetch%3E\";\r",
+									"\r",
+									"pm.variables.set('gfetchxmlencoded',fetchxml);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?fetchXml={{gfetchxmlencoded}}",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "fetchXml",
+									"value": "{{gfetchxmlencoded}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update User List",
+			"item": [
+				{
+					"name": "Create Dynamic User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"Dynamic User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_description\": \"Api created description Updated\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deactivate User List",
+			"item": [
+				{
+					"name": "Create Dynamic User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"Dynamic User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{    \r\n    \"statecode\": 1,\r\n    \"statuscode\": 2\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete User List",
+			"item": [
+				{
+					"name": "Delete Dynamic User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User List Deleted\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);      ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists({{gdynamicuserlistid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

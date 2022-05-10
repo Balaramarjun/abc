@@ -1,0 +1,866 @@
+{
+	"info": {
+		"_postman_id": "f8f2ad10-d93d-4df3-9eb4-28167e4c0e54",
+		"name": "TC_969384_ScoringModel_ValidationForAssociation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Base Entity: Contact",
+			"item": [
+				{
+					"name": "Create Marketing List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var listid;",
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    listid = jsonData.listid;",
+									"    ",
+									" var SGName =jsonData.listname;   ",
+									" var stateid = jsonData.statecode;",
+									" console.log('Statecode:'+stateid);",
+									" ",
+									" if(stateid ===0)",
+									"   {  ",
+									"       var  active=\"is Activated\";",
+									"   console.log('SGName' +active);",
+									"   } ",
+									" else{ ",
+									"      var deactive=\"is De-Activated\";",
+									"     console.log('SGName' +deactive);",
+									"     }",
+									"});",
+									"",
+									"pm.globals.set('glistid', listid);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listname\": \"Marketing list SD {{$randomInt}}API {{$randomInt}} \",\r\n    \"type\": false,\r\n    \"createdfromcode\": {{createdfromcode}},\r\n    \"cmc_marketinglisttype\": \"{{cmc_marketinglisttype}}\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}lists",
+							"host": [
+								"{{Eresource_URL}}lists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "BaseEntity: Application",
+			"item": [
+				{
+					"name": "Create Scoring Factor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var scoringfactor1;",
+									"pm.test(\"Scoring factor is Created\", function()",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    scoringfactor1 = jsonData.cmc_scoringfactorid;",
+									"    console.log('Scoring factor ID:' +scoringfactor1);",
+									"    var scoringfactorname= jsonData.cmc_scoringfactorname;",
+									"    console.log('Scoring factor that is created is:' +scoringfactorname);",
+									"",
+									"});",
+									"",
+									"",
+									"",
+									"pm.globals.set('gscoringfactorid1',scoringfactor1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n\t\"cmc_scoringfactorname\": \"SF-Application check1 {{$randomInt}} {{$randomInt}}\",\r\n\t\"cmc_baseentity\": \"{{cmc_baseentity}}\",\r\n\t\"cmc_points\": {{cmc_points}},\r\n\t\"cmc_description\":\"{{cmc_description}} {{$randomInt}}\",\r\n\t\"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n\t\r\n\r\n }\r\n \r\n "
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoringfactors",
+							"host": [
+								"{{Eresource_URL}}cmc_scoringfactors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Base Entity: Account",
+			"item": [
+				{
+					"name": "Create ScoreDefinitions_Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Score Definition for Account is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    pm.globals.set('gscoredefinitionid',scoredefinitionid);",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval',scheduleinterval);",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoredefinitionname\": \"SD-API{{$randomInt}} Account {{$randomInt}}{{$randomInt}}\",\r\n    \"cmc_scheduleinterval\": {{cmc_scheduleinterval}},\r\n    \"cmc_redscorethreshold\": {{cmc_redscorethreshold}},\r\n    \"cmc_yellowscorethreshold\": {{cmc_yellowscorethreshold}},\r\n    \"cmc_greenscorethreshold\": {{cmc_greenscorethreshold}},\r\n    \"cmc_baseentity\": \"{{cmc_baseentity1}}\",\r\n    \"cmc_targetattributename\": \"account.numberofemployees\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create ScoreDefinitions_Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var scoredefinitionid;",
+									"pm.test(\"Score Definition for Application is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    scoredefinitionid =jsonData.cmc_scoredefinitionid;",
+									"    console.log('Score definition ID:' +scoredefinitionid);",
+									"    var scoredefinitionname= jsonData.cmc_scoredefinitionname;",
+									"    console.log('Score Definition that is created is:' +scoredefinitionname);",
+									"    pm.globals.set('gscoredefinitionid2',scoredefinitionid);",
+									"    var scheduleinterval=jsonData.cmc_scheduleinterval;",
+									"    pm.globals.set('gscheduleinterval',scheduleinterval);",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoredefinitionname\": \"SD-API{{$randomInt}} Application {{$randomInt}}{{$randomInt}}\",\r\n    \"cmc_scheduleinterval\": {{cmc_scheduleinterval}},\r\n    \"cmc_redscorethreshold\": {{cmc_redscorethreshold}},\r\n    \"cmc_yellowscorethreshold\": {{cmc_yellowscorethreshold}},\r\n    \"cmc_greenscorethreshold\": {{cmc_greenscorethreshold}},\r\n    \"cmc_baseentity\": \"{{cmc_baseentity}}\",\r\n    \"cmc_targetattributename\": \"{{cmc_targetattributename1}}\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wrong Association Checks",
+			"item": [
+				{
+					"name": "Adding ScoringFactor To ScoreDefinition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Wrong association validation between Scoring Factor and Score Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    console.log(\"Cannot associate entities with different values of 'base entity' field!\");",
+									"  ",
+									"});",
+									"",
+									"/*",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"ScoreDefinition_InvalidScoringFactorAssociation\");",
+									"    console.log(\"Cannot associate entities with different values of 'base entity' field!\");",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})/cmc_scoredefinition_scoringfactor/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+							],
+							"path": [
+								"cmc_scoredefinition_scoringfactor",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Marketing List To ScoreDefinition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Wrong association validation between Marketing List and Score Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    console.log(\"Cannot associate entities with different values of 'base entity' field!\");",
+									"  ",
+									"});",
+									"",
+									"/*",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"ScoreDefinition_InvalidMarketingListAssociation\");",
+									"    console.log(\"Cannot associate entities with different values of 'base entity' field!\");",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}lists({{glistid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})/cmc_scoredefinition_list/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid}})"
+							],
+							"path": [
+								"cmc_scoredefinition_list",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding ScoringFactor To ScoreDefinition_Empty query check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Wrong association validation between Scoring Factor and Score Definition\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    console.log(\"Cannot associate entities with empty query\");",
+									"});",
+									"",
+									"/*",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"ScoreDefinition_EmptyConditionScoringFactorAssociation\");",
+									"    console.log(\"Cannot associate entities with empty query\");",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}cmc_scoringfactors({{gscoringfactorid1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})/cmc_scoredefinition_scoringfactor/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions({{gscoredefinitionid2}})"
+							],
+							"path": [
+								"cmc_scoredefinition_scoringfactor",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Field validation check",
+			"item": [
+				{
+					"name": "Create ScoreDefinitions_Upper limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Score Definition Upper limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoredefinitionname\": \"SD-API{{$randomInt}} Account {{$randomInt}}{{$randomInt}}\",\r\n    \"cmc_scheduleinterval\": 1000,\r\n    \"cmc_baseentity\": \"{{cmc_baseentity1}}\",\r\n    \"cmc_targetattributename\": \"{{cmc_targetattributename}}\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create ScoreDefinitions_Lower limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Score Definition lower limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoredefinitionname\": \"SD-API{{$randomInt}} Account {{$randomInt}}{{$randomInt}}\",\r\n    \"cmc_scheduleinterval\": -1,\r\n    \"cmc_baseentity\": \"{{cmc_baseentity1}}\",\r\n    \"cmc_targetattributename\": \"{{cmc_targetattributename}}\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoredefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_scoredefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Scoring Factor_provide alphabet in integer field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//var message;",
+									"pm.test(\"Scoring factor Points field validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    //message = jsonData.error.message;",
+									"    //console.log(message);",
+									"    ",
+									"    ",
+									"    pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Cannot convert the literal\");",
+									"    ",
+									"    console.log(\"Input string for 'Points' field was not in a correct format\");",
+									"    ",
+									"    });",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_scoringfactorname\": \"SF-Application check1 {{$randomInt}} {{$randomInt}}\",\r\n    \"cmc_baseentity\": \"{{cmc_baseentity}}\",\r\n    \"cmc_points\": \"abc\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_scoringfactors",
+							"host": [
+								"{{Eresource_URL}}cmc_scoringfactors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

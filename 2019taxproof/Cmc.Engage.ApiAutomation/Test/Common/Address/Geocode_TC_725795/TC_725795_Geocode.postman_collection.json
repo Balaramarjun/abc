@@ -1,0 +1,4347 @@
+{
+	"info": {
+		"_postman_id": "50978481-6113-4366-86c1-b1b2624bd7d3",
+		"name": "TC_725795_Geocode",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Primary address under contact",
+			"item": [
+				{
+					"name": "GetToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id; ",
+									"pm.test(\"Account Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    account_id = jsonData.accountid;",
+									"    accountaname = jsonData.name;",
+									"    console.log(\"Account:\" +accountaname);",
+									"});",
+									"",
+									"",
+									"var name1 = data.name;",
+									"var Zip = data.cmc_zip;",
+									"var City = data.cmc_city;",
+									"var accounttype = data.cmc_accounttype;",
+									"var addresstype = data.cmc_addresstypeid;",
+									"",
+									"var addressname = data.cmc_addressname;",
+									"pm.variables.set(\"cmc_addressname\", addressname);",
+									"",
+									"pm.variables.set(\"name\", name1 );",
+									"pm.variables.set(\"cmc_zip\", Zip );",
+									"pm.variables.set(\"cmc_city\", City );",
+									"pm.variables.set(\"cmc_accounttype\", accounttype );",
+									"pm.variables.set(\"cmc_addresstypeid\", addresstype);",
+									"pm.globals.set('gaccountId',account_id);",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"name\":\"College{{$randomCountry}}\",\r\n \"mshied_accounttype\":\"494280000\",\r\n \"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n \"preferredcontactmethodcode\":1\r\n \r\n\r\n} \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var firstname = jsonData.firstname;",
+									"    console.log('Contact:' +contact_id);",
+									"    console.log('firstname:' +firstname);",
+									"    ",
+									"});",
+									"",
+									"pm.globals.set(\"gcontactid\",contact_id);",
+									"setTimeout(function(){}, 50000);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n     \"firstname\": \"ContactGeo{{$randomFirstName}}\",\r\n     \"lastname\": \"ContLast{{$randomLastName}}\",\r\n     \"mshied_contacttype\":\"494280011\",\r\n   \"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n   \"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n     \"parentcustomerid_account@odata.bind\": \"/accounts({{gaccountId}})\"\r\n   \r\n}\r\n\r\n  \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CusomerAddress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Contact_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===3)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"3 default addresses are created under a contact record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\")\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\")\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===3)\r",
+									"        {\r",
+									"            console.log(\"Address number 3 is present\")\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})?$expand=Contact_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Contact_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 1st primary Address for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Created New Address Contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var engage_addressnumber=jsonData.addressnumber;",
+									"    var engage_country=jsonData.cmc_countryregion;",
+									"    var engage_state=jsonData.cmc_state;",
+									"    var engage_county=jsonData.cmc_county;",
+									"",
+									"    var mick1_country=jsonData.cmc_country;",
+									"    var mick1_state=jsonData.cmc_stateprovince;",
+									"    var mick1_county=jsonData.county;",
+									"",
+									"    var mick2_country=jsonData.country;",
+									"    var mick2_state=jsonData.stateorprovince;",
+									"    var customeraddressid=jsonData.customeraddressid;",
+									"",
+									"    pm.globals.set('gcustomeraddressid1',customeraddressid);",
+									"    pm.globals.set('gengage_addressnumber1',engage_addressnumber);",
+									"    pm.globals.set('gengage_country1',engage_country);",
+									"    pm.globals.set('gengage_state1',engage_state);",
+									"    pm.globals.set('gengage_county1',engage_county);",
+									"    pm.globals.set('gmick1_country1',mick1_country);",
+									"    pm.globals.set('gmick1_state1',mick1_state);",
+									"    pm.globals.set('gmick1_county1',mick1_county);",
+									"    pm.globals.set('gmick2_country1',mick2_country);",
+									"    pm.globals.set('gmick2_state1',mick2_state);",
+									"",
+									"    console.log(\"engage_country: \"+engage_country);",
+									"    console.log(\"engage_state: \"+engage_state);",
+									"    console.log(\"engage_county: \"+engage_county);",
+									"    console.log(\"mick1_country: \"+mick1_country);",
+									"    console.log(\"mick1_state: \"+mick1_state);",
+									"    console.log(\"mick1_county: \"+mick1_county);",
+									"    console.log(\"mick2_country: \"+mick2_country);",
+									"    console.log(\"mick2_state: \"+mick2_state);",
+									"",
+									" });",
+									"",
+									"setTimeout(function(){}, 75000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"addresstypecode\":\"3\",\r\n        \"mshied_mailtype\": 494280000,\r\n        \"name\": \"address{{$randomInt}}\",\r\n        \"cmc_countryregion\": \"175490231\",\r\n        \"cmc_state\": \"175490282\",\r\n        \"line1\": \"Street1\",\r\n        \"postalcode\": \"33145\",\r\n        \"line2\": \"street2\",\r\n        \"line3\": \"street3\",\r\n        \"city\": \"Miami\",\r\n        \"cmc_county\": \"175490027\",\r\n        \"parentid_contact@odata.bind\": \"/contacts({{gcontactid}})\"\r\n        \r\n       }\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get 1st primary CusomerAddress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var engage_addressnumber=jsonData.addressnumber;\r",
+									"    var engage_country=jsonData.cmc_countryregion;\r",
+									"    var engage_state=jsonData.cmc_state;\r",
+									"    var engage_county=jsonData.cmc_county;\r",
+									"\r",
+									"    var mick1_country=jsonData.cmc_country;\r",
+									"    var mick1_state=jsonData.cmc_stateprovince;\r",
+									"    var mick1_county=jsonData.county;\r",
+									"\r",
+									"    var customeraddressid= pm.globals.get('gcustomeraddressid1');\r",
+									"    var engage_addressnumber=pm.globals.get('gengage_addressnumber1');\r",
+									"    var mick2_country=\"United States of America\";\r",
+									"    var mick2_state=\"Alabama\";\r",
+									"\r",
+									"    console.log(\"engage_country: \"+engage_country);\r",
+									"    console.log(\"engage_state: \"+engage_state);\r",
+									"    console.log(\"engage_county: \"+engage_county);\r",
+									"    console.log(\"mick1_country: \"+mick1_country);\r",
+									"    console.log(\"mick1_state: \"+mick1_state);\r",
+									"    console.log(\"mick1_county: \"+mick1_county);\r",
+									"    console.log(\"mick2_country: \"+mick2_country);\r",
+									"    console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"    /*\r",
+									"    pm.test(\"Address number field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_addressnumber).to.equal(1);\r",
+									"            \r",
+									"        });\r",
+									"    */\r",
+									"    //checking if the values are populated to Microsoft fields\r",
+									"    pm.test(\"cmc_country field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_country).to.equal(mick1_country);\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_state).to.equal(mick1_state);\r",
+									"        });\r",
+									"    \r",
+									"     pm.test(\"cmc_county field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_county).to.equal(175490027);\r",
+									"        });\r",
+									"    \r",
+									"\r",
+									"        // system field value checks\r",
+									"     pm.test(\"country system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_country).to.equal(\"United States of America\");\r",
+									"        });\r",
+									"\r",
+									"    \r",
+									"    pm.test(\"stateorprovince system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_state).to.equal(\"Alabama\");\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"county system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick1_county).to.equal(\"Barbour\");\r",
+									"        });\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcustomeraddressid1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses({{gcustomeraddressid1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get contact primary address details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the contact record\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var engage_addressnumber=jsonData.addressnumber;\r",
+									"    var engage_country=jsonData.address1_country;\r",
+									"    var engage_state=jsonData.address1_stateorprovince;\r",
+									"    var engage_county=jsonData.address1_county;\r",
+									"\r",
+									"    var mick1_country=\"United States of America\";\r",
+									"    var mick1_state=\"Alabama\";\r",
+									"    var mick1_county=\"Barbour\";\r",
+									"    \r",
+									"    console.log(\"engage_country: \"+engage_country);\r",
+									"    console.log(\"engage_state: \"+engage_state);\r",
+									"    console.log(\"engage_county: \"+engage_county);\r",
+									"    \r",
+									"    console.log(\"mick1_country: \"+mick1_country);\r",
+									"    console.log(\"mick1_state: \"+mick1_state);\r",
+									"    console.log(\"mick1_county: \"+mick1_county);\r",
+									"\r",
+									"    pm.test(\"cmc_country field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_country).to.equal(mick1_country);\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_state).to.equal(mick1_state);\r",
+									"        });\r",
+									"    \r",
+									"     pm.test(\"cmc_county field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_county).to.equal(mick1_county);\r",
+									"        });\r",
+									"   \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Address for Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Created New Address Account\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"});",
+									"  ",
+									"  ",
+									"setTimeout(function(){}, 50000); ",
+									"",
+									"//pm.globals.set('gcontcustomeraddressid',contcustomeraddressid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(1095, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n       \"addresstypecode\": 3,\r\n        \"mshied_mailtype\": 494280000,\r\n       \"name\": \"AccountAddress{{$randomInt}}\",\r\n         \"cmc_country\": \"175490236 \",\r\n        \"cmc_stateprovince\": \"175490013 \",\r\n        \"line1\": \"5201 Congress Ave.\",\r\n        \"postalcode\": \"33431\",\r\n        \"city\": \"Boca Raton\",\r\n        \"mshied_startdate\":\"{{timestamp}}\",\r\n        \"mshied_enddate\":\"{{timestampEndDate}}\",\r\n         \"parentid_account@odata.bind\": \"/accounts({{gaccountId}})\"\r\n       }\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get laititude and Longitude-Contact",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Geo Code-Contact\", function() ",
+									"",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    //Reading values from CSV file",
+									"    var ContLat = data.latitude1;",
+									"    var ContLong = data.longitude1;",
+									"    var Milescsv =data.miles;",
+									"    console.log('Latitude-CSV:' +ContLat);",
+									"    console.log('Longitude-CSV:' +ContLong);",
+									"    console.log('Miles-CSV:' +Milescsv);",
+									"",
+									"    //Reading values from Response",
+									"    var latitude = parseFloat(jsonData.address1_latitude);",
+									"    var longitude = parseFloat(jsonData.address1_longitude);",
+									"    var miles = jsonData.cmc_milesfromcampus;    ",
+									"    console.log('Latitude:' + latitude);",
+									"    console.log('Longitude:' + longitude);",
+									"    console.log('Miles From Campus:' + miles);",
+									"    ",
+									"  pm.test(\"Validate Latitude\", function()",
+									"        {",
+									"        pm.expect(latitude).not.equal(undefined);",
+									"\t\tpm.expect(latitude).not.equal(null);",
+									"        });\t\t",
+									"  pm.test(\"Validate Longitude\", function()",
+									"        {            ",
+									"        pm.expect(longitude).not.equal(undefined);",
+									"\t\tpm.expect(longitude).not.equal(null);",
+									"        });",
+									" ",
+									"        ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid}})"
+							]
+						},
+						"description": "Get laititude and Longitude"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Latitude and Longitude -Account",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Geo Code-Account\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"",
+									"    //Reading values from CSV file",
+									"    var AccLat = data.latitude2;",
+									"    var AccLong = data.longitude2;",
+									"    console.log('Account-Latitude-CSV:' +AccLat);",
+									"    console.log('Account-Longitude-CSV:' +AccLong); ",
+									"    pm.variables.set(\"name\", AccLat );",
+									"    pm.variables.set(\"name\", AccLong );",
+									"    //Reading values from Response",
+									"    var latitudeAcc = jsonData.address1_latitude;",
+									"    var longitudeAcc =  parseFloat(jsonData.address1_longitude);",
+									"    console.log('latitudeAcc : ' + latitudeAcc);",
+									"    console.log('longitudeAcc : ' + longitudeAcc);",
+									"    ",
+									"  pm.test(\"Validate Latitude\", function()",
+									"        {",
+									"        pm.expect(latitudeAcc).not.equal(undefined);",
+									"\t\tpm.expect(latitudeAcc).not.equal(null);",
+									"        });\t\t",
+									"  pm.test(\"Validate Longitude\", function()",
+									"        {            ",
+									"        pm.expect(longitudeAcc).not.equal(undefined);",
+									"\t\tpm.expect(longitudeAcc).not.equal(null);",
+									"        });",
+									" ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts({{gaccountId}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts({{gaccountId}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 2nd primary Address for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Created New Address Contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var engage_addressnumber=jsonData.addressnumber;",
+									"    var engage_country=jsonData.cmc_countryregion;",
+									"    var engage_state=jsonData.cmc_state;",
+									"    var engage_county=jsonData.cmc_county;",
+									"",
+									"    var mick1_country=jsonData.cmc_country;",
+									"    var mick1_state=jsonData.cmc_stateprovince;",
+									"    var mick1_county=jsonData.county;",
+									"",
+									"    var mick2_country=jsonData.country;",
+									"    var mick2_state=jsonData.stateorprovince;",
+									"    var customeraddressid=jsonData.customeraddressid;",
+									"",
+									"    pm.globals.set('gcustomeraddressid2',customeraddressid);",
+									"    pm.globals.set('gengage_addressnumber2',engage_addressnumber);",
+									"    pm.globals.set('gengage_country2',engage_country);",
+									"    pm.globals.set('gengage_state2',engage_state);",
+									"    pm.globals.set('gengage_county2',engage_county);",
+									"    pm.globals.set('gmick1_country2',mick1_country);",
+									"    pm.globals.set('gmick1_state2',mick1_state);",
+									"    pm.globals.set('gmick1_county2',mick1_county);",
+									"    pm.globals.set('gmick2_country2',mick2_country);",
+									"    pm.globals.set('gmick2_state2',mick2_state);",
+									"",
+									"    console.log(\"engage_country: \"+engage_country);",
+									"    console.log(\"engage_state: \"+engage_state);",
+									"    console.log(\"engage_county: \"+engage_county);",
+									"    console.log(\"mick1_country: \"+mick1_country);",
+									"    console.log(\"mick1_state: \"+mick1_state);",
+									"    console.log(\"mick1_county: \"+mick1_county);",
+									"    console.log(\"mick2_country: \"+mick2_country);",
+									"    console.log(\"mick2_state: \"+mick2_state);",
+									"",
+									" });",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"addresstypecode\": 2,\r\n        \"city\": \"Bangalore\",\r\n        \"cmc_countryregion\": \"175490101\",\r\n        \"cmc_state\": \"175490089\",\r\n        \"line1\": \"street 1\",\r\n        \"line2\": \"street 2\",\r\n        \"line3\": \"street 3\",\r\n        \"mshied_mailtype\": 494280000,\r\n        \"objecttypecode\": \"contact\",\r\n        \"postalcode\": \"560059\",\r\n        \"parentid_contact@odata.bind\": \"/contacts({{gcontactid}})\"\r\n       }\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update 2nd primary Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"updated New Address Contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var engage_addressnumber=jsonData.addressnumber;",
+									"    var engage_country=jsonData.cmc_countryregion;",
+									"    var engage_state=jsonData.cmc_state;",
+									"    var engage_county=jsonData.cmc_county;",
+									"",
+									"    var mick1_country=jsonData.cmc_country;",
+									"    var mick1_state=jsonData.cmc_stateprovince;",
+									"    var mick1_county=jsonData.county;",
+									"",
+									"    var mick2_country=jsonData.country;",
+									"    var mick2_state=jsonData.stateorprovince;",
+									"    var customeraddressid=jsonData.customeraddressid;",
+									"",
+									"    //pm.globals.set('gcustomeraddressid3',customeraddressid);",
+									"    pm.globals.set('gengage_addressnumber3',engage_addressnumber);",
+									"    pm.globals.set('gengage_country3',engage_country);",
+									"    pm.globals.set('gengage_state3',engage_state);",
+									"    pm.globals.set('gengage_county3',engage_county);",
+									"    pm.globals.set('gmick1_country3',mick1_country);",
+									"    pm.globals.set('gmick1_state3',mick1_state);",
+									"    pm.globals.set('gmick1_county3',mick1_county);",
+									"    pm.globals.set('gmick2_country3',mick2_country);",
+									"    pm.globals.set('gmick2_state3',mick2_state);",
+									"",
+									"    console.log(\"engage_country: \"+engage_country);",
+									"    console.log(\"engage_state: \"+engage_state);",
+									"    console.log(\"engage_county: \"+engage_county);",
+									"    console.log(\"mick1_country: \"+mick1_country);",
+									"    console.log(\"mick1_state: \"+mick1_state);",
+									"    console.log(\"mick1_county: \"+mick1_county);",
+									"    console.log(\"mick2_country: \"+mick2_country);",
+									"    console.log(\"mick2_state: \"+mick2_state);",
+									"",
+									" });",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"addresstypecode\": \"3\",\r\n    \"mshied_mailtype\": 494280000,\r\n    \"name\": \"address{{$randomInt}}\",\r\n    \"cmc_countryregion\": \"175490231 \",\r\n    \"cmc_state\": \"175490282 \",\r\n    \"line1\": \"3640 SW 22nd Street.\",\r\n    \"postalcode\": \"33145\",\r\n    \"city\": \"Miami\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcustomeraddressid2}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses({{gcustomeraddressid2}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get 2nd primary CusomerAddress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var engage_addressnumber=jsonData.addressnumber;\r",
+									"    var engage_country=jsonData.cmc_countryregion;\r",
+									"    var engage_state=jsonData.cmc_state;\r",
+									"    var engage_county=jsonData.cmc_county;\r",
+									"\r",
+									"    var mick1_country=jsonData.cmc_country;\r",
+									"    var mick1_state=jsonData.cmc_stateprovince;\r",
+									"    var mick1_county=jsonData.county;\r",
+									"\r",
+									"    var customeraddressid= pm.globals.get('gcustomeraddressid2');\r",
+									"    //var engage_addressnumber=pm.globals.get('gengage_addressnumber1');\r",
+									"    var mick2_country=\"United States of America\";\r",
+									"    var mick2_state=\"Alabama\";\r",
+									"\r",
+									"    console.log(\"engage_country: \"+engage_country);\r",
+									"    console.log(\"engage_state: \"+engage_state);\r",
+									"    console.log(\"engage_county: \"+engage_county);\r",
+									"    console.log(\"mick1_country: \"+mick1_country);\r",
+									"    console.log(\"mick1_state: \"+mick1_state);\r",
+									"    console.log(\"mick1_county: \"+mick1_county);\r",
+									"    console.log(\"mick2_country: \"+mick2_country);\r",
+									"    console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"\r",
+									"    pm.test(\"Address number field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_addressnumber).to.equal(1);\r",
+									"            \r",
+									"        });\r",
+									"\r",
+									"    //checking if the values are populated to Microsoft fields\r",
+									"    pm.test(\"cmc_country field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_country).to.equal(mick1_country);\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_state).to.equal(mick1_state);\r",
+									"        });\r",
+									"    \r",
+									"     pm.test(\"cmc_county field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_county).to.equal(null);\r",
+									"        });\r",
+									"    \r",
+									"\r",
+									"        // system field value checks\r",
+									"     pm.test(\"country system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_country).to.equal(\"United States of America\");\r",
+									"        });\r",
+									"\r",
+									"    \r",
+									"    pm.test(\"stateorprovince system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_state).to.equal(\"Alabama\");\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"county system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick1_county).to.equal(null);\r",
+									"        });\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcustomeraddressid2}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses({{gcustomeraddressid2}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 3rd non primary Address for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Created New Address Contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var engage_addressnumber=jsonData.addressnumber;",
+									"    var engage_country=jsonData.cmc_countryregion;",
+									"    var engage_state=jsonData.cmc_state;",
+									"    var engage_county=jsonData.cmc_county;",
+									"",
+									"    var mick1_country=jsonData.cmc_country;",
+									"    var mick1_state=jsonData.cmc_stateprovince;",
+									"    var mick1_county=jsonData.county;",
+									"",
+									"    var mick2_country=jsonData.country;",
+									"    var mick2_state=jsonData.stateorprovince;",
+									"    var customeraddressid=jsonData.customeraddressid;",
+									"",
+									"    pm.globals.set('gcustomeraddressid4',customeraddressid);",
+									"    pm.globals.set('gengage_addressnumber4',engage_addressnumber);",
+									"    pm.globals.set('gengage_country4',engage_country);",
+									"    pm.globals.set('gengage_state4',engage_state);",
+									"    pm.globals.set('gengage_county4',engage_county);",
+									"    pm.globals.set('gmick1_country4',mick1_country);",
+									"    pm.globals.set('gmick1_state4',mick1_state);",
+									"    pm.globals.set('gmick1_county4',mick1_county);",
+									"    pm.globals.set('gmick2_country4',mick2_country);",
+									"    pm.globals.set('gmick2_state4',mick2_state);",
+									"",
+									"    console.log(\"engage_country: \"+engage_country);",
+									"    console.log(\"engage_state: \"+engage_state);",
+									"    console.log(\"engage_county: \"+engage_county);",
+									"    console.log(\"mick1_country: \"+mick1_country);",
+									"    console.log(\"mick1_state: \"+mick1_state);",
+									"    console.log(\"mick1_county: \"+mick1_county);",
+									"    console.log(\"mick2_country: \"+mick2_country);",
+									"    console.log(\"mick2_state: \"+mick2_state);",
+									"",
+									" });",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"addresstypecode\": 4,\r\n        \"city\": \"Bangalore\",\r\n        \"cmc_countryregion\": \"175490231\",\r\n        \"cmc_state\": \"175490332\",\r\n        \"line1\": \"non primary street 1\",\r\n        \"line2\": \"non primary street 2\",\r\n        \"line3\": \"non primary street 3\",\r\n        \"objecttypecode\": \"contact\",\r\n        \"postalcode\": \"560060\",\r\n        \"parentid_contact@odata.bind\": \"/contacts({{gcontactid}})\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get 3rd primary CusomerAddress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var engage_addressnumber=jsonData.addressnumber;\r",
+									"    var engage_country=jsonData.cmc_countryregion;\r",
+									"    var engage_state=jsonData.cmc_state;\r",
+									"    var engage_county=jsonData.cmc_county;\r",
+									"\r",
+									"    var mick1_country=jsonData.cmc_country;\r",
+									"    var mick1_state=jsonData.cmc_stateprovince;\r",
+									"    var mick1_county=jsonData.county;\r",
+									"\r",
+									"    var customeraddressid= pm.globals.get('gcustomeraddressid4');\r",
+									"    var mick2_country=\"United States of America\";\r",
+									"    var mick2_state=\"Texas\";\r",
+									"\r",
+									"    console.log(\"engage_country: \"+engage_country);\r",
+									"    console.log(\"engage_state: \"+engage_state);\r",
+									"    console.log(\"engage_county: \"+engage_county);\r",
+									"    console.log(\"mick1_country: \"+mick1_country);\r",
+									"    console.log(\"mick1_state: \"+mick1_state);\r",
+									"    console.log(\"mick1_county: \"+mick1_county);\r",
+									"    console.log(\"mick2_country: \"+mick2_country);\r",
+									"    console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"\r",
+									"    if(engage_addressnumber!=1)\r",
+									"    {\r",
+									"        console.log(\"This address is set as non primary which is correct\")\r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        pm.expect.fail(\"This address is set as primary, which is incorrect\");\r",
+									"    }\r",
+									"\r",
+									"    //checking if the values are populated to Microsoft fields\r",
+									"    pm.test(\"cmc_country field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_country).to.equal(mick1_country);\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_state).to.equal(mick1_state);\r",
+									"        });\r",
+									"    \r",
+									"     pm.test(\"cmc_county field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_county).to.equal(null);\r",
+									"        });\r",
+									"    \r",
+									"\r",
+									"        // system field value checks\r",
+									"     pm.test(\"country system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_country).to.equal(\"United States of America\");\r",
+									"        });\r",
+									"\r",
+									"    \r",
+									"    pm.test(\"stateorprovince system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_state).to.equal(\"Texas\");\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"county system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick1_county).to.equal(null);\r",
+									"        });\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcustomeraddressid4}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses({{gcustomeraddressid4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 4th primary Address for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Created New Address Contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var engage_addressnumber=jsonData.addressnumber;",
+									"    var engage_country=jsonData.cmc_countryregion;",
+									"    var engage_state=jsonData.cmc_state;",
+									"    var engage_county=jsonData.cmc_county;",
+									"",
+									"    var mick1_country=jsonData.cmc_country;",
+									"    var mick1_state=jsonData.cmc_stateprovince;",
+									"    var mick1_county=jsonData.county;",
+									"",
+									"    var mick2_country=jsonData.country;",
+									"    var mick2_state=jsonData.stateorprovince;",
+									"    var customeraddressid=jsonData.customeraddressid;",
+									"",
+									"    pm.globals.set('gcustomeraddressid5',customeraddressid);",
+									"    pm.globals.set('gengage_addressnumber5',engage_addressnumber);",
+									"    pm.globals.set('gengage_country5',engage_country);",
+									"    pm.globals.set('gengage_state5',engage_state);",
+									"    pm.globals.set('gengage_county5',engage_county);",
+									"    pm.globals.set('gmick1_country5',mick1_country);",
+									"    pm.globals.set('gmick1_state5',mick1_state);",
+									"    pm.globals.set('gmick1_county5',mick1_county);",
+									"    pm.globals.set('gmick2_country5',mick2_country);",
+									"    pm.globals.set('gmick2_state5',mick2_state);",
+									"",
+									"    console.log(\"engage_country: \"+engage_country);",
+									"    console.log(\"engage_state: \"+engage_state);",
+									"    console.log(\"engage_county: \"+engage_county);",
+									"    console.log(\"mick1_country: \"+mick1_country);",
+									"    console.log(\"mick1_state: \"+mick1_state);",
+									"    console.log(\"mick1_county: \"+mick1_county);",
+									"    console.log(\"mick2_country: \"+mick2_country);",
+									"    console.log(\"mick2_state: \"+mick2_state);",
+									"",
+									" });",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"addresstypecode\": 2,\r\n        \"city\": \"Bangalore\",\r\n        \"cmc_countryregion\": \"175490231\",\r\n        \"cmc_state\": \"175490285\",\r\n        \"line1\": \"street 1\",\r\n        \"line2\": \"street 2\",\r\n        \"line3\": \"street 3\",\r\n        \"mshied_mailtype\": 494280000,\r\n        \"objecttypecode\": \"contact\",\r\n        \"county\": \"APcounty\",\r\n        \"parentid_contact@odata.bind\": \"/contacts({{gcontactid}})\"\r\n       }\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get 4th primary CusomerAddress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var engage_addressnumber=jsonData.addressnumber;\r",
+									"    var engage_country=jsonData.cmc_countryregion;\r",
+									"    var engage_state=jsonData.cmc_state;\r",
+									"    var engage_county=jsonData.cmc_county;\r",
+									"\r",
+									"    var mick1_country=jsonData.cmc_country;\r",
+									"    var mick1_state=jsonData.cmc_stateprovince;\r",
+									"    var mick1_county=jsonData.county;\r",
+									"\r",
+									"    var customeraddressid= pm.globals.get('gcustomeraddressid5');\r",
+									"    var engage_addressnumber=pm.globals.get('gengage_addressnumber5');\r",
+									"    var mick2_country=\"United States of America\";\r",
+									"    var mick2_state=\"Armed Forces Pacific\";\r",
+									"\r",
+									"    console.log(\"engage_country: \"+engage_country);\r",
+									"    console.log(\"engage_state: \"+engage_state);\r",
+									"    console.log(\"engage_county: \"+engage_county);\r",
+									"    console.log(\"mick1_country: \"+mick1_country);\r",
+									"    console.log(\"mick1_state: \"+mick1_state);\r",
+									"    console.log(\"mick1_county: \"+mick1_county);\r",
+									"    console.log(\"mick2_country: \"+mick2_country);\r",
+									"    console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"/*\r",
+									"    pm.test(\"Address number field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_addressnumber).to.equal(1);\r",
+									"            \r",
+									"        });\r",
+									"*/\r",
+									"    //checking if the values are populated to Microsoft fields\r",
+									"    pm.test(\"cmc_country field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_country).to.equal(mick1_country);\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_state).to.equal(mick1_state);\r",
+									"        });\r",
+									"    \r",
+									"     pm.test(\"cmc_county field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_county).to.equal(null);\r",
+									"        });\r",
+									"    \r",
+									"\r",
+									"        // system field value checks\r",
+									"     pm.test(\"country system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_country).to.equal(\"United States of America\");\r",
+									"        });\r",
+									"\r",
+									"    \r",
+									"    pm.test(\"stateorprovince system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_state).to.equal(\"Armed Forces Pacific\");\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"county system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick1_county).to.equal(\"APcounty\");\r",
+									"        });\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcustomeraddressid5}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses({{gcustomeraddressid5}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update 4th primary Address-country and county only",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"updated New Address Contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var engage_addressnumber=jsonData.addressnumber;",
+									"    var engage_country=jsonData.cmc_countryregion;",
+									"    var engage_state=jsonData.cmc_state;",
+									"    var engage_county=jsonData.cmc_county;",
+									"",
+									"    var mick1_country=jsonData.cmc_country;",
+									"    var mick1_state=jsonData.cmc_stateprovince;",
+									"    var mick1_county=jsonData.county;",
+									"",
+									"    var mick2_country=jsonData.country;",
+									"    var mick2_state=jsonData.stateorprovince;",
+									"    var customeraddressid=jsonData.customeraddressid;",
+									"",
+									"    //pm.globals.set('gcustomeraddressid3',customeraddressid);",
+									"    pm.globals.set('gengage_addressnumber6',engage_addressnumber);",
+									"    pm.globals.set('gengage_country6',engage_country);",
+									"    pm.globals.set('gengage_state6',engage_state);",
+									"    pm.globals.set('gengage_county6',engage_county);",
+									"    pm.globals.set('gmick1_country6',mick1_country);",
+									"    pm.globals.set('gmick1_state6',mick1_state);",
+									"    pm.globals.set('gmick1_county6',mick1_county);",
+									"    pm.globals.set('gmick2_country6',mick2_country);",
+									"    pm.globals.set('gmick2_state6',mick2_state);",
+									"",
+									"    console.log(\"engage_country: \"+engage_country);",
+									"    console.log(\"engage_state: \"+engage_state);",
+									"    console.log(\"engage_county: \"+engage_county);",
+									"    console.log(\"mick1_country: \"+mick1_country);",
+									"    console.log(\"mick1_state: \"+mick1_state);",
+									"    console.log(\"mick1_county: \"+mick1_county);",
+									"    console.log(\"mick2_country: \"+mick2_country);",
+									"    console.log(\"mick2_state: \"+mick2_state);",
+									"",
+									" });",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_countryregion\": 175490038,\r\n    \"county\": \"test no state\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcustomeraddressid5}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses({{gcustomeraddressid5}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get 4th primary CusomerAddress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var engage_addressnumber=jsonData.addressnumber;\r",
+									"    var engage_country=jsonData.cmc_countryregion;\r",
+									"    var engage_state=jsonData.cmc_state;\r",
+									"    var engage_county=jsonData.cmc_county;\r",
+									"\r",
+									"    var mick1_country=jsonData.cmc_country;\r",
+									"    var mick1_state=jsonData.cmc_stateprovince;\r",
+									"    var mick1_county=jsonData.county;\r",
+									"\r",
+									"    var customeraddressid= pm.globals.get('gcustomeraddressid5');\r",
+									"    //var engage_addressnumber=pm.globals.get('gengage_addressnumber1');\r",
+									"    var mick2_country=\"Canada\";\r",
+									"    var mick2_state= null;\r",
+									"\r",
+									"    console.log(\"engage_country: \"+engage_country);\r",
+									"    console.log(\"engage_state: \"+engage_state);\r",
+									"    console.log(\"engage_county: \"+engage_county);\r",
+									"    console.log(\"mick1_country: \"+mick1_country);\r",
+									"    console.log(\"mick1_state: \"+mick1_state);\r",
+									"    console.log(\"mick1_county: \"+mick1_county);\r",
+									"    console.log(\"mick2_country: \"+mick2_country);\r",
+									"    console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"\r",
+									"    //checking if the values are populated to Microsoft fields\r",
+									"    pm.test(\"cmc_country field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_country).to.equal(mick1_country);\r",
+									"        });\r",
+									"\r",
+									"    /*\r",
+									"    pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_state).to.equal(null);\r",
+									"        });\r",
+									"    */\r",
+									"     pm.test(\"cmc_county field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(engage_county).to.equal(null);\r",
+									"        });\r",
+									"    \r",
+									"\r",
+									"        // system field value checks\r",
+									"     pm.test(\"country system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_country).to.equal(\"Canada\");\r",
+									"        });\r",
+									"\r",
+									"    \r",
+									"    pm.test(\"stateorprovince system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick2_state).to.equal(null);\r",
+									"        });\r",
+									"\r",
+									"    pm.test(\"county system field value check\", function()\r",
+									"        {\r",
+									"            pm.expect(mick1_county).to.equal(\"test no state\");\r",
+									"        });\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcustomeraddressid5}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"customeraddresses({{gcustomeraddressid5}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Provide address details from contact form",
+			"item": [
+				{
+					"name": "Create Contact-Donor-allOptioset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var firstname = jsonData.firstname;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log('Contact:' +contact_id);",
+									"    console.log('firstname:' +firstname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"    ",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(\"United States of America\");",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(\"OH\");",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(\"Adams\");",
+									"            });",
+									"});",
+									"",
+									"pm.globals.set(\"gcontactid2\",contact_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"ContactAddressCheck{{$randomFirstName}}\",\r\n    \"lastname\": \"ContLast{{$randomLastName}}\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"address1_addresstypecode\": 1,\r\n    \"address1_city\": \"Germantown\",\r\n    \"address1_country\": \"United States of America\",\r\n    \"address1_county\": \"Adams\",\r\n    \"address1_line1\": \"205, East Market Street\",\r\n    \"address1_line2\": \"street2\",\r\n    \"address1_line3\": \"street3\",\r\n    \"address1_postalcode\": \"45327\",\r\n    \"address1_stateorprovince\": \"OH\"\r\n    \r\n}\r\n\r\n  \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Contact_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===3)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"3 default addresses are created under a contact record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=\"United States of America\";\r",
+									"            var mick2_state=\"Ohio\";\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(175492038);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(\"United States of America\");\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(\"Ohio\");\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(\"Adams\");\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===3)\r",
+									"        {\r",
+									"            console.log(\"Address number 3 is present\");\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid2}})?$expand=Contact_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid2}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Contact_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact-Donor-2Optioset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var firstname = jsonData.firstname;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log('Contact:' +contact_id);",
+									"    console.log('firstname:' +firstname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"    ",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(\"India\");",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(\"Karnataka\");",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(\"jayanagar\");",
+									"            });",
+									"});",
+									"",
+									"pm.globals.set(\"gcontactid3\",contact_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"ContactAddressCheck{{$randomFirstName}}\",\r\n    \"lastname\": \"ContLast{{$randomLastName}}\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"address1_addresstypecode\": 2,\r\n    \"address1_city\": \"city1\",\r\n    \"address1_country\": \"India\",\r\n    \"address1_county\": \"jayanagar\",\r\n    \"address1_line1\": \"s1\",\r\n    \"address1_line2\": \"s2\",\r\n    \"address1_line3\": \"s3\",\r\n    \"address1_postalcode\": \"560028\",\r\n    \"address1_stateorprovince\": \"Karnataka\"\r\n    \r\n}\r\n\r\n  \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Contact_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===3)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"3 default addresses are created under a contact record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=\"India\";\r",
+									"            var mick2_state=\"Karnataka\";\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(null);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(\"India\");\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(\"Karnataka\");\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(\"jayanagar\");\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===3)\r",
+									"        {\r",
+									"            console.log(\"Address number 3 is present\");\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid3}})?$expand=Contact_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid3}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Contact_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact-Donor-onlyCountry",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var firstname = jsonData.firstname;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log('Contact:' +contact_id);",
+									"    console.log('firstname:' +firstname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"    ",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(\"United States of America\");",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(null);",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(null);",
+									"            });",
+									"});",
+									"",
+									"pm.globals.set(\"gcontactid4\",contact_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"ContactAddressCheck{{$randomFirstName}}\",\r\n    \"lastname\": \"ContLast{{$randomLastName}}\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"address1_addresstypecode\": 2,\r\n    \"address1_city\": \"city1\",\r\n    \"address1_country\": \"United States of America\",\r\n    \"address1_line1\": \"s1\",\r\n    \"address1_line2\": \"s2\",\r\n    \"address1_line3\": \"s3\",\r\n    \"address1_postalcode\": \"560028\"\r\n    \r\n}\r\n\r\n  \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Contact_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===3)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"3 default addresses are created under a contact record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=\"United States of America\";\r",
+									"            var mick2_state=null;\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(null);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(\"United States of America\");\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(null);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(null);\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===3)\r",
+									"        {\r",
+									"            console.log(\"Address number 3 is present\");\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid4}})?$expand=Contact_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid4}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Contact_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact-Donor-onlyCountryAndState",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var firstname = jsonData.firstname;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log('Contact:' +contact_id);",
+									"    console.log('firstname:' +firstname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"    ",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(\"India\");",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(\"Karnataka\");",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(null);",
+									"            });",
+									"});",
+									"",
+									"pm.globals.set(\"gcontactid5\",contact_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"ContactAddressCheck{{$randomFirstName}}\",\r\n    \"lastname\": \"ContLast{{$randomLastName}}\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"address1_addresstypecode\": 2,\r\n    \"address1_city\": \"city1\",\r\n    \"address1_country\": \"India\",\r\n    \"address1_line1\": \"s1\",\r\n    \"address1_line2\": \"s2\",\r\n    \"address1_line3\": \"s3\",\r\n    \"address1_postalcode\": \"560028\",\r\n    \"address1_stateorprovince\": \"Karnataka\"\r\n    \r\n}\r\n\r\n  \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Contact_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===3)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"3 default addresses are created under a contact record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=\"India\";\r",
+									"            var mick2_state=\"Karnataka\";\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(null);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(\"India\");\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(\"Karnataka\");\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(null);\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===3)\r",
+									"        {\r",
+									"            console.log(\"Address number 3 is present\");\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid5}})?$expand=Contact_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid5}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Contact_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact-Donor-onlyCountryAndCounty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var firstname = jsonData.firstname;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log('Contact:' +contact_id);",
+									"    console.log('firstname:' +firstname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"    ",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(\"India\");",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(null);",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(\"jayanagar\");",
+									"            });",
+									"});",
+									"",
+									"pm.globals.set(\"gcontactid6\",contact_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"ContactAddressCheck{{$randomFirstName}}\",\r\n    \"lastname\": \"ContLast{{$randomLastName}}\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"address1_addresstypecode\": 2,\r\n    \"address1_city\": \"city1\",\r\n    \"address1_country\": \"India\",\r\n    \"address1_county\": \"jayanagar\",\r\n    \"address1_line1\": \"s1\",\r\n    \"address1_line2\": \"s2\",\r\n    \"address1_line3\": \"s3\",\r\n    \"address1_postalcode\": \"560028\"\r\n    \r\n}\r\n\r\n  \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Contact_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===3)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"3 default addresses are created under a contact record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=\"India\";\r",
+									"            var mick2_state=null;\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(null);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(\"India\");\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(null);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(\"jayanagar\");\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===3)\r",
+									"        {\r",
+									"            console.log(\"Address number 3 is present\");\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid6}})?$expand=Contact_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid6}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Contact_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact-Donor-onlyStateAndCounty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var firstname = jsonData.firstname;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log('Contact:' +contact_id);",
+									"    console.log('firstname:' +firstname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"    ",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(null);",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(\"Karnataka\");",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(\"jayanagar\");",
+									"            });",
+									"});",
+									"",
+									"pm.globals.set(\"gcontactid7\",contact_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"ContactAddressCheck{{$randomFirstName}}\",\r\n    \"lastname\": \"ContLast{{$randomLastName}}\",\r\n    \"mshied_contacttype\": \"494280002\",\r\n    \"address1_addresstypecode\": 2,\r\n    \"address1_city\": \"city1\",\r\n    \"address1_county\": \"jayanagar\",\r\n    \"address1_line1\": \"s1\",\r\n    \"address1_line2\": \"s2\",\r\n    \"address1_line3\": \"s3\",\r\n    \"address1_postalcode\": \"560028\",\r\n    \"address1_stateorprovince\": \"Karnataka\"\r\n    \r\n}\r\n\r\n  \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Contact_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===3)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"3 default addresses are created under a contact record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=null;\r",
+									"            var mick2_state=\"Karnataka\";\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(null);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(null);\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(\"Karnataka\");\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(\"jayanagar\");\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===3)\r",
+									"        {\r",
+									"            console.log(\"Address number 3 is present\");\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid7}})?$expand=Contact_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts({{gcontactid7}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Contact_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Provide address details from Account form",
+			"item": [
+				{
+					"name": "Create Account- Campus-allOptionset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id; ",
+									"pm.test(\"Account Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    account_id = jsonData.accountid;",
+									"    accountaname = jsonData.name;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log(\"Account:\" +accountaname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(\"United States of America\");",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(\"Texas\");",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(\"Angelina\");",
+									"            });",
+									"",
+									"});",
+									"",
+									"",
+									"pm.globals.set('gaccountId2',account_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"CampusAddresscheck{{$randomCountry}}\",\r\n    \"mshied_accounttype\":\"494280000\",\r\n    \"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n    \"address1_addresstypecode\": 1,\r\n    \"address1_city\": \"Waverly\",\r\n    \"address1_country\": \"United States of America\",\r\n    \"address1_county\": \"Angelina\",\r\n    \"address1_line1\": \"124, 2nd Street Southeast\",\r\n    \"address1_line2\": \"Street2\",\r\n    \"address1_line3\": \"street3\",\r\n    \"address1_postalcode\": \"50677\",\r\n    \"address1_stateorprovince\": \"TX\"\r\n} \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Account_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===2)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"2 default addresses are created under an Account record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=\"United States of America\";\r",
+									"            var mick2_state=\"Texas\";\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(175492599);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(\"United States of America\");\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(\"Texas\");\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(\"Angelina\");\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"       \r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts({{gaccountId2}})?$expand=Account_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts({{gaccountId2}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Account_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account- Campus-2Optionset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id; ",
+									"pm.test(\"Account Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    account_id = jsonData.accountid;",
+									"    accountaname = jsonData.name;",
+									"    var state=jsonData.address1_stateorprovince;",
+									"    var country=jsonData.address1_country;",
+									"    var county=jsonData.address1_county;",
+									"    console.log(\"Account:\" +accountaname);",
+									"    console.log(\"country, state and county values are: \"+country+\" ,\"+state+\" ,\"+county);",
+									"",
+									"    pm.test(\"Country validation in contact form\", function()",
+									"        {",
+									"            pm.expect(country).to.equal(\"India\");",
+									"        });",
+									"",
+									"    pm.test(\"State validation in contact form\", function()",
+									"            {",
+									"                pm.expect(state).to.equal(\"Karnataka\");",
+									"            });",
+									"",
+									"    pm.test(\"County validation in contact form\", function()",
+									"            {",
+									"                pm.expect(county).to.equal(\"jayanagar\");",
+									"            });",
+									"",
+									"});",
+									"",
+									"",
+									"pm.globals.set('gaccountId3',account_id);",
+									"",
+									"setTimeout(function(){}, 50000);",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"CampusAddresscheck{{$randomCountry}}\",\r\n    \"mshied_accounttype\":\"494280000\",\r\n    \"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n    \"address1_addresstypecode\": 2,\r\n    \"address1_city\": \"city1\",\r\n    \"address1_country\": \"India\",\r\n    \"address1_county\": \"jayanagar\",\r\n    \"address1_line1\": \"s1\",\r\n    \"address1_line2\": \"s2\",\r\n    \"address1_line3\": \"s3\",\r\n    \"address1_postalcode\": \"560028\",\r\n    \"address1_stateorprovince\": \"Karnataka\"\r\n} \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Address in account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching the Customer address records\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var result=jsonData.Account_CustomerAddress;\r",
+									"    var custAddressLength=result.length;\r",
+									"    console.log('Length: ' +custAddressLength);\r",
+									"    var errorcount=0;\r",
+									"    var errors=[];\r",
+									"    var success=[];\r",
+									"    var successcount=0;\r",
+									"    \r",
+									"    if(custAddressLength===2)\r",
+									"    {\r",
+									" \r",
+									"        console.log(\"2 default addresses are created under an Account record successfully\")\r",
+									"        for(var i=0;i<custAddressLength;i++)\r",
+									"        {\r",
+									"        if(result[i].addressnumber===1)\r",
+									"        {\r",
+									"            console.log(\"Address number 1 is present\");\r",
+									"\r",
+									"            var engage_country=result[i].cmc_countryregion;\r",
+									"            var engage_state=result[i].cmc_state;\r",
+									"            var engage_county=result[i].cmc_county;\r",
+									"\r",
+									"            var mick1_country=result[i].cmc_country;\r",
+									"            var mick1_state=result[i].cmc_stateprovince;\r",
+									"            var mick1_county=result[i].county;\r",
+									"          \r",
+									"            var mick2_country=\"India\";\r",
+									"            var mick2_state=\"Karnataka\";\r",
+									"\r",
+									"            console.log(\"engage_country: \"+engage_country);\r",
+									"            console.log(\"engage_state: \"+engage_state);\r",
+									"            console.log(\"engage_county: \"+engage_county);\r",
+									"            console.log(\"mick1_country: \"+mick1_country);\r",
+									"            console.log(\"mick1_state: \"+mick1_state);\r",
+									"            console.log(\"mick1_county: \"+mick1_county);\r",
+									"            console.log(\"mick2_country: \"+mick2_country);\r",
+									"            console.log(\"mick2_state: \"+mick2_state);\r",
+									"\r",
+									"            //checking if the values are populated to Microsoft fields\r",
+									"            pm.test(\"cmc_country field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_country).to.equal(mick1_country);\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"cmc_stateprovince field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_state).to.equal(mick1_state);\r",
+									"                });\r",
+									"            \r",
+									"            pm.test(\"cmc_county field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(engage_county).to.equal(null);\r",
+									"                });\r",
+									"            \r",
+									"\r",
+									"                // system field value checks\r",
+									"            pm.test(\"country system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_country).to.equal(\"India\");\r",
+									"                });\r",
+									"\r",
+									"            \r",
+									"            pm.test(\"stateorprovince system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick2_state).to.equal(\"Karnataka\");\r",
+									"                });\r",
+									"\r",
+									"            pm.test(\"county system field value check\", function()\r",
+									"                {\r",
+									"                    pm.expect(mick1_county).to.equal(\"jayanagar\");\r",
+									"                });\r",
+									"\r",
+									"\r",
+									"        }\r",
+									"        else if(result[i].addressnumber===2)\r",
+									"        {\r",
+									"            console.log(\"Address number 2 is present\");\r",
+									"        }\r",
+									"       \r",
+									"    }\r",
+									"        \r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Default Customer address records doesn't exist\");\r",
+									"        pm.expect.fail('Default Customer address records does not exist');\r",
+									"    }\r",
+									"  \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts({{gaccountId3}})?$expand=Account_CustomerAddress",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts({{gaccountId3}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Account_CustomerAddress"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "accessToken",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlNTUWRoSTFjS3ZoUUVEU0p4RTJnR1lzNDBRMCIsImtpZCI6IlNTUWRoSTFjS3ZoUUVEU0p4RTJnR1lzNDBRMCJ9.eyJhdWQiOiJodHRwczovL2F1cm9yYWNybTlxYS5jcm0uZHluYW1pY3MuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNzAwODQxMGYtMmUxOS00MzFmLWIwZDctN2JjYzJmY2FjZTNmLyIsImlhdCI6MTUyMDQyMzc2NiwibmJmIjoxNTIwNDIzNzY2LCJleHAiOjE1MjA0Mjc2NjYsImFjciI6IjEiLCJhaW8iOiJZMk5nWUZnY1BKdXhzR2NkOTh1SEQvKzFSL0pucEFhVWlxMlJybW5XVy92ZXhlZk1zdE1BIiwiYW1yIjpbInB3ZCJdLCJhcHBpZCI6ImQzYWNiYzllLTUyZmQtNDA3OC1iMWZmLTA3MmU3YWJhZWE2NCIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiVmVtdWxhIiwiZ2l2ZW5fbmFtZSI6IkFiaGluZXNoIiwiaXBhZGRyIjoiMTE1LjExMC44Mi4xNDIiLCJuYW1lIjoiQWJoaW5lc2ggVmVtdWxhIiwib2lkIjoiZGNlNzg5YTAtMWZiZC00NzQ2LTlmZDItMjkzY2NiMDdkMzZlIiwicHVpZCI6IjEwMDMwMDAwQTdBRjdEQzciLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzdWIiOiJBdFg0TUxXVktmRlRzWnFlQ0ZXSjdUb2oybDBwOTdVMF9IQ3RVYXJwa3pFIiwidGlkIjoiNzAwODQxMGYtMmUxOS00MzFmLWIwZDctN2JjYzJmY2FjZTNmIiwidW5pcXVlX25hbWUiOiJhYmhpbmVzaHZAYXVyb3JhY3JtOVFBLm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6ImFiaGluZXNodkBhdXJvcmFjcm05UUEub25taWNyb3NvZnQuY29tIiwidXRpIjoiMW5fYXVCV3p1VXlzRlM2U0t6UUxBQSIsInZlciI6IjEuMCIsIndpZHMiOlsiNjJlOTAzOTQtNjlmNS00MjM3LTkxOTAtMDEyMTc3MTQ1ZTEwIl19.T-CTmb8YG3yb7QVajCStjVJJ4c0XZRjynaagsC8E_Fopj5LM0MgL0RwGcP_WUNO2ny97vbdgJEzyi6yGqOv2go09sHpkYu20fVM8NgpYi78t-fdkf-_HBcDlfuDSTUIeaZd2E3DW3wswbYf81HRppz6yPvH6c9X_YeaF25xCFGuhBUm6F8cjZgh-myJB2LHt86pcVihJOJNxN-mLEPLAlunX0qrOmv7_7x50J6kkqHXig6DDIki63AoZFVufywCbx1YrQVOIkSodDOk77Cb_F_KWO4x0ZBgXA0QiIF9QWWceNbBxCI22PWuc73GenSQIeEQ3JjCWipPIICFzyHqC4A",
+				"type": "string"
+			},
+			{
+				"key": "tokenType",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

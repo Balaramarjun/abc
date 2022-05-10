@@ -1,0 +1,1741 @@
+{
+	"info": {
+		"_postman_id": "75f9a65e-1f4b-49b2-af8f-35c8125fc03c",
+		"name": "Agency",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"setTimeout(function(){}, 35000);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var redirectid;",
+							"pm.environment.get(\"Eredirectid\", \"redirectid\");",
+							"",
+							"var clientid;",
+							"pm.environment.get(\"Eclient_id\", \"clientid\");",
+							"",
+							"var clientsecret;",
+							"pm.environment.get(\"Eclient_secret\", \"clientsecret\");",
+							"",
+							"var resourceurl;",
+							"pm.environment.get(\"Eresource\", \"resourceurl\");",
+							"",
+							"",
+							"// pm.globals.unset(\"gaccountId\");",
+							"// pm.variable.unset(\"name\");",
+							"// pm.variable.unset(\"cmc_zip\");",
+							"// pm.variable.unset(\"cmc_city\");",
+							"// pm.variable.unset(\"cmc_accounttype\");",
+							"// pm.variable.unset(\"cmc_addresstypeid\");",
+							"// pm.variable.unset(\"lifecyclename\");",
+							"// pm.variable.unset(\"accountid\");",
+							"// pm.variable.unset(\"contactid\");",
+							"// pm.variable.unset(\"lifecycleid\");",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Esystemadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Esystemadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LeadSources",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var Leadsourceid,Leadsourcename,campusgroupid,Leadsourcename,campuslistid,",
+							"campusid,campusname;",
+							"",
+							"pm.test(\"Created contact in Student\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    ",
+							"    Leadsourceid = jsonData.value[0].Id;",
+							"    console.log('LeadSourceID:' +Leadsourceid);",
+							"    ",
+							"    Leadsourcename = jsonData.value[0].Name;",
+							"    console.log('LeadSourceName:' +Leadsourcename);",
+							"    ",
+							"    campusgroupid = jsonData.value[0].CampusGroup.Id;",
+							"    console.log('campusgroupid:' +campusgroupid);",
+							"    ",
+							"    campuslistid = jsonData.value[0].CampusGroup.CampusList[0].Id;",
+							"    console.log('campuslistid:' +campuslistid);",
+							"    ",
+							"    campusid = jsonData.value[0].CampusGroup.CampusList[0].Campus.Id;",
+							"    console.log('campusid:' +campusid);",
+							"    ",
+							"    campusname = jsonData.value[0].CampusGroup.CampusList[0].Campus.Name;",
+							"    console.log('campusname:' +campusname);",
+							"    ",
+							"});",
+							"",
+							"pm.globals.set('gLeadsourceid', Leadsourceid);",
+							"pm.globals.set('gLeadsourcename', Leadsourcename);",
+							"pm.globals.set('gcampusid', campusid);",
+							"pm.globals.set('gcampusgroupId', campusgroupid);",
+							"pm.globals.set('gcampusgrouplistId', campuslistid);",
+							"pm.globals.set('gcampusname', campusname);",
+							"",
+							"var gLeadsourceid1=pm.globals.get(\"gLeadsourceid\");",
+							"console.log('GolbalLeadsourceid1:' +gLeadsourceid1);",
+							"",
+							"var gLeadsourcename1=pm.globals.get(\"gLeadsourcename\");",
+							"console.log('GolbalLeadsourcename1:' +gLeadsourcename1);",
+							"",
+							"var gcampusid1=pm.globals.get(\"gcampusid\");",
+							"console.log('Golbalgcampusid1:' +gcampusid1);",
+							"",
+							"var gcampusgroupId1=pm.globals.get(\"gcampusgroupId\");",
+							"console.log('GlobalcampusgroupId1:' +gcampusgroupId1);",
+							"",
+							"var gcampusgrouplistId1=pm.globals.get(\"gcampusgrouplistId\");",
+							"console.log('GlobalgcampusgrouplistId1:' +gcampusgrouplistId1);",
+							"",
+							"var gcampusname1=pm.globals.get(\"gcampusname\");",
+							"console.log('Globalcampusname1:' +gcampusname1);",
+							"",
+							"// console.log(pm.globals.get(\"gLeadsourceid\"));",
+							"// console.log(pm.globals.get(\"gLeadsourcename\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n   \"payload\":{ \r\n      \"id\":-1,\r\n      \"acgEligReasonCode\":null,\r\n      \"address\":\"\",\r\n      \"agencyId\":15,\r\n      \"alienNumber\":\"\",\r\n      \"AmRaceID\":[ \r\n\r\n      ],\r\n      \"arAccountStatus\":\"X\",\r\n      \"arBalance\":0,\r\n      \"arNextTransactionNumber\":0,\r\n      \"assignedAdmissionsRepId\":338,\r\n      \"athleticIdentifier\":null,\r\n      \"bestTimeToContact\":\"Anytime\",\r\n      \"campusId\":{{gcampusid}},\r\n      \"citizen\":0,\r\n      \"citizenId\":53,\r\n      \"city\":\"MILWAUKEE\",\r\n      \"comments\":\"\",\r\n      \"countryId\":\"7\",\r\n      \"countyId\":0,\r\n      \"createdDateTime\":\"{{current_timestamp}}\",\r\n      \"cumGpa\":null,\r\n      \"cumulativeGpaPoints\":null,\r\n      \"currentLda\":null,\r\n      \"dataBlockIndicator\":false,\r\n      \"dateOfBirth\":\"1985/04/01 00:00:00\",\r\n      \"dbiModifiedDate\":null,\r\n      \"defaultAddressCode\":null,\r\n      \"defaultMasterStudentAddressId\":null,\r\n      \"defaultStudentAddressId\":null,\r\n      \"disabled\":\"N\",\r\n      \"dlNum\":\"\",\r\n      \"dlState\":\"\",\r\n      \"driverLicenseNumber\":\"\",\r\n      \"driverLicenseState\":\"\",\r\n      \"email\":\"email{{$randomInt}}abc@gmail.com\",\r\n      \"emailAddress\":\"abc{{$randomInt}}@gmail12.com\",\r\n      \"employerId\":0,\r\n      \"employmentStatusId\":0,\r\n      \"enrollmentNumber\":null,\r\n      \"extraCurricularActivityId\":0,\r\n      \"ethnicity\":[ \r\n\r\n      ],\r\n      \"extraCurricular\":[ \r\n\r\n      ],\r\n      \"faGradPlusCounselingDate\":null,\r\n      \"faRigorousHighSchoolProgramCodeId\":null,\r\n      \"firstName\":\"CNSCNE1st{{$randomInt}}\",\r\n      \"genderId\":6,\r\n      \"gpaCredits\":null,\r\n      \"gradeLevelID\":0,\r\n      \"gradDate\":null,\r\n      \"hispanicLatino\":null,\r\n      \"isActive\":true,\r\n      \"isBadAddress\":false,\r\n      \"isBadPhone\":false,\r\n      \"isDdVeteran\":false,\r\n      \"isEftDefaultForStipends\":false,\r\n      \"isExcludedCrmIntegration\":false,\r\n      \"isInDistrict\":false,\r\n      \"isSscrError11Received\":false,\r\n      \"lastActivityDate\":null,\r\n      \"lastInterestDate\":null,\r\n      \"lastModifiedDateTime\":\"{{current_timestamp}}\",\r\n      \"lastModifiedUserId\":0,\r\n      \"lastName\":\"secondnametest{{$randomInt}}\",\r\n      \"lastNameFirstFour\":\"\",\r\n      \"lastStatementBeginDate\":null,\r\n      \"lastStatementCloseDate\":null,\r\n      \"lastStatementDate\":null,\r\n      \"leadDate\":\"{{current_timestamp}}\",\r\n      \"leadSourceId\":837,\r\n      \"leadSourcesList\":[ \r\n         837\r\n      ],\r\n      \"leadTypeId\":0,\r\n      \"maidenName\":\"maid{{$randomInt}}\",\r\n      \"maritalStatusId\":2,\r\n      \"mi\":\" \",\r\n      \"midDate\":null,\r\n      \"middleName\":\"mid{{$randomInt}}\",\r\n      \"mobilePhoneNumber\":\"\",\r\n      \"nationalityId\":22,\r\n      \"nickName\":\"\",\r\n      \"niStudent\":0,\r\n      \"note\":\"321321\",\r\n      \"originalAssignedAdmissionsRepId\":338,\r\n      \"originalExpectedStartDate\":null,\r\n      \"originalStartDate\":null,\r\n      \"otherEmailAddress\":\"abc{{$randomInt}}@gmail1.com\",\r\n      \"otherPhoneNumber\":null,\r\n      \"personId\":null,\r\n      \"programsList\":[ \r\n         507\r\n      ],\r\n      \"phoneNumber\":\"(123)654-{{$randomInt}}4\",\r\n      \"pin\":3213,\r\n      \"postalCode\":\"53210\",\r\n      \"postalCodeFirstThree\":\"   \",\r\n      \"previousEducationGpa\":null,\r\n      \"previousEducationId\":{{GPreviousEducation}},\r\n      \"ProgramDescrip\":0,\r\n      \"programGroupId\":159,\r\n      \"programId\":{{gprogramid}},\r\n      \"programVersionID\":{{gprogramversionid}},\r\n      \"rawFirstName\":\"\",\r\n      \"rawLastName\":\"\",\r\n      \"rawPhoneNumber\":\"\",\r\n      \"rowVersion\":\"AAAAAB+ZVEI=\",\r\n      \"schoolStatusId\":1,\r\n      \"sexId\":0,\r\n      \"shiftId\":{{gshiftid}},\r\n      \"smsServiceProviderId\":null,\r\n      \"sourceSystem\":\"C\",\r\n      \"ssn\":\"\",\r\n      \"SSN\":\"{{$randomInt}}-21-{{$randomInt}}2\",\r\n      \"startDate\":null,\r\n      \"state\":\"AL\",\r\n      \"statementComment\":\" \",\r\n      \"statusId\":0,\r\n      \"streetAddress\":\"906 W. Fairbanks Ave\",\r\n      \"studentIdentifier\":null,\r\n      \"studentNumber\":\"{{$randomInt}}a123\",\r\n      \"subscribeToSms\":false,\r\n      \"suffix\":null,\r\n      \"suffixId\":68,\r\n      \"telephone\":\"{{$randomInt}}{{$randomInt}}1234\",\r\n      \"titleId\":1,\r\n      \"veteran\":\"X\",\r\n      \"workPhone\":\"{{$randomInt}}{{$randomInt}}4321\",\r\n      \"workExt\":\"\",\r\n      \"workPhoneNumber\":\"(789)654-1230\",\r\n      \"workPhoneNumberExtension\":\"\",\r\n      \"zip\":\"\",\r\n      \"originalState\":\"\",\r\n      \"entityState\":0,\r\n      \"oldAssignedAdmissionsRepId\":0,\r\n      \"oldSchoolStatusId\":1,\r\n      \"deleteInquiryDetails\":false,\r\n      \"studentAddressAssociation\":2,\r\n      \"age\":34,\r\n      \"niStudentEnabled\":false,\r\n      \"vendors\":[ \r\n         { \r\n            \"SyOrganizationId\":-1,\r\n            \"LeadSourceId\":837\r\n         }\r\n      ],\r\n      \"leadSourceLeadVendorColl\":[ \r\n         \r\n\r\n         { \r\n            \"SyOrganizationId\":null,\r\n            \"OrganizationName\":null,\r\n            \"ParentSyOrganizationId\":null,\r\n            \"NodeSyOrganizationId\":null,\r\n            \"LeadSourceName\":\"testing\",\r\n            \"LeadSourceId\":836,\r\n            \"LeadSourceLeadVendorId\":null,\r\n            \"NodeProspectInquiryLeadSourceId\":null,\r\n            \"IsDefault\":null,\r\n            \"Code\":null,\r\n            \"OverrideDefaultVendor\":false,\r\n            \"checked\":false\r\n         }\r\n      ],\r\n      \"leadTime\":\"9:58 AM\",\r\n      \"studentInquiryRequired\":false,\r\n      \"StudentInquiryRequired\":false,\r\n      \"ExtraCurricularsList\":[ \r\n\r\n      ],\r\n      \"ProgramsList\":[ \r\n         507\r\n      ],\r\n      \"EthnicitiesList\":[ \r\n\r\n      ],\r\n      \"LeadSourcesList\":[ \r\n         837\r\n      ],\r\n      \"Vendors\":[ \r\n         { \r\n            \"SyOrganizationId\":-1,\r\n            \"LeadSourceId\":837\r\n         }\r\n      ],\r\n      \"AddressTypeId\":0,\r\n      \"DeleteVeteranDetails\":false\r\n   }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{student}}ds/campusnexus/LeadSources?$expand=CampusGroup($select=Id;$expand=CampusList($select=Id;$expand=Campus($select=Id,Name))),LeadSourceCategory&$format=json&$top=20&$orderby=Name&$count=true",
+					"host": [
+						"{{student}}ds"
+					],
+					"path": [
+						"campusnexus",
+						"LeadSources"
+					],
+					"query": [
+						{
+							"key": "$expand",
+							"value": "CampusGroup($select=Id;$expand=CampusList($select=Id;$expand=Campus($select=Id,Name))),LeadSourceCategory"
+						},
+						{
+							"key": "$format",
+							"value": "json"
+						},
+						{
+							"key": "$top",
+							"value": "20"
+						},
+						{
+							"key": "$orderby",
+							"value": "Name"
+						},
+						{
+							"key": "$count",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AccountOption Set-address1_stateorprovince",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var state1, state2,state3,state4,statename;",
+							"pm.test(\"Fetching the Integration Mapping record of States\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var  jsonData =JSON.parse(responseBody);",
+							"    //const jsonData2 =JSON.stringify(jsonData);",
+							"    ",
+							"console.log(jsonData);",
+							"",
+							"     stateA1=jsonData.value[0].cmc_externaloptionvalue;",
+							"     stateA2= jsonData.value[1].cmc_externaloptionvalue;",
+							"     stateA3= jsonData.value[2].cmc_externaloptionvalue;",
+							"     stateA4= jsonData.value[3].cmc_externaloptionvalue;",
+							"     ",
+							"     statenameA=jsonData.value[0].cmc_internaloptiondisplayname;",
+							"     ",
+							"     console.log(\"States:\",stateA1,stateA2,stateA3,stateA4);",
+							"     ",
+							"     console.log(\"Statename:\"+statenameA);",
+							"    ",
+							"   ",
+							"});",
+							"",
+							"pm.globals.set('gstatenameA',statename);",
+							" pm.globals.set('gstateA1',stateA1);",
+							" pm.globals.set('gstateA2',stateA2);",
+							" pm.globals.set('gstateA3',stateA3);",
+							" pm.globals.set('gstateA4',stateA4);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_integrationmappings?$filter=cmc_optionsetname eq 'StateCodeMap' and cmc_externalsourcesystem eq 175490000 and cmc_mappingtype eq 175490000 and not(cmc_externaloptiondisplayname+eq+null) and not(cmc_internaloptionvalue+eq+null) and not(cmc_internaloptiondisplayname+eq+null) and not(cmc_externaloptionvalue+eq+null)",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"cmc_integrationmappings"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "cmc_optionsetname eq 'StateCodeMap' and cmc_externalsourcesystem eq 175490000 and cmc_mappingtype eq 175490000 and not(cmc_externaloptiondisplayname+eq+null) and not(cmc_internaloptionvalue+eq+null) and not(cmc_internaloptiondisplayname+eq+null) and not(cmc_externaloptionvalue+eq+null)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AccountCountry-Option Set-cmc_country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var country1, country2, country3, country4, countryname;",
+							"",
+							"pm.test(\"Fetching the Integration Mapping record of country\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    countryA1 = jsonData.value[0].cmc_externaloptionvalue;",
+							"    countryA2 = jsonData.value[1].cmc_externaloptionvalue;",
+							"    countryA3 = jsonData.value[2].cmc_externaloptionvalue;",
+							"    countryA4 = jsonData.value[3].cmc_externaloptionvalue;",
+							"",
+							"    countryname = jsonData.value[0].cmc_internaloptionvalue;",
+							"    console.log(\"AccountcountriesName:\" + countryname);",
+							"",
+							"",
+							"    console.log(\"countries:\", +countryA1, +countryA2, +countryA3, +countryA4);",
+							"",
+							"",
+							"});",
+							"",
+							"",
+							"pm.globals.set('gcountryA1', countryA1);",
+							"pm.globals.set('gcountryA2', countryA2);",
+							"pm.globals.set('gcountryA3', countryA3);",
+							"pm.globals.set('gcountryA4', countryA4);",
+							"pm.globals.set('gcountrynameA', countryname);",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_integrationmappings?$filter=cmc_optionsetname eq 'CountryIdMap' and cmc_externalsourcesystem eq 175490000 and cmc_mappingtype eq 175490000 and not(cmc_externaloptiondisplayname+eq+null) and not(cmc_internaloptionvalue+eq+null) and not(cmc_internaloptiondisplayname+eq+null) and not(cmc_externaloptionvalue+eq+null)",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"cmc_integrationmappings"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "cmc_optionsetname eq 'CountryIdMap' and cmc_externalsourcesystem eq 175490000 and cmc_mappingtype eq 175490000 and not(cmc_externaloptiondisplayname+eq+null) and not(cmc_internaloptionvalue+eq+null) and not(cmc_internaloptiondisplayname+eq+null) and not(cmc_externaloptionvalue+eq+null)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Agency",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+							"\r",
+							"\r",
+							"pm.globals.unset(\"gagencyid\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var uniqueid;",
+							"pm.test(\"Created Agency/Account in Student\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    uniqueid = jsonData.payload.data.agencyEntity.id;",
+							"    console.log('ID:' +uniqueid);",
+							"",
+							"});",
+							"pm.globals.set('gagencyid', uniqueid);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n   \"payload\":{  \r\n      \"agencyEntity\":{  \r\n         \"id\":-1,\r\n         \"agencyTypeId\":2,\r\n         \"campusGroupId\":{{gcampusgroupId}},\r\n         \"code\":\"A{{$randomInt}}{{$randomInt}}\",\r\n         \"createdDateTime\":\"{{current_timestamp}}\",\r\n         \"fundSourceId\":\"\",\r\n         \"isActive\":true,\r\n         \"isExcludedCrmIntegration\":false,\r\n         \"isSystemCode\":false,\r\n         \"lastModifiedDateTime\":\"{{current_timestamp}}\",\r\n         \"lastModifiedUserId\":2,\r\n         \"mainAgencyBranchId\":null,\r\n         \"name\":\"Agency{{$randomInt}}\",\r\n         \"rowVersion\":null,\r\n         \"originalState\":\"H4sIAAAAAAAEALWTzWrDMAyAX6X4vjhdbyENhA5GWEsP6cauxlFSQWwHS1nmPf1WD8Yu2WHgi4SQ9OkPlbX3Kpz7Jwgvapzh3BN7tIOy4RIm2Lyb0dJeXJmnQkrSVzCKMoPaO3I9Z9oZeZ/nO7nNZQse1YgfitFZGcEkvgkF/jCWZcmWXeb8cEvcytfTsY3YO7TEymoQVbnSTnRUTVfKmy5jyAYLi+NesJ9ByCq6VnPXoQdlppkevZunNHwPiqF7+BIXNJCgQj2A1dFOMkBDtWZ8S9F5Q20gBnNwXQr8URGfXIc9Jt3/7zLPBP6/V5B/v2T1Cd33z6OzAwAA\",\r\n         \"secureState\":\"H4sIAAAAAAAEAD3MQQrCMBAAwK9I7mZTeysqeFbpoSJel5C0C01Ssisxvl6s4ANm9qecsfb+7Ood56frPUumOGKst7q4zSvMkQ9qElk6ALaTC8g6kM2JkxdtU4CdMS00BgaXCWd6o1CKsMasfkNH/6OUokurUx6/sIHH9TKs7ZYiC0brFBw/juQnSpcAAAA=\",\r\n         \"extendedProperties\":[  \r\n\r\n         ],\r\n         \"entityState\":0\r\n      },\r\n      \"agencyEntranceTestList\":[  \r\n\r\n      ],\r\n       \"agencyDocumentTypeList\":[  \r\n         {  \r\n            \"id\":-1,\r\n            \"documentTypeId\":282,\r\n            \"entityState\":0\r\n         }\r\n      ],\r\n      \"validationMessages\":[  \r\n\r\n      ]\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{student}}api/commands/Common/Agency/SaveNew",
+					"host": [
+						"{{student}}api"
+					],
+					"path": [
+						"commands",
+						"Common",
+						"Agency",
+						"SaveNew"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create AgencyBranch",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+							"\r",
+							"\r",
+							"pm.globals.unset(\"gagencybranchid\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var uniqueid1;",
+							"pm.test(\"Created AgencyBranch in Student\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    uniqueid1 = jsonData.payload.data.id;",
+							"    console.log('ID:' +uniqueid1);",
+							"",
+							"});",
+							"pm.globals.set('gagencybranchid', uniqueid1);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n   \"payload\":{  \r\n      \"isAllowedtoDeleteAgencyWithCreditCard\":false,\r\n      \"id\":-1,\r\n      \"agencyId\":{{gagencyid}},\r\n      \"billingMethodId\":null,\r\n      \"campusGroupId\":{{gcampusgroupId}},\r\n      \"city\":\"Winter Park\",\r\n      \"contactFirstName\":\"Contact1st{{$randomInt}}\",\r\n      \"contactLastName\":\"Contact1st{{$randomInt}}\",\r\n      \"countryId\":\"{{gcountryA1}}\",\r\n      \"createdDateTime\":\"{{current_timestamp}}\",\r\n      \"division\":null,\r\n      \"emailAddress\":\"Bala{{$randomInt}}@gmail.com\",\r\n      \"industryId\":null,\r\n      \"invoiceNumberMask\":null,\r\n      \"invoiceType\":\"I\",\r\n      \"isDisbursementBatchCreated\":false,\r\n      \"isExcludedCrmIntegration\":false,\r\n      \"lastInvoiceNumber\":null,\r\n      \"lastModifiedDateTime\":\"{{current_timestamp}}\",\r\n      \"lastModifiedUserId\":2,\r\n      \"lastStatementCloseDate\":null,\r\n      \"lastStatementDate\":null,\r\n      \"name\":\"branch{{$randomInt}}\",\r\n      \"organizationId\":null,\r\n      \"phoneNumber\":\"({{$randomInt}})603-8{{$randomInt}}7\",\r\n      \"postalCode\":\"32786\",\r\n      \"rowVersion\":null,\r\n      \"state\":\"{{gstateA1}}\",\r\n      \"statementAmount\":30,\r\n      \"statementComment\":\"api test{{$randomInt}}t\",\r\n      \"streetAddress\":\"906 W. Fairbanks Ave\",\r\n      \"originalState\":\"H4sIAAAAAAAEALWSMU/DMBCF/0rlnThttyiNBC1DRasOLYjV2JfkpNiu7i5Kw6+HGsRWhJCy3tP7vjdceU9kxkP9BOOL6Xo41CyEoTFhPI1nmF18F3ilWpFzoTXbFrzhzKOlyLGWzEavF3m+1PNcH4HQdPhuBGPQCczqi1DgD2MYhmxYZpGaa3GuX/e7Y8LeYWAxwYKqyhtzUlDtDMs+OqwR3DMDbV2pr/cyVWZYBOxWSqgHpasU3WT9TbIxAif0MIFmku1rgs/Fk87mDfJbTwwegjwYse23dBLZ48V2vQO3Jr8NAg2lF/ufSv/+8dUHMBbmuhIDAAA=\",\r\n      \"secureState\":\"H4sIAAAAAAAEAD3MQQrCMBAAwK9I7mZTeysqeFbpoSJel5C0C01Ssisxvl6s4ANm9qecsfb+7Ood56frPUumOGKst7q4zSvMkQ9qElk6ALaTC8g6kM2JkxdtU4CdMS00BgaXCWd6o1CKsMasfkNH/6OUokurUx6/sIHH9TKs7ZYiC0brFBw/juQnSpcAAAA=\",\r\n      \"extendedProperties\":[  \r\n\r\n      ],\r\n      \"entityState\":0\r\n   }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{student}}api/commands/Common/AgencyBranch/SaveNew",
+					"host": [
+						"{{student}}api"
+					],
+					"path": [
+						"commands",
+						"Common",
+						"AgencyBranch",
+						"SaveNew"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"setTimeout(function(){}, 35000);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var redirectid;",
+							"pm.environment.get(\"Eredirectid\", \"redirectid\");",
+							"",
+							"var clientid;",
+							"pm.environment.get(\"Eclient_id\", \"clientid\");",
+							"",
+							"var clientsecret;",
+							"pm.environment.get(\"Eclient_secret\", \"clientsecret\");",
+							"",
+							"var resourceurl;",
+							"pm.environment.get(\"Eresource\", \"resourceurl\");",
+							"",
+							"",
+							"// pm.globals.unset(\"gaccountId\");",
+							"// pm.variable.unset(\"name\");",
+							"// pm.variable.unset(\"cmc_zip\");",
+							"// pm.variable.unset(\"cmc_city\");",
+							"// pm.variable.unset(\"cmc_accounttype\");",
+							"// pm.variable.unset(\"cmc_addresstypeid\");",
+							"// pm.variable.unset(\"lifecyclename\");",
+							"// pm.variable.unset(\"accountid\");",
+							"// pm.variable.unset(\"contactid\");",
+							"// pm.variable.unset(\"lifecycleid\");",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Esystemadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Esystemadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Account from Engage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Getting Account from Engage\" , function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    ",
+							"    var aname= jsonData.value[0].name;",
+							"    console.log('Name:' +aname);",
+							"    ",
+							"    var acode = jsonData.value[0].cmc_accountcode;",
+							"    console.log('Code:' +acode);",
+							"    ",
+							"    var createdon = jsonData.value[0].createdon;",
+							"    console.log('Createdon:' +createdon);",
+							"    ",
+							"    var createdby = jsonData.value[0]._createdby_value;",
+							"    console.log('Createdby:' +createdby);",
+							"    ",
+							"    ",
+							"    var modifiedon = jsonData.value[0].modifiedon;",
+							"    console.log('Modifiedon:' +modifiedon);",
+							"    ",
+							"    var modifiedby = jsonData.value[0]._modifiedby_value;",
+							"    console.log('Modifiedby:' +modifiedby);",
+							"    ",
+							"    var externalidentifier = jsonData.value[0].mshied_externalidentifier;",
+							"    console.log('ExternalidentifierID:' +externalidentifier);",
+							"    ",
+							"    ",
+							"    ",
+							"    var aAddress1_City = jsonData.value[0].address1_city;",
+							"    console.log('Address1_City:' +aAddress1_City);",
+							"    ",
+							"    var aAddress1_Country = jsonData.value[0].address1_country;",
+							"    console.log('Address1_Country:' +aAddress1_Country);",
+							"    ",
+							"    var Address1_County = jsonData.value[0].address1_county;",
+							"    console.log('Address1_County:' +Address1_County);",
+							"    ",
+							"    var aAddress1_Line1 = jsonData.value[0].address1_line1;",
+							"    console.log('Address1_Line1:' +aAddress1_Line1);",
+							"    ",
+							"    var Address1_Line2 = jsonData.value[0].address1_line2;",
+							"    console.log('Address1_Line2:' +Address1_Line2);",
+							"    ",
+							"    ",
+							"    ",
+							"     var Address1_Line3 = jsonData.value[0].address1_line3;",
+							"    console.log('Address1_Line3:' +Address1_Line3);",
+							"    ",
+							"    var aAddress1_PostalCode = jsonData.value[0].address1_postalcode;",
+							"    console.log('Address1_PostalCode:' +aAddress1_PostalCode);",
+							"    ",
+							"    var address1_stateorprovince = jsonData.value[0].address1_stateorprovince;",
+							"    console.log('Address1_StateOrProvince:' +address1_stateorprovince);",
+							"    ",
+							"        var cmc_academicorfiscalyearend = jsonData.value[0].cmc_academicorfiscalyearend;",
+							"    console.log('cmc_academicorfiscalyearend:' +cmc_academicorfiscalyearend);",
+							"    ",
+							"        var cmc_transcriptofficefee = jsonData.value[0].cmc_transcriptofficefee;",
+							"    console.log('cmc_transcriptofficefee:' +cmc_transcriptofficefee);",
+							"    ",
+							"        var Description = jsonData.value[0].description;",
+							"    console.log('Description:' +Description);",
+							"    ",
+							"    var EMailAddress1 = jsonData.value[0].emailaddress1;",
+							"    console.log('EMailAddress1:' +EMailAddress1);",
+							"    ",
+							"    var Fax = jsonData.value[0].fax;",
+							"    console.log('Fax:' +Fax);",
+							"    ",
+							"    var mshied_AccountType = jsonData.value[0].mshied_accounttype;",
+							"    console.log('mshied_AccountType:' +mshied_AccountType);",
+							"    ",
+							"     var mshied_ExternalSourceSystem = jsonData.value[0].mshied_externalsourcesystem;",
+							"    console.log('mshied_ExternalSourceSystem:' +mshied_ExternalSourceSystem);",
+							"    ",
+							"     var OwnerId = jsonData.value[0]._ownerid_value;",
+							"    console.log('OwnerId:' +OwnerId);",
+							"    ",
+							"     var Telephone1 = jsonData.value[0].telephone1;",
+							"    console.log('Telephone1:' +Telephone1);",
+							"    ",
+							"         var WebSiteURL = jsonData.value[0].websiteurl;",
+							"    console.log('WebSiteURL:' +WebSiteURL);",
+							"    ",
+							"    ",
+							"    pm.globals.set('gaccnamea',aname);",
+							"    //pm.globals.set('gcodea',acode);",
+							"     pm.globals.set('gaddresscitya',aAddress1_City);",
+							"      pm.globals.set('gaddressline1a',aAddress1_Line1);",
+							"    //  pm.globals.set('gemaildddress1',EMailAddress1);",
+							"      pm.globals.set('gaddresspostalcodea',aAddress1_PostalCode);",
+							"    ",
+							"    ",
+							"    ",
+							"    ",
+							"    ",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}accounts?$filter=mshied_externalidentifier eq '{{gagencybranchid}}'and mshied_accounttype eq 175490000",
+					"host": [
+						"{{Eresource_URL}}accounts"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "mshied_externalidentifier eq '{{gagencybranchid}}'and mshied_accounttype eq 175490000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get AgencyBranch",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var rowVersionid;",
+							"var organizationId;",
+							"pm.test(\"Get AgencyBranch from student\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    rowVersionid = jsonData.payload.data.rowVersion;",
+							"    console.log('ROWID:' +rowVersionid);",
+							"",
+							"       organizationId = jsonData.payload.data.organizationId;",
+							"    console.log('organizationId:' +organizationId);",
+							"   ",
+							"});",
+							"pm.globals.set('growVersionid', rowVersionid);",
+							"",
+							" pm.globals.set('gorganizationId', organizationId);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n   \"payload\":{  \r\n      \"id\":{{gagencybranchid}}\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{student}}api/commands/Common/AgencyBranch/get",
+					"host": [
+						"{{student}}api"
+					],
+					"path": [
+						"commands",
+						"Common",
+						"AgencyBranch",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update AgencyBranch",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var uniqueid1;",
+							"pm.test(\"Update AgencyBranch in Student\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    uniqueid1 = jsonData.payload.data.id;",
+							"    console.log('ID:' +uniqueid1);",
+							"",
+							"});",
+							"pm.globals.set('gagencybranchid', uniqueid1);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n   \"payload\":{  \r\n      \"isAllowedtoDeleteAgencyWithCreditCard\":false,\r\n      \"id\":{{gagencybranchid}},\r\n      \"agencyId\":\"{{gagencyid}}\",\r\n      \"billingMethodId\":null,\r\n      \"campusGroupId\":{{gcampusgroupId}},\r\n      \"city\":\"Winter ParkUpd\",\r\n      \"contactFirstName\":\"Contact1st900\",\r\n      \"contactLastName\":\"Contact1st237\",\r\n      \"countryId\":\"{{gcountryA2}}\",\r\n      \"createdDateTime\":\"{{current_timestamp}}\",\r\n      \"division\":null,\r\n      \"emailAddress\":\"updateBala532@gmail.com\",\r\n      \"industryId\":null,\r\n      \"invoiceNumberMask\":null,\r\n      \"invoiceType\":\"I\",\r\n      \"isDisbursementBatchCreated\":false,\r\n      \"isExcludedCrmIntegration\":false,\r\n      \"lastInvoiceNumber\":null,\r\n      \"lastModifiedDateTime\":\"{{current_timestamp}}\",\r\n      \"lastModifiedUserId\":2,\r\n      \"lastStatementCloseDate\":null,\r\n      \"lastStatementDate\":null,\r\n      \"name\":\"Upd{{$randomInt}}\",\r\n      \"organizationId\":{{gorganizationId}},\r\n      \"phoneNumber\":\"(988)603-8569\",\r\n      \"postalCode\":\"33427\",\r\n      \"rowVersion\":\"{{growVersionid}}\",\r\n      \"state\":\"{{gstateA2}}\",\r\n      \"statementAmount\":31,\r\n      \"statementComment\":\"api test{{current_timestamp}}\",\r\n      \"streetAddress\":\"906 W. Fairbanks AveS\",\r\n      \"originalState\":\"H4sIAAAAAAAEANWYXW/aMBSG/0qUq+2CfNIUEKBBWia00lYrK9vlITmAVcdGtgPNfv2SlHWb1mxjNtLGBRFxcs7jNz4nr+mPhIDiZvUOi3ugOd6spBKErYEV82KL1mNGmRzYG6W2PdeVyQYzkE5GEsElXykn4ZkbeF7o+p57h4IAJZ9BEc7cOrC0nyL0yHOM/X7v7EOHi3V1o+9+nF3d1WFbhEkFLEF72G/AqQeG07TvVsd+fYlFeqocGtjQI0x9zQe/z2cPg/O+W8cY1gEbMzajjNbIksIYUBjoAo0JpeW5GaoNT3/iYoQObCVytN2/zhBDts3lW8HzrbF5d/x2qDvzmKiiAefp6qOIFuUUUFi3IB60wThTkKgJEVJdQ4bmIA+Rfam6nmcI8wpORxmE2gUX85wpYa7ifF+bSCAoTC/Krzlp1C09DB/Xnzy/2/LaLf987kW9dtQLIsc7066UC7IjsmzRJ2gOlxkQOkpTgVKaW0FjoHAWBm/WVfTqlaOrwJSluXxpGZnQYMp2nCR4nWdLFDOQD6fLUZ0wJ/NUW1Z5QeQyFxIzZGoMKtkcqqMBcsk5RWBHUa6AStQnvXxMaJ5iGotsWrb6tahdy7/GWXXjH9bTCdZSlWPGU7Ii/1UX+x77g0RhzhWaILtTpVRVFcSUS6xkPdGTe050ohxmvcBSlAZ/0w6037o3ovx92GqYMwOhAR96u+Hs5WLV0O1Vt9N5HXlhq3MWaXuoW17us2jMU4MPNgzOO5Eu2Hu+v0fxgjV57sMgMWqPCQNRHIU3qj7xfLGYfBroUtYVZ065yZURoKoFjLLKHTf1bkxIBvS4p+o5nqe/tfjWDHlWHcyJB1tiKSx3FkFH6VMKRGXcvHa9yFo41gSIWAJ7kNZo9ye2wP31HzPDL+UYHF65EQAA\",\r\n      \"secureState\":\"H4sIAAAAAAAEAD3MQQrCMBAAwK9I7mZTeysqeFbpoSJel5C0C01Ssisxvl6s4ANm9qecsfb+7Ood56frPUumOGKst7q4zSvMkQ9qElk6ALaTC8g6kM2JkxdtU4CdMS00BgaXCWd6o1CKsMasfkNH/6OUokurUx6/sIHH9TKs7ZYiC0brFBw/juQnSpcAAAA=\",\r\n      \"extendedProperties\":[  \r\n\r\n      ],\r\n      \"entityState\":2\r\n   }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{student}}api/commands/Common/AgencyBranch/Save",
+					"host": [
+						"{{student}}api"
+					],
+					"path": [
+						"commands",
+						"Common",
+						"AgencyBranch",
+						"Save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"setTimeout(function(){}, 35000);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var redirectid;",
+							"pm.environment.get(\"Eredirectid\", \"redirectid\");",
+							"",
+							"var clientid;",
+							"pm.environment.get(\"Eclient_id\", \"clientid\");",
+							"",
+							"var clientsecret;",
+							"pm.environment.get(\"Eclient_secret\", \"clientsecret\");",
+							"",
+							"var resourceurl;",
+							"pm.environment.get(\"Eresource\", \"resourceurl\");",
+							"",
+							"",
+							"// pm.globals.unset(\"gaccountId\");",
+							"// pm.variable.unset(\"name\");",
+							"// pm.variable.unset(\"cmc_zip\");",
+							"// pm.variable.unset(\"cmc_city\");",
+							"// pm.variable.unset(\"cmc_accounttype\");",
+							"// pm.variable.unset(\"cmc_addresstypeid\");",
+							"// pm.variable.unset(\"lifecyclename\");",
+							"// pm.variable.unset(\"accountid\");",
+							"// pm.variable.unset(\"contactid\");",
+							"// pm.variable.unset(\"lifecycleid\");",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Esystemadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Esystemadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Account from Engage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Getting Updated Account from Engage\" , function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    ",
+							"    var name3 = jsonData.value[0].name;",
+							"    console.log('Name:' +name3);",
+							"    ",
+							"    var code3 = jsonData.value[0].cmc_accountcode;",
+							"    console.log('Code:' +code3);",
+							"    ",
+							"    var createdon = jsonData.value[0].createdon;",
+							"    console.log('Createdon:' +createdon);",
+							"    ",
+							"    var createdby = jsonData.value[0]._createdby_value;",
+							"    console.log('Createdby:' +createdby);",
+							"    ",
+							"    ",
+							"    var modifiedon = jsonData.value[0].modifiedon;",
+							"    console.log('Modifiedon:' +modifiedon);",
+							"    ",
+							"    var modifiedby = jsonData.value[0]._modifiedby_value;",
+							"    console.log('Modifiedby:' +modifiedby);",
+							"    ",
+							"    var externalidentifier = jsonData.value[0].mshied_externalidentifier;",
+							"    console.log('ExternalidentifierID:' +externalidentifier);",
+							"    ",
+							"    ",
+							"    ",
+							"    var Address1_City3 = jsonData.value[0].address1_city;",
+							"    console.log('Address1_City:' +Address1_City3);",
+							"    ",
+							"    var Address1_Country3 = jsonData.value[0].address1_country;",
+							"    console.log('Address1_Country:' +Address1_Country3);",
+							"    ",
+							"    var Address1_County = jsonData.value[0].address1_county;",
+							"    console.log('Address1_County:' +Address1_County);",
+							"    ",
+							"    var Address1_Line13 = jsonData.value[0].address1_line1;",
+							"    console.log('Address1_Line1:' +Address1_Line13);",
+							"    ",
+							"    var Address1_Line2 = jsonData.value[0].address1_line2;",
+							"    console.log('Address1_Line2:' +Address1_Line2);",
+							"    ",
+							"    ",
+							"     var Address1_Line3 = jsonData.value[0].address1_line3;",
+							"    console.log('Address1_Line3:' +Address1_Line3);",
+							"    ",
+							"    var Address1_PostalCode3 = jsonData.value[0].address1_postalcode;",
+							"    console.log('Address1_PostalCode:' +Address1_PostalCode3);",
+							"    ",
+							"    var address1_stateorprovince = jsonData.value[0].address1_stateorprovince;",
+							"    console.log('Address1_StateOrProvince:' +address1_stateorprovince);",
+							"    ",
+							"        var cmc_academicorfiscalyearend = jsonData.value[0].cmc_academicorfiscalyearend;",
+							"    console.log('cmc_academicorfiscalyearend:' +cmc_academicorfiscalyearend);",
+							"    ",
+							"        var cmc_transcriptofficefee = jsonData.value[0].cmc_transcriptofficefee;",
+							"    console.log('cmc_transcriptofficefee:' +cmc_transcriptofficefee);",
+							"    ",
+							"        var Description = jsonData.value[0].description;",
+							"    console.log('Description:' +Description);",
+							"    ",
+							"    var EMailAddress1 = jsonData.value[0].emailaddress1;",
+							"    console.log('EMailAddress1:' +EMailAddress1);",
+							"    ",
+							"    var Fax = jsonData.value[0].fax;",
+							"    console.log('Fax:' +Fax);",
+							"    ",
+							"    var mshied_AccountType = jsonData.value[0].mshied_accounttype;",
+							"    console.log('mshied_AccountType:' +mshied_AccountType);",
+							"    ",
+							"     var mshied_ExternalSourceSystem = jsonData.value[0].mshied_externalsourcesystem;",
+							"    console.log('mshied_ExternalSourceSystem:' +mshied_ExternalSourceSystem);",
+							"    ",
+							"     var OwnerId = jsonData.value[0]._ownerid_value;",
+							"    console.log('OwnerId:' +OwnerId);",
+							"    ",
+							"     var Telephone1 = jsonData.value[0].telephone1;",
+							"    console.log('Telephone1:' +Telephone1);",
+							"    ",
+							"         var WebSiteURL = jsonData.value[0].websiteurl;",
+							"    console.log('WebSiteURL:' +WebSiteURL);",
+							"    ",
+							"    ",
+							"   var bname=  pm.globals.get(\"gaccnamea\");",
+							"   var bcode=  pm.globals.get(\"gcodea\");",
+							"   var baddresscity=   pm.globals.get(\"gaddresscitya\");",
+							"    var baddressline=   pm.globals.get(\"gaddressline1a\");",
+							"     var baddresspostalcod=  pm.globals.get(\"gaddresspostalcodea\");",
+							"    ",
+							"    ",
+							"    if (bname===name3)",
+							"     {",
+							"      console.log('Name is not updated');",
+							"//throw new Error('Name is not updated');",
+							"    pm.expect.fail(1,2,'Name is not updated');",
+							"      ",
+							"     } ",
+							"    else if(Address1_City3===baddresscity)",
+							"     {",
+							"      console.log('Address1_City is not updated');",
+							"     // throw new Error('Address1_City is not updated');",
+							"      pm.expect.fail(1,2,'Address1_City is not updated');",
+							"     }",
+							"     ",
+							"    else if(Address1_PostalCode3===baddresspostalcod)",
+							"     {",
+							"      console.log('Address1_PostalCode is not updated');",
+							"     // throw new Error('Address1_PostalCode is not updated');",
+							"      pm.expect.fail(1,2,'Address1_PostalCode is not updated');",
+							"     }",
+							"    else",
+							"    {",
+							"        console.log('Branch fields are  updated');",
+							"        ",
+							"    }",
+							"    ",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}accounts?$filter=mshied_externalidentifier eq '{{gagencybranchid}}'and mshied_accounttype eq 175490000",
+					"host": [
+						"{{Eresource_URL}}accounts"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "mshied_externalidentifier eq '{{gagencybranchid}}'and mshied_accounttype eq 175490000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get AgencyBranch for delete",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var rowVersionid;",
+							"pm.test(\"Get AgencyBranch id for delete in student\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    rowVersionid = jsonData.payload.data.rowVersion;",
+							"    console.log('ROWID:' +rowVersionid);",
+							"",
+							"    // toeflid = jsonData.value[0].id;",
+							"    // Testtypename = jsonData.value[0].mshied_name;",
+							"    // console.log('TesttypeID:'+toeflid);",
+							"    // console.log('Testtype:'+Testtypename);",
+							"});",
+							"pm.globals.set('growVersionid', rowVersionid);",
+							"",
+							"setTimeout(function(){}, 25000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n   \"payload\":{  \r\n      \"id\":{{gagencybranchid}}\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{student}}api/commands/Common/AgencyBranch/get",
+					"host": [
+						"{{student}}api"
+					],
+					"path": [
+						"commands",
+						"Common",
+						"AgencyBranch",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete AgencyBranch",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Deleted AgencyBranch in Student\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n   \"payload\":{  \r\n      \"isAllowedtoDeleteAgencyWithCreditCard\":false,\r\n      \"campusGroupId\":16633,\r\n      \"id\":{{gagencybranchid}},\r\n      \"agencyId\":{{gagencyid}},\r\n      \"billingMethodId\":null,\r\n      \r\n      \"rowVersion\":\"{{growVersionid}}\",\r\n      \r\n      \"streetAddress\":\"906 W. Fairbanks Ave\",\r\n      \"originalState\":\"H4sIAAAAAAAEAM2YXW/aMBSG/wrK1XZB4iQNDQjQIG0ntNJWK22n3R2SA1hNbGQ7pdmvX5KybtPINmZHGhdExMk5j1/7fJjhRAgorlcfsLiHNMfrlVSCsjWwYlFssfOcpUyOrI1S24HjyHiDGUg7o7Hgkq+UHfPM8QjxHZc4tygopPQLKMqZUxuW1ouFAX21sdvt7J1vc7GuXnSdT/PL29pslzKpgMVojYcNOPXAeJYMneo6rB/p0IEqh0YWDChT3/zBn/1Z4xN36NQ2xrXBRo/NKJM1srgwBxToAk1pmpb35qg2PPmFi9F0ZCmRo+X8s4cIsm0u3wueb43NO3RPfN2ZR1QVDTgvTx9F9FBOAUXnBsSjNhhnCmJ1QYVUV5ChOci9ZVeqPiGGMC+hPUrPP9WnzJkS5iLO1U4BkUBQmJyVXwvaqFuyHz4KziNuv0uCLgkXpD8g3iBw7aCnreEZfaKyTNEtJIfzDGg6SRKBUprbQVNIIfC9d+vKelVydBWYsSSXh7aRCQ1m7InTGK/ybIliDvKxPR/VDXMyz7RllWdULnMhMUOmpqDizT46GiCXnKcI7CjKFaQS9UnPn+M0TzCJRDYrU/1a1F3L/8ZZZeOf9lMLe6nyMecJXdH2s1iwz2Khq13vf8S+kyiMlQTPBNmtKqWqoiBKucRK1pZW7tVRSz7M9gJ32+RUu+Jei/L3/phhrhHwDfSgNxvODgeqhmZv+mH4tkf8bmig9t/w8oyVRjwxuKi+dxr2dME+8t09igNtyWsOBom9kyllIIqj8CbVJ1r467vdSJeyjjZzyl1cGgGqwn+SVZ1xU97GmGaQHreqxCZE/1jxPRHyrLqYEw+2tKOwPFUc7JKDz/rkAlEZb2b7pNd5sDsXQMUS2KPsTJ7+pk1wfv9HzfgrsYOAGskRAAA=\",\r\n      \"secureState\":\"H4sIAAAAAAAEAD3MQQrCMBAAwK9I7mZTeysqeFbpoSJel5C0C01Ssisxvl6s4ANm9qecsfb+7Ood56frPUumOGKst7q4zSvMkQ9qElk6ALaTC8g6kM2JkxdtU4CdMS00BgaXCWd6o1CKsMasfkNH/6OUokurUx6/sIHH9TKs7ZYiC0brFBw/juQnSpcAAAA=\",\r\n      \"extendedProperties\":[  \r\n\r\n      ],\r\n      \"entityState\":3\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{student}}api/commands/Common/AgencyBranch/Delete",
+					"host": [
+						"{{student}}api"
+					],
+					"path": [
+						"commands",
+						"Common",
+						"AgencyBranch",
+						"Delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetToken Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"setTimeout(function(){}, 35000);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var redirectid;",
+							"pm.environment.get(\"Eredirectid\", \"redirectid\");",
+							"",
+							"var clientid;",
+							"pm.environment.get(\"Eclient_id\", \"clientid\");",
+							"",
+							"var clientsecret;",
+							"pm.environment.get(\"Eclient_secret\", \"clientsecret\");",
+							"",
+							"var resourceurl;",
+							"pm.environment.get(\"Eresource\", \"resourceurl\");",
+							"",
+							"",
+							"// pm.globals.unset(\"gaccountId\");",
+							"// pm.variable.unset(\"name\");",
+							"// pm.variable.unset(\"cmc_zip\");",
+							"// pm.variable.unset(\"cmc_city\");",
+							"// pm.variable.unset(\"cmc_accounttype\");",
+							"// pm.variable.unset(\"cmc_addresstypeid\");",
+							"// pm.variable.unset(\"lifecyclename\");",
+							"// pm.variable.unset(\"accountid\");",
+							"// pm.variable.unset(\"contactid\");",
+							"// pm.variable.unset(\"lifecycleid\");",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Esystemadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Esystemadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Deleted  Account from Engage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var uniqueid;",
+							"pm.test(\"Agency Branch  deleted successfulyy\" , function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    uniqueid = jsonData.value[0];",
+							"    // uniqueid = jsonData.payload.data.id;",
+							"    ",
+							"    // console.log('Academic Period deleted successfully: '+uniqueid);",
+							"    ",
+							"    if (uniqueid===undefined||uniqueid===null)",
+							"    {",
+							"   console.log('Agency Branc deleted successfully');",
+							"    } ",
+							"    ",
+							"    else",
+							"    ",
+							"    {",
+							"    console.log('Agency Branc not deleted successfully');",
+							"    //throw new Error('Agency Branc not deleted successfully');",
+							"   pm.expect.fail(1,2,'Agency Branc not deleted successfully');",
+							"    }",
+							"    ",
+							"});   ",
+							"",
+							"",
+							"  "
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}accounts?$filter=mshied_externalidentifier eq '{{gagencybranchid}}'and mshied_accounttype eq 175490000",
+					"host": [
+						"{{Eresource_URL}}accounts"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "mshied_externalidentifier eq '{{gagencybranchid}}'and mshied_accounttype eq 175490000"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,289 @@
+{
+	"info": {
+		"_postman_id": "50c95af9-e314-45e2-a54d-781b7334a0e5",
+		"name": "TC_1098490_CashNet_RefrenceParamaeter",
+		"description": "Refrence Paramaeter Entity.Create,Update record with difference different base Entity option set",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM API- System Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM API -System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"    console.log(\"Application User name: \" +fullname);    ",
+									"});",
+									"pm.globals.set('guserid',userid);",
+									"console.log('Systemuser:'+userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'sysadmin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'sysadmin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Reference Parameter ",
+			"item": [
+				{
+					"name": "Create Cashnet Payment Record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var paymentgatewayconfigurationid;",
+									"var paymentgatewayconfigurationname;",
+									"pm.test(\"Application Registration Created\", function () {",
+									"   pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"   var jsonData = JSON.parse(responseBody);",
+									"   paymentgatewayconfigurationid = jsonData.cmc_paymentgatewayconfigurationid;",
+									"   paymentgatewayconfigurationname = jsonData.cmc_paymentgatewayconfigurationname;",
+									"   console.log(\"paymentgatewayconfigurationid- \", paymentgatewayconfigurationid);",
+									"   console.log(\"paymentgatewayconfigurationname- \", paymentgatewayconfigurationname);",
+									"}); ",
+									"",
+									"",
+									"pm.globals.set('gpaymentgatewayconfigurationid', paymentgatewayconfigurationid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_authenticationmethod\": 175490000,\r\n    \"cmc_paymentgateway\": 175490002,\r\n    \"cmc_paymentgatewayconfigurationname\": \"{{$randomInt}}-C{{$randomInt}}-TestCashnet-T{{$randomInt}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_paymentgatewayconfigurations",
+							"host": [
+								"{{Eresource_URL}}cmc_paymentgatewayconfigurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create reference parameter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var referenceparameterid;",
+									"pm.test(\"Application Registration Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    referenceparameterid = jsonData.cmc_referenceparameterid;",
+									"    console.log(\"referenceparameterid \", referenceparameterid)",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_baseentity\": \"{{cmc_baseentity}}\",\r\n    \"cmc_baseentityname\": \"{{cmc_baseentityname}}\",\r\n    \"cmc_name\": \"{{cmc_name}}\",\r\n    \"cmc_paymentgatewayconfigurationid@odata.bind\": \"/cmc_paymentgatewayconfigurations({{gpaymentgatewayconfigurationid}})\",\r\n    \"cmc_querystring\": \"{{cmc_querystring}}\",\r\n    \"cmc_referenceattribute\": \"{{cmc_referenceattribute}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_referenceparameters",
+							"host": [
+								"{{Eresource_URL}}cmc_referenceparameters"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

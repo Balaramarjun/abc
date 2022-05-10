@@ -1,0 +1,1853 @@
+{
+	"info": {
+		"_postman_id": "28dc5ed9-15b8-4fda-a788-f0514c07c133",
+		"name": "TC_805688_ACTSuperscore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona - StudentAdvisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('gownerid',userid);",
+									"console.log('Systemuser:'+userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var fullname = jsonData.fullname;",
+									"    console.log('Contact:' +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('gcontactid',contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstname\": \"{{$randomFirstName}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{$randomLastName}}{{$randomInt}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\":\"494280003,494280004\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n\t\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/v9.0/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"v9.0",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create SAT Testscore and validate superscore and Bestscore",
+			"item": [
+				{
+					"name": "Get ACT Test Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var actid;",
+									"var Testtypename;",
+									"pm.test(\"Get ACT id\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    actid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"    ",
+									"     console.log('TesttypeID:'+actid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('gactid',actid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'ACT'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq 'ACT'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreACT record 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var satequivalent;",
+									" var composite;",
+									" var math;",
+									" var english;",
+									" var ela;",
+									" var tname;",
+									" var reading;",
+									" var science;",
+									" var writing;",
+									" var stem;",
+									"pm.test(\"ACT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    satequivalent = jsonData.cmc_satequivalentscore;",
+									"    console.log('SAT equivalent score: '+satequivalent);",
+									"    composite = jsonData.mshied_actcomposite;",
+									"    english = jsonData.mshied_actenglish;",
+									"    tname = jsonData.mshied_name;",
+									"    ela = jsonData.mshied_actela;",
+									"    reading = jsonData.mshied_actreading;",
+									"    math = jsonData.mshied_actmath;",
+									"    science = jsonData.mshied_actscience;",
+									"    writing = jsonData.mshied_actwriting;",
+									"    stem = jsonData.mshied_actstem;",
+									"    ",
+									"    pm.test(\"Validate Composite score\", function()",
+									"    {",
+									"        pm.expect(composite).to.equal(29);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(reading).to.equal(27);",
+									"    });",
+									"    pm.test(\"Validate Math\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(30);",
+									"    });",
+									"    pm.test(\"Validate Science\", function()",
+									"    {",
+									"        pm.expect(science).to.equal(32);",
+									"    });",
+									"  ",
+									"     pm.test(\"Validate English\", function()",
+									"    {",
+									"        pm.expect(english).to.equal(26);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(\"ACT\");",
+									"    });",
+									"});",
+									"pm.globals.set('gACTtestscore1',ACTtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_actcomposite\": 29,\n    \"mshied_actenglish\": 26,\n    \"mshied_actmath\":30,\n    \"mshied_actreading\": 27,\n    \"mshied_actscience\": 32,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreACT record 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var satequivalent;",
+									" var composite;",
+									" var math;",
+									" var english;",
+									" var ela;",
+									" var tname;",
+									" var reading;",
+									" var science;",
+									" var writing;",
+									" var stem;",
+									"pm.test(\"ACT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    satequivalent = jsonData.cmc_satequivalentscore;",
+									"    console.log('SAT equivalent score: '+satequivalent);",
+									"    composite = jsonData.mshied_actcomposite;",
+									"    english = jsonData.mshied_actenglish;",
+									"    tname = jsonData.mshied_name;",
+									"    ela = jsonData.mshied_actela;",
+									"    reading = jsonData.mshied_actreading;",
+									"    math = jsonData.mshied_actmath;",
+									"    science = jsonData.mshied_actscience;",
+									"    writing = jsonData.mshied_actwriting;",
+									"    stem = jsonData.mshied_actstem;",
+									"    ",
+									"    pm.test(\"Validate Composite score\", function()",
+									"    {",
+									"        pm.expect(composite).to.equal(30);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(reading).to.equal(30);",
+									"    });",
+									"    pm.test(\"Validate Math\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(34);",
+									"    });",
+									"    pm.test(\"Validate Science\", function()",
+									"    {",
+									"        pm.expect(science).to.equal(29);",
+									"    });",
+									"  ",
+									"     pm.test(\"Validate English\", function()",
+									"    {",
+									"        pm.expect(english).to.equal(27);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(\"ACT\");",
+									"    });",
+									"});",
+									"pm.globals.set('gACTtestscore2',ACTtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_actcomposite\": 30,\n    \"mshied_actenglish\": 27,\n    \"mshied_actmath\":34,\n    \"mshied_actreading\": 30,\n    \"mshied_actscience\": 29,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreACT record 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var satequivalent;",
+									" var composite;",
+									" var math;",
+									" var english;",
+									" var ela;",
+									" var tname;",
+									" var reading;",
+									" var science;",
+									" var writing;",
+									" var stem;",
+									"pm.test(\"ACT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    satequivalent = jsonData.cmc_satequivalentscore;",
+									"    console.log('SAT equivalent score: '+satequivalent);",
+									"    composite = jsonData.mshied_actcomposite;",
+									"    english = jsonData.mshied_actenglish;",
+									"    tname = jsonData.mshied_name;",
+									"    ela = jsonData.mshied_actela;",
+									"    reading = jsonData.mshied_actreading;",
+									"    math = jsonData.mshied_actmath;",
+									"    science = jsonData.mshied_actscience;",
+									"    writing = jsonData.mshied_actwriting;",
+									"    stem = jsonData.mshied_actstem;",
+									"    ",
+									"    pm.test(\"Validate Composite score\", function()",
+									"    {",
+									"        pm.expect(composite).to.equal(31);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(reading).to.equal(32);",
+									"    });",
+									"    pm.test(\"Validate Math\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(29);",
+									"    });",
+									"    pm.test(\"Validate Science\", function()",
+									"    {",
+									"        pm.expect(science).to.equal(34);",
+									"    });",
+									"    pm.test(\"Validate English\", function()",
+									"    {",
+									"        pm.expect(english).to.equal(28);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(\"ACT\");",
+									"    });",
+									"});",
+									"pm.globals.set('gACTtestscore3',ACTtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_actcomposite\": 31,\n    \"mshied_actenglish\": 28,\n    \"mshied_actmath\":29,\n    \"mshied_actreading\": 32,\n    \"mshied_actscience\": 34,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get ACT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var actscore;",
+									"var actbest;",
+									"",
+									"pm.test(\"ACT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    actscore = jsonData.cmc_actsuperscore;",
+									"    actbest = jsonData.cmc_actbest;",
+									"    console.log('ACTSuperScore:'+actscore);",
+									"    console.log('ACTBest:'+actbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(actscore).to.equal(32);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(actbest).to.equal(31);",
+									"    });",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreACT 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var includeinscorecalculations;",
+									"pm.test(\"ACT test score Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    includeinscorecalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('After updating includeinscorecalculations: '+includeinscorecalculations);",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \n    \"cmc_includeinscorecalculations\":false\n  \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gACTtestscore1}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gACTtestscore1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreACT 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var includeinscorecalculations;",
+									"pm.test(\"ACT test score Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    includeinscorecalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('After updating includeinscorecalculations: '+includeinscorecalculations);",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \n    \"cmc_includeinscorecalculations\":false\n  \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gACTtestscore2}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gACTtestscore2}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreACT 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var includeinscorecalculations;",
+									"pm.test(\"ACT test score Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    includeinscorecalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('After updating includeinscorecalculations: '+includeinscorecalculations);",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \n    \"cmc_includeinscorecalculations\":false\n  \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gACTtestscore3}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gACTtestscore3}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Updated ACT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var actscore;",
+									"var actbest;",
+									"",
+									"pm.test(\"ACT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    actscore = jsonData.cmc_actsuperscore;",
+									"    actbest = jsonData.cmc_actbest;",
+									"    console.log('Updated ACTSuperScore:'+actscore);",
+									"    console.log('Updated ACTBest:'+actbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(actscore).to.equal(0);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(actbest).to.equal(0);",
+									"    });",
+									"    ",
+									"}); ",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreACT record 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var satequivalent;",
+									" var composite;",
+									" var math;",
+									" var english;",
+									" var ela;",
+									" var tname;",
+									" var reading;",
+									" var science;",
+									" var writing;",
+									" var stem;",
+									"pm.test(\"ACT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    satequivalent = jsonData.cmc_satequivalentscore;",
+									"    console.log('SAT equivalent score: '+satequivalent);",
+									"    composite = jsonData.mshied_actcomposite;",
+									"    english = jsonData.mshied_actenglish;",
+									"    tname = jsonData.mshied_name;",
+									"    ela = jsonData.mshied_actela;",
+									"    reading = jsonData.mshied_actreading;",
+									"    math = jsonData.mshied_actmath;",
+									"    science = jsonData.mshied_actscience;",
+									"    writing = jsonData.mshied_actwriting;",
+									"    stem = jsonData.mshied_actstem;",
+									"    ",
+									"    pm.test(\"Validate Composite score\", function()",
+									"    {",
+									"        pm.expect(composite).to.equal(25);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(reading).to.equal(32);",
+									"    });",
+									"    pm.test(\"Validate Math\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(29);",
+									"    });",
+									"    pm.test(\"Validate Science\", function()",
+									"    {",
+									"        pm.expect(science).to.equal(34);",
+									"    });",
+									"    pm.test(\"Validate English\", function()",
+									"    {",
+									"        pm.expect(english).to.equal(28);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(\"ACT\");",
+									"    });",
+									"});",
+									"pm.globals.set('gACTtestscore4',ACTtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(3, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_actcomposite\": 25,\n    \"mshied_actenglish\": 28,\n    \"mshied_actmath\":29,\n    \"mshied_actreading\": 32,\n    \"mshied_actscience\": 34,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Updated ACT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var actscore;",
+									"var actbest;",
+									"",
+									"pm.test(\"ACT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    actscore = jsonData.cmc_actsuperscore;",
+									"    actbest = jsonData.cmc_actbest;",
+									"    console.log('Updated ACTSuperScore:'+actscore);",
+									"    console.log('Updated ACTBest:'+actbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(actscore).to.equal(30);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(actbest).to.equal(25);",
+									"    });",
+									"    ",
+									"}); ",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreACT record 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var satequivalent;",
+									" var composite;",
+									" var math;",
+									" var english;",
+									" var ela;",
+									" var tname;",
+									" var reading;",
+									" var science;",
+									" var writing;",
+									" var stem;",
+									"pm.test(\"ACT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    satequivalent = jsonData.cmc_satequivalentscore;",
+									"    console.log('SAT equivalent score: '+satequivalent);",
+									"    composite = jsonData.mshied_actcomposite;",
+									"    english = jsonData.mshied_actenglish;",
+									"    tname = jsonData.mshied_name;",
+									"    ela = jsonData.mshied_actela;",
+									"    reading = jsonData.mshied_actreading;",
+									"    math = jsonData.mshied_actmath;",
+									"    science = jsonData.mshied_actscience;",
+									"    writing = jsonData.mshied_actwriting;",
+									"    stem = jsonData.mshied_actstem;",
+									"    ",
+									"    pm.test(\"Validate Composite score\", function()",
+									"    {",
+									"        pm.expect(composite).to.equal(25);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(reading).to.equal(32);",
+									"    });",
+									"    pm.test(\"Validate Math\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(29);",
+									"    });",
+									"    pm.test(\"Validate Science\", function()",
+									"    {",
+									"        pm.expect(science).to.equal(34);",
+									"    });",
+									"    pm.test(\"Validate English\", function()",
+									"    {",
+									"        pm.expect(english).to.equal(25);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(\"ACT\");",
+									"    });",
+									"});",
+									"pm.globals.set('gACTtestscore5',ACTtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(4, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_actcomposite\": 25,\n    \"mshied_actenglish\": 25,\n    \"mshied_actmath\":29,\n    \"mshied_actreading\": 32,\n    \"mshied_actscience\": 34,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Updated ACT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var actscore;",
+									"var actbest;",
+									"",
+									"pm.test(\"ACT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    actscore = jsonData.cmc_actsuperscore;",
+									"    actbest = jsonData.cmc_actbest;",
+									"    console.log('Updated ACTSuperScore:'+actscore);",
+									"    console.log('Updated ACTBest:'+actbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(actscore).to.equal(30);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(actbest).to.equal(25);",
+									"    });",
+									"    ",
+									"}); ",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Testscore value from TestScoreGrid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscorevalue;\r",
+									"var testscoreid;\r",
+									"var gtestscoreID;\r",
+									"\r",
+									"pm.test(\"Test Score Concatenate workflow - Test score sub-grid getting from contact\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var length=jsonData.value.length;\r",
+									"    if(length === 5)\r",
+									"    {\r",
+									"    for(var i=0; i<length;i++)\r",
+									"    {\r",
+									"        var testscorevalue= jsonData.value[i].cmc_testscorevalue;\r",
+									"        console.log('Testscorevalue through workflow: '+ testscorevalue);\r",
+									"        \r",
+									"    }\r",
+									"  }\r",
+									"    \r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Composite - \");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Math -\");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Science - \");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"English - \");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Reading - \");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Writing - \");\r",
+									"});\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})/mshied_contact_testscore_StudentID",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							],
+							"path": [
+								"mshied_contact_testscore_StudentID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate TestScoreACT record 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscore;",
+									"pm.test(\"ACT test score deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    console.log('ACT test score deactivated');",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"statecode\" : 1\n\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gACTtestscore4}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gACTtestscore4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate TestScoreACT record 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscore;",
+									"pm.test(\"ACT test score deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    console.log('ACT test score deactivated');",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"statecode\" : 1\n\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gACTtestscore5}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gACTtestscore5}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Updated ACT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var actscore;",
+									"var actbest;",
+									"",
+									"pm.test(\"ACT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    actscore = jsonData.cmc_actsuperscore;",
+									"    actbest = jsonData.cmc_actbest;",
+									"    console.log('Updated ACTSuperScore:'+actscore);",
+									"    console.log('Updated ACTBest:'+actbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(actscore).to.equal(0);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(actbest).to.equal(0);",
+									"    });",
+									"    ",
+									"}); ",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reactivate TestScoreACT record 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscore;",
+									"pm.test(\"ACT test score reactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    console.log('ACT test score reactivated');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"statecode\" : 0\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gACTtestscore5}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gACTtestscore5}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Updated ACT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var actscore;",
+									"var actbest;",
+									"",
+									"pm.test(\"ACT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    actscore = jsonData.cmc_actsuperscore;",
+									"    actbest = jsonData.cmc_actbest;",
+									"    console.log('Updated ACTSuperScore:'+actscore);",
+									"    console.log('Updated ACTBest:'+actbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(actscore).to.equal(30);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(actbest).to.equal(25);",
+									"    });",
+									"    ",
+									"}); ",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

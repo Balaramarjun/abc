@@ -1,0 +1,1247 @@
+{
+	"info": {
+		"_postman_id": "1d95498c-505f-4916-9e79-de93bfca9438",
+		"name": "TC_746120_DOMContact",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken_DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Eadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Eadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser - DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid,fullname;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    fullname=jsonData.value[0].fullname;",
+							"",
+							"    console.log(\"Application User name: \" +fullname);",
+							"    ",
+							"});",
+							"pm.globals.set('guserid2',userid);",
+							"console.log('Systemuser:'+userid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq 'admin@api.com'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AssignDOMTo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid;",
+							"pm.test(\"AssingedTO\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    ",
+							"});",
+							"pm.globals.set('gownerid',userid);",
+							"",
+							"console.log('AssingedTO:'+userid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/systemusers?$select=systemuserid&$filter=internalemailaddress eq '{{User1}}'",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"systemusers"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "systemuserid"
+						},
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq '{{User1}}'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fallbackuser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var fallbackuser;",
+							"pm.test(\"FallBackUser\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    fallbackuser = jsonData.value[0].systemuserid;",
+							"    ",
+							"});",
+							"pm.globals.set('gfallbackuser',fallbackuser);",
+							"console.log('FallBackUser:'+fallbackuser);",
+							"",
+							"",
+							"var user=data.username;",
+							"pm.variables.set(\"username\",user);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/systemusers?$select=systemuserid&$filter=internalemailaddress eq '{{User2}}'",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"systemusers"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "systemuserid"
+						},
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq '{{User2}}'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Academic period",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var academicperiodid;",
+							"",
+							"pm.test(\"Academicperiodid Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    academicperiodid = jsonData.mshied_academicperiodid;",
+							" ",
+							"});",
+							"",
+							"",
+							"var academicperiodname = data.cmc_academicperiodname;",
+							"var startDate = data.cmc_startdate;",
+							"var endDate = data.cmc_enddate;",
+							"var Code = data.cmc_code;",
+							"var ownerid1 = data.ownerid;",
+							"pm.globals.set('gacademicperiodid',academicperiodid);",
+							"//console.log('{{gAcademic}}');",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+							"\r",
+							"var moment = require(\"moment\");\r",
+							"pm.environment.set('EndTime', moment().add(30, 'days').toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"mshied_name\":\"{{cmc_academicperiodname}}{{$randomInt}}\",\r\n\"mshied_startdate\":\"{{current_timestamp}}\",\r\n\"mshied_enddate\":\"{{EndTime}}\",\r\n\"mshied_code\":\"{{$randomInt}}{{cmc_code}}D1{{$randomInt}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n \r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"mshied_academicperiods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contact_id;",
+							"var Name;",
+							"pm.test(\"Contact Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contact_id = jsonData.contactid;",
+							"",
+							"    Name = jsonData.firstname;",
+							"});",
+							" ",
+							"  ",
+							"  var addressnamecontact = data.cmc_addressname2;",
+							"  var cmc_sourcemethod =data.cmc_sourcemethodid;",
+							"  var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+							"  var CurrentProgramLevelId =data.mshied_CurrentProgramLevelId;",
+							"  var CurrentProgramId =data.mshied_CurrentProgramId;",
+							"  var titleid =data.cmc_titleid;",
+							"  var srcpogramlevelid =data.cmc_srcpogramlevelid;",
+							"  var srcprogramid =data.cmc_srcprogramid;",
+							"  var educationlevelid =data.cmc_educationlevelid;",
+							"  var StudentStatusId =data.mshied_StudentStatusId;",
+							"  var mshied_contacttype =data.mshied_contacttype;",
+							"  var emailaddress1 =data.emailaddress1;",
+							"  var cmc_dateofbirth =data.cmc_dateofbirth;",
+							"  var cmc_sourcedate =data.cmc_sourcedate;",
+							"  var recentsat =data.cmc_recentsat;",
+							"  var recentact =data.cmc_recentact;",
+							"  var gendercode =data.gendercode;",
+							"  var shippingmethodcode =data.shippingmethodcode;",
+							"  var firstname = data.firstname;",
+							"  var lastname = data.lastname;",
+							"  var anniversary = data.anniversary;",
+							"  var lastonholdtime = data.lastonholdtime;",
+							"  var numberofchildren = data.numberofchildren;",
+							"  var familystatuscode = data.familystatuscode;",
+							"  var race = data.mshied_race;",
+							"  var miltarystatus = data.mshied_miltarystatus;",
+							"  var ethnicgroup = data.mshied_ethnicgroup;",
+							"  var nationality = data.mshied_nationality;",
+							"  ",
+							"  //Address variables",
+							"  var Zip = data.cmc_zip;",
+							"  var City = data.cmc_city;",
+							"  var addresstype1 = data.cmc_addresstypeid;",
+							"pm.globals.set('gcontactid',contact_id);",
+							"console.log(Name);",
+							"console.log('Contactid:'+contact_id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+							"\r",
+							"var moment = require(\"moment\");\r",
+							"pm.environment.set('pickUpTime', moment().add(-20, 'years').format(\"YYYY-MM-DD\"));\r",
+							"\r",
+							"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"firstname\": \"{{firstname}}{{$randomInt}}\",\r\n\"lastname\": \"{{lastname}}\",\r\n\"middlename\":\"mid{{$randomInt}}\",\r\n\"mshied_maidenname\":\"maid{{$randomInt}}\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}a@a.com\",\r\n\"gendercode\":\"1\",\r\n\"numberofchildren\":\"2\",\r\n\"nickname\":\"Nickname{{$randomInt}}\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{timestamp}}\",\r\n\"birthdate\":\"{{pickUpTime}}\",\r\n\"cmc_recentsat\":\"266\",\r\n\"cmc_recentact\":\"100\",\r\n\"mshied_contacttype\":\"494280010 ,494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife{{$randomInt}}\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":175490001,\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(07C2EB09-4734-E811-A95F-000D3A11EC14)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827FF116-142B-E811-A965-000D3A11E605)\",\r\n\"cmc_titleid@odata.bind\": \"/contacts(28697f71-90b4-e711-a94f-000d3a11f5ee)\",\r\n\"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"78865{{$randomInt}}30\",\r\n\"mobilephone\":\"78965{{$randomInt}}30\",\r\n\"telephone1\":\"8569{{$randomInt}}230\",\r\n\"cmc_phone2extension\":\"8083{{$randomInt}}569\",\r\n\"websiteurl\":\"www.dcrm{{$randomInt}}.com\"\r\n     \r\n }"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Student Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var listid;",
+							"pm.test(\"Student Group Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    listid = jsonData.listid;",
+							"    ",
+							" var SGName =jsonData.listname;   ",
+							" var stateid = jsonData.statecode;",
+							" console.log('Statecode:'+stateid);",
+							" ",
+							" if(stateid ===0)",
+							"   {  ",
+							"       var  active=\"is Activated\";",
+							"   console.log(SGName+active);",
+							"   } ",
+							" else{ ",
+							"      var deactive=\"is De-Activated\";",
+							"     console.log(SGName+deactive);",
+							"     }",
+							"});",
+							"",
+							"pm.globals.set('glistid', listid);",
+							"var marketinglisttype = data.cmc_marketinglisttype;",
+							"var expirationdate = data.cmc_expirationdate;"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+							"\r",
+							"var moment = require(\"moment\");\r",
+							"pm.environment.set('pickUpTime', moment().add(20, 'days').toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"listname\":\"{{listname}}\",\r\n\"type\":false,\r\n\"createdfromcode\":2,\r\n\"cmc_expirationdate\": \"{{pickUpTime}}\",\r\n\"cmc_marketinglisttype\": \"{{cmc_marketinglisttype}}\"\r\n\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/lists",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"lists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adding Contacts to StudentGroup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Contact Addedd to StudentGroup\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+							"  ",
+							"});",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"List\": {\r\n        \"listid\": \"{{glistid}}\",\r\n        \"@odata.type\": \"Microsoft.Dynamics.CRM.list\"\r\n    },\r\n\"Members\":\r\n[{\"@odata.type\": \"Microsoft.Dynamics.CRM.contact\", \"contactid\": \"{{gcontactid}}\"}]\r\n}\r\n\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/AddListMembersList",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"AddListMembersList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DOMMaster",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"DOMMaster created\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    pm.globals.set('gdommasterid', jsonData.cmc_dommasterid);",
+							"",
+							"});",
+							"",
+							"var runassignmentforentity = data.cmc_runassignmentforentity;",
+							"var attributenametobeassigned = data.cmc_attributenametobeassigned;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0",
+						"description": " "
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"cmc_fallbackuserid@odata.bind\":\"/systemusers({{gfallbackuser}})\",\r\n\"cmc_marketinglistid@odata.bind\": \"/lists({{glistid}})\",\r\n\"cmc_runassignmentforentity\":\"{{cmc_runassignmentforentity}}\",\r\n\"cmc_attributenametobeassigned\":\"{{cmc_attributenametobeassigned}}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/cmc_dommasters",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"cmc_dommasters"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DOMDefinition",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"DOMDefinition created\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    pm.globals.set('gdomdefinitionid', jsonData.cmc_domdefinitionid);",
+							"",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0",
+						"description": " "
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"cmc_dommasterid@odata.bind\":\"/cmc_dommasters({{gdommasterid}})\",\r\n\"cmc_domdefinitionforid@odata.bind\":\"/systemusers({{gownerid}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/cmc_domdefinitions",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"cmc_domdefinitions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DOMDefinitionlogicsLogicValue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"DOMDefinition logic created\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"",
+							"});",
+							"",
+							"var attributeschema = data.cmc_attributeschema;",
+							"var attribute = data.cmc_attribute;",
+							"var conditiontype =data.cmc_conditiontype;",
+							"var value = data.cmc_value;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0",
+						"description": " "
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"cmc_domdefinitionid@odata.bind\":\"/cmc_domdefinitions({{gdomdefinitionid}})\",\r\n\"cmc_attributeschema\":\"{{cmc_attributeschema}}\",\r\n\"cmc_attribute\":\"{{cmc_attribute}}\",\r\n\"cmc_conditiontype\":\"{{cmc_conditiontype}}\",\r\n\"cmc_value\":\"{{cmc_value}}\"\r\n}\r\n\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/cmc_domdefinitionlogics",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"cmc_domdefinitionlogics"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DOMDefinitionlogicsLogicRange",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"DOMDefinition logic created\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"",
+							"});",
+							"",
+							"var attributeschema2 = data.cmc_attributeschema2;",
+							"var attribute2 = data.cmc_attribute2;",
+							"var conditiontype2 =data.cmc_conditiontype2;",
+							"var maximum = data.cmc_maximum;",
+							"var minimum = data.cmc_minimum;"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+							"\r",
+							"var moment = require(\"moment\");\r",
+							"pm.environment.set('pickUpTime', moment().add(20, 'days').format(\"YYYY-MM-DD\"));\r",
+							"\r",
+							"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0",
+						"description": " "
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"cmc_domdefinitionid@odata.bind\":\"/cmc_domdefinitions({{gdomdefinitionid}})\",\r\n\"cmc_attributeschema\":\"{{cmc_attributeschema2}}\",\r\n\"cmc_attribute\":\"{{cmc_attribute2}}\",\r\n\"cmc_conditiontype\":\"{{cmc_conditiontype2}}\",\r\n\"cmc_minimum\":\"{{timestamp}}\",\r\n\"cmc_maximum\":\"{{pickUpTime}}\"\r\n\t\r\n}\r\n\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/cmc_domdefinitionlogics",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"cmc_domdefinitionlogics"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DOMDefinitionexecutionorder1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"DOMDefinitionexecutionorders created\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"",
+							"});",
+							"",
+							"",
+							"var attributeschema = data.cmc_attributeschema;",
+							"var attribute = data.cmc_attribute;",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0",
+						"description": " "
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"cmc_attributeschema\":\"{{cmc_attributeschema}}\",\r\n\"cmc_attribute\":\"{{cmc_attribute}}\",\r\n\"cmc_dommasterid@odata.bind\":\"/cmc_dommasters({{gdommasterid}})\",\r\n\"cmc_order\":1\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/cmc_domdefinitionexecutionorders",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"cmc_domdefinitionexecutionorders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create DOMDefinitionexecutionorder2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"DOMDefinitionexecutionorders created\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"",
+							"});",
+							"",
+							"var attributeschema = data.cmc_attributeschema2;",
+							"var attribute = data.cmc_attribute2;",
+							"",
+							"setTimeout(function(){}, 20000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0",
+						"description": " "
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"cmc_attributeschema\":\"{{cmc_attributeschema2}}\",\r\n\"cmc_attribute\":\"{{cmc_attribute2}}\",\r\n\"cmc_dommasterid@odata.bind\":\"/cmc_dommasters({{gdommasterid}})\",\r\n\"cmc_order\":2\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/cmc_domdefinitionexecutionorders",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"cmc_domdefinitionexecutionorders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VerifyCurrentDOMStatus",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var currentownerid;",
+							"pm.test(\"GetDOM Status\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"        currentownerid=jsonData._ownerid_value;",
+							" ",
+							"",
+							"var domstatus =jsonData.cmc_domstatus;",
+							" console.log('cmc_domstatus:'+domstatus);",
+							" ",
+							" if (domstatus==175490000)",
+							" {",
+							" console.log(domstatus+\"is Pending Assignment\");",
+							" //pm.expect.fail(\"Please Run Azure Function\");  ",
+							" }",
+							"",
+							"else if (domstatus==175490001)",
+							" {",
+							"     console.log(domstatus+\"is Assignment Complete\");",
+							" }",
+							"",
+							"else if (domstatus==175490002)",
+							" {console.log(domestatus+\"is Locked Assignment\");",
+							" }",
+							"else",
+							"{",
+							"    console.log(\"Some Error Occured\");",
+							"    ",
+							"}",
+							" ",
+							" ",
+							"});",
+							"   pm.globals.set('gcurrentownerid',currentownerid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"//Clearing Contact Variables",
+							"pm.variables.unset(\"Fname1\");",
+							"pm.variables.unset(\"Lname1\");",
+							"pm.variables.unset(\"Zip\");",
+							"pm.variables.unset(\"City\");",
+							"",
+							"",
+							"//Clearing other Variables",
+							"pm.variables.unset(\"name1\");",
+							"pm.variables.unset(\"scoredefinitionid\");",
+							"",
+							"pm.globals.unset(\"SGName\");",
+							"pm.variables.unset(\"currentretentionscore\");",
+							"pm.variables.unset(\"Inboundname\");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"contacts({{gcontactid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetOwnername",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var ownername;",
+							"pm.test(\"GetOwnerName\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ownername = jsonData.fullname;",
+							"    console.log('OwnerName:'+ownername);",
+							"    });",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/v9.1/systemusers({{gcurrentownerid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"v9.1",
+						"systemusers({{gcurrentownerid}})"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

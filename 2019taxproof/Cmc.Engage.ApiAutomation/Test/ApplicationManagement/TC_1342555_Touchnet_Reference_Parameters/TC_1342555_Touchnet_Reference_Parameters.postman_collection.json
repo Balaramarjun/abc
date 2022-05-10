@@ -1,0 +1,483 @@
+{
+	"info": {
+		"_postman_id": "5de69298-ed4b-478d-82bf-24925ab12ab2",
+		"name": "TC_1342555_Touchnet_Reference_Parameters",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM API- System Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM API -System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"    console.log(\"Application User name: \" +fullname);    ",
+									"});",
+									"pm.globals.set('guserid',userid);",
+									"console.log('Systemuser:'+userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'sysadmin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'sysadmin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Payment gateway and Reference Parameter's",
+			"item": [
+				{
+					"name": "Create Touchnet payment gateway",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var paymentgatewayconfigurationid;\r",
+									"var paymentgatewayconfigurationname;\r",
+									"pm.test(\"Touchnet payment gateway is Created\", function () {\r",
+									"   pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+									"   var jsonData = JSON.parse(responseBody);\r",
+									"   paymentgatewayconfigurationid = jsonData.cmc_paymentgatewayconfigurationid;\r",
+									"   paymentgatewayconfigurationname = jsonData.cmc_paymentgatewayconfigurationname;\r",
+									"   console.log(\"paymentgatewayconfigurationid- \", paymentgatewayconfigurationid);\r",
+									"   console.log(\"paymentgatewayconfigurationname- \", paymentgatewayconfigurationname);\r",
+									"}); \r",
+									"\r",
+									"\r",
+									"pm.globals.set('gpaymentgatewayconfigurationid', paymentgatewayconfigurationid);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_paymentgatewaytouchnetwebserviceurl\":\"https://test.secure.touchnet.net:8703/C30002test_tlink/services/TPGSecureLink\",\r\n   \"cmc_paymentgatewaytouchnetupayurl\":\"https://test.secure.touchnet.net:8443/C30002test_upay/web/index.jsp\",\r\n   \"cmc_paymentgatewaytouchnetsiteid\":191,\r\n   \"cmc_paymentgatewaypassword\":\"Ya4raZak\",\r\n   \"cmc_paymentgatewayusername\":\"hob$on$\",\r\n   \"cmc_paymentgateway\":175490003,\r\n   \"cmc_paymentgatewayconfigurationname\":\"Touc{{$randomInt}}hnet\",\r\n   \"cmc_authenticationmethod\":175490000,\r\n   \"ownerid@odata.bind\":\"/systemusers({{guserid}})\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_paymentgatewayconfigurations",
+							"host": [
+								"{{Eresource_URL}}cmc_paymentgatewayconfigurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 1st reference parameter for Tochnet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var baseentityname;",
+									"var baseentity;",
+									"var querystring;",
+									"var referenceattribute;",
+									"var referenceparameterid;",
+									"pm.test(\"Touchnet reference parameter is created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    referenceparameterid = jsonData.cmc_referenceparameterid;",
+									"    console.log(\"referenceparameterid \", referenceparameterid);",
+									"    referenceparameterattribute = jsonData.cmc_referenceattribute;",
+									"    console.log(\"referenceattribute \", referenceparameterattribute);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_referenceattribute\":\"{{referenceattribute}}\",\r\n   \"cmc_baseentityname\":\"{{baseentityname}}\",\r\n   \"cmc_baseentity\":\"{{baseentity}}\",\r\n   \"cmc_querystring\":\"{{querystring}}\",\r\n   \"cmc_paymentgatewayconfigurationid@odata.bind\":\"/cmc_paymentgatewayconfigurations({{gpaymentgatewayconfigurationid}})\",\r\n   \"cmc_paymentgateway\":175490003\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_referenceparameters",
+							"host": [
+								"{{Eresource_URL}}cmc_referenceparameters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 2nd reference parameter for Tochnet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var baseentityname;",
+									"var baseentity;",
+									"var querystring;",
+									"var referenceattribute;",
+									"var referenceparameterid;",
+									"pm.test(\"Touchnet reference parameter is created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    referenceparameterid = jsonData.cmc_referenceparameterid;",
+									"    console.log(\"referenceparameterid \", referenceparameterid);",
+									"    referenceparameterattribute = jsonData.cmc_referenceattribute;",
+									"    console.log(\"referenceattribute \", referenceparameterattribute);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_referenceattribute\":\"{{referenceattribute1}}\",\r\n   \"cmc_baseentityname\":\"{{baseentityname1}}\",\r\n   \"cmc_baseentity\":\"{{baseentity1}}\",\r\n   \"cmc_querystring\":\"{{querystring1}}\",\r\n   \"cmc_paymentgatewayconfigurationid@odata.bind\":\"/cmc_paymentgatewayconfigurations({{gpaymentgatewayconfigurationid}})\",\r\n   \"cmc_paymentgateway\":175490003\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_referenceparameters",
+							"host": [
+								"{{Eresource_URL}}cmc_referenceparameters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 3rd reference parameter for Tochnet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var baseentityname;",
+									"var baseentity;",
+									"var querystring;",
+									"var referenceattribute;",
+									"var referenceparameterid;",
+									"pm.test(\"Touchnet reference parameter is created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    referenceparameterid = jsonData.cmc_referenceparameterid;",
+									"    console.log(\"referenceparameterid \", referenceparameterid);",
+									"    referenceparameterattribute = jsonData.cmc_referenceattribute;",
+									"    console.log(\"referenceattribute \", referenceparameterattribute);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_referenceattribute\":\"{{referenceattribute2}}\",\r\n   \"cmc_baseentityname\":\"{{baseentityname2}}\",\r\n   \"cmc_baseentity\":\"{{baseentity2}}\",\r\n   \"cmc_querystring\":\"{{querystring2}}\",\r\n   \"cmc_paymentgatewayconfigurationid@odata.bind\":\"/cmc_paymentgatewayconfigurations({{gpaymentgatewayconfigurationid}})\",\r\n   \"cmc_paymentgateway\":175490003\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_referenceparameters",
+							"host": [
+								"{{Eresource_URL}}cmc_referenceparameters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 4th reference parameter for Tochnet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var baseentityname;",
+									"var baseentity;",
+									"var querystring;",
+									"var referenceattribute;",
+									"var referenceparameterid;",
+									"pm.test(\"Touchnet reference parameter is created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    referenceparameterid = jsonData.cmc_referenceparameterid;",
+									"    console.log(\"referenceparameterid \", referenceparameterid);",
+									"    referenceparameterattribute = jsonData.cmc_referenceattribute;",
+									"    console.log(\"referenceattribute \", referenceparameterattribute);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_referenceattribute\":\"{{referenceattribute3}}\",\r\n   \"cmc_baseentityname\":\"{{baseentityname3}}\",\r\n   \"cmc_baseentity\":\"{{baseentity3}}\",\r\n   \"cmc_querystring\":\"{{querystring3}}\",\r\n   \"cmc_paymentgatewayconfigurationid@odata.bind\":\"/cmc_paymentgatewayconfigurations({{gpaymentgatewayconfigurationid}})\",\r\n   \"cmc_paymentgateway\":175490003\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_referenceparameters",
+							"host": [
+								"{{Eresource_URL}}cmc_referenceparameters"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

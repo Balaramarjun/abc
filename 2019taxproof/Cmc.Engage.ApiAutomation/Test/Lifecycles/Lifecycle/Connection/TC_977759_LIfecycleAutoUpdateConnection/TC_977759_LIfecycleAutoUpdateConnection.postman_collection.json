@@ -1,0 +1,1107 @@
+{
+	"info": {
+		"_postman_id": "51c04b1d-27cf-4f66-97db-5bdfaf60a659",
+		"name": "TC_977759_LIfecycleAutoUpdateConnection",
+		"description": "Validate the functionality of \"Lifecycle - Auto Update Connections\" flow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona- Business UnitAdmin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid2',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auto Update Connection",
+			"item": [
+				{
+					"name": "Get SourceCategory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceCategoryid;",
+									"pm.test(\"Source category record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceCategoryid = jsonData.value[0].cmc_sourcecategoryid;",
+									"    var sourceCategoryName = jsonData.value[0].cmc_sourcecategoryname;",
+									"    console.log('SourceCategory Name is: ' + sourceCategoryName);",
+									"});",
+									"pm.globals.set('gsourceCategoryid1', sourceCategoryid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceMethod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceMethodid;",
+									"",
+									"pm.test(\"Source Method record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+									"    var sourceMethodName = jsonData.value[0].cmc_sourcemethodname;",
+									"    console.log('SourceMethod Name is: ' + sourceMethodName);",
+									"",
+									"});",
+									"pm.globals.set('gsourceMethodid1', sourceMethodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create AcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"pm.test(\"Academicperiodid Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"});",
+									"",
+									"var academicperiodname = data.mshied_name;",
+									"pm.environment.unset(\"variable_key\");",
+									"pm.variables.set(\"cmc_academicperiodname\", academicperiodname);",
+									"var ownerid1 = data.ownerid;",
+									"pm.variables.set(\"ownerid\", ownerid1);",
+									"pm.globals.set('gacademicperiodid', academicperiodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_name\": \"{{AcademicName}}{{$randomInt}}\",\n    \"mshied_code\": \"{{$randomInt}}{{cmc_code}}IC{{$randomInt}}\",\n    \"mshied_startdate\": \"{{timestamp}}\",\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var accountid;",
+									"var accountname;",
+									"pm.test(\"Accountid created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    accountid = jsonData.accountid;",
+									"    accountname = jsonData.name;",
+									"    console.log('Accountid:' + accountid);",
+									"    console.log('Account Name:' + accountname);",
+									"});",
+									"pm.globals.set('gaccountid', accountid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\":\"{{AccName}}{{$randomInt}}\",\n\"mshied_accounttype\": \"{{accounttypecampus}}\",\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact(Alumni)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var contactname;",
+									"",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    contactname = jsonData.fullname;",
+									"",
+									"});",
+									"  ",
+									"var Fname1 = data.firstname;",
+									"var Lname1 = data.lastname;",
+									"",
+									"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"pm.globals.set('gcontactid1',contact_id);",
+									"console.log(\"contactid:\"+contact_id);",
+									"console.log(\"contactname:\"+contactname);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"firstname\": \"{{firstname}}{{$randomInt}}\",\n\"lastname\": \"{{lastname}}\",\n\"mshied_contacttype\":\"{{ContType1}}\",\n\"mshied_CurrentAcademicPeriodId@odata.bind\":\"/mshied_academicperiods({{gacademicperiodid}})\",\n\"cmc_sourcecampusid@odata.bind\":\"/accounts({{gaccountid}})\",\n\"birthdate\":\"{{dateofbirth}}\",\n\"emailaddress1\":\"ankur{{$randomInt}}@test.com\",\n\"cmc_sourcedate\":\"{{currentdate}}\",\n\"cmc_recentsat\":266,\n\"cmc_recentact\":100,\n\"mshied_legacy\":\"true\",\n\"gendercode\":\"1\",\n\"shippingmethodcode\":\"1\",\n\"preferredcontactmethodcode\": \"1\",\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts({{gsourceCategoryid1}})\",\n\"cmc_sourcemethodid@odata.bind\":\"/contacts({{gsourceMethodid1}})\",\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create lifecycle",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid;",
+									"var accountid;",
+									"var lifecyclename;",
+									"pm.test(\"Accountid created\", function() {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"   lifecycleid  = jsonData.opportunityid ;",
+									"  accountid = jsonData._cmc_campusid_value;",
+									"  contactid = jsonData._cmc_contactid_value;",
+									"  lifecyclename = jsonData.name;",
+									"",
+									"   console.log('LifeCyleID:' +lifecycleid);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('LifeCyleName:' +lifecyclename);",
+									"});",
+									"",
+									"pm.globals.set('glifecycleid',lifecycleid);",
+									"pm.globals.set('glifecyclename',lifecyclename);",
+									" ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_campusid@odata.bind\": \"/accounts({{gaccountid}})\",\n    \"cmc_lifecycletype\": {{lifecycletype}},\n    \"cmc_lifecyclestatus\": {{lifecyclestatus}},\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\",\n    \"cmc_sourcecampusid@odata.bind\": \"/accounts({{gaccountid}})\",\n    \"cmc_contactid@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"customerid_contact@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\n    \"cmc_sourcereferringcontactid@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"parentcontactid@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/opportunities",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"opportunities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Connection Role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var connectionroleid;",
+									"var connectionroleName;",
+									"pm.test(\"Getting Connection Role UG Prospect\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    connectionroleid = jsonData.value[0].connectionroleid;",
+									"    connectionroleName = jsonData.value[0].name;",
+									"    console.log('ConnectionRole ID:' + connectionroleid);",
+									"    console.log('ConnecationRole Name:' + connectionroleName);",
+									"    pm.globals.set('gconnectionroleid', connectionroleid);",
+									"    pm.globals.set('gconnectionroleName', connectionroleName);",
+									"    setTimeout(function () { }, 90000);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/connectionroles?$filter=name eq 'UG Prospect'",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"connectionroles"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "name eq 'UG Prospect'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Connection",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Connection created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    var connectionid1 = jsonData.value[0].connectionid;",
+									"    var record1id_value = jsonData.value[0]._record1id_value;",
+									"    var record2id_value = jsonData.value[0]._record2id_value;",
+									"    var connectionrole = jsonData.value[0]._record1roleid_value;",
+									"",
+									"    console.log('record1id_value:' + record1id_value);",
+									"    console.log('record2id_value:' + record2id_value);",
+									"    console.log('Connection Role:' + connectionrole);",
+									"",
+									"    var connectioncontact = pm.globals.get('gcontactid1');",
+									"    console.log(\"connectioncontact\", connectioncontact);",
+									"    var connectionaccount = pm.globals.get('gaccountid');",
+									"    console.log(\"connectionaccount\", connectionaccount);",
+									"    var ugprospectroleid = pm.globals.get('gconnectionroleid')",
+									"",
+									"    pm.globals.set('gconnectionid1', connectionid1);",
+									"",
+									"    if (record1id_value === connectioncontact && record2id_value === connectionaccount && ugprospectroleid === connectionrole) {",
+									"        console.log(\"UG Prospect Role connection created\");",
+									"    }",
+									"    else {",
+									"        console.log(\"connection not created\");",
+									"        pm.expect.fail('connection not created');",
+									"    }",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/connections?$filter=_record1id_value eq '{{gcontactid1}}' and _record2roleid_value eq '{{gconnectionroleid}}'",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"connections"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_record1id_value eq '{{gcontactid1}}' and _record2roleid_value eq '{{gconnectionroleid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Updating Lifecycle Status Lost",
+			"item": [
+				{
+					"name": "Update LifeCycle Status Not Interested",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus;",
+									"var contactid;",
+									"var accountid;",
+									"var lifecyclename;",
+									"",
+									"pm.test(\"Updating LifeCycle status\", function () {",
+									"  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"  var jsonData = JSON.parse(responseBody);",
+									"  lifecyclestatus = jsonData.cmc_lifecyclestatus;",
+									"  statecode = jsonData.statecode;",
+									"",
+									"  if (lifecyclestatus === 175490001 && statecode === 2) {",
+									"    console.log('Lifecycyle status Set to NotEligible');",
+									"    console.log(\"Lifecycyle state LOST\");",
+									"  }",
+									"  else {",
+									"    pm.expect.fail('Lifecycyle status not set to NotEligible');",
+									"  }",
+									"});",
+									"setTimeout(function () { }, 60000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_lifecyclestatus\": {{lifecyclestatus1}}\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Connection Deactivation",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify Connection Deactivation\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    var statecodevalue = jsonData.statecode;",
+									"    var statuscodevalue = jsonData.statuscode;",
+									"    console.log('statecodevalue:' + statecodevalue);",
+									"    console.log('statuscodeevalue:' + statuscodevalue);",
+									"",
+									"    if(statecodevalue===1 && statuscodevalue===2)",
+									"    {",
+									"      console.log('Connection Deactivated' );",
+									"    }",
+									"  else {",
+									"    pm.expect.fail('Connection Not Deactivated');",
+									"  }",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/connections({{gconnectionid1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"connections({{gconnectionid1}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reopen Lifecycle",
+			"item": [
+				{
+					"name": "Reopen Lifecycle first",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid;",
+									"var statecode;",
+									"pm.test(\"Update Lifecycle status\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    var lifecyclestatus = jsonData.cmc_lifecyclestatus;",
+									"    statecode = jsonData.statecode;",
+									"    console.log(\"--- Reopining Lifecycle ---  \");",
+									"    console.log(\"Lifecycle status : \" + lifecyclestatus);",
+									"",
+									"    if (statecode === 0 && pm.expect(lifecyclestatus).to.eql(undefined)) {",
+									"        console.log(\"Lifecycle state : OPEN\");",
+									"        setTimeout(function(){}, 60000);",
+									"    }",
+									"    else {",
+									"        pm.expect.fail('Lifecycle status not changed')",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"statecode\": 0\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Connection Activation",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify Connection Activation\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    var statecodevalue = jsonData.statecode;",
+									"    var statuscodevalue = jsonData.statuscode;",
+									"    console.log('statecodevalue:' + statecodevalue);",
+									"    console.log('statuscodeevalue:' + statuscodevalue);",
+									"",
+									"    if(statecodevalue===0 && statuscodevalue===1)",
+									"    {",
+									"      console.log('Connection Activated Again' );",
+									"    }",
+									"    else{",
+									"      pm.expect.fail('Connection not Activated')",
+									"    }",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/connections({{gconnectionid1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"connections({{gconnectionid1}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

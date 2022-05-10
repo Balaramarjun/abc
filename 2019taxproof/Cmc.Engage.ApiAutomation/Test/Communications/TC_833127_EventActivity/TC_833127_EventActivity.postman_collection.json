@@ -1,0 +1,1806 @@
+{
+	"info": {
+		"_postman_id": "0856c43a-bdcf-4a9c-b1d7-4d812e58a56f",
+		"name": "TC_833127_EventActivity",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid2',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "EventActivity-Normal",
+			"item": [
+				{
+					"name": "Create Contact1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.fullname;",
+									"});",
+									" ",
+									"",
+									"pm.globals.set('gcontactid',contact_id);",
+									"console.log(Name);",
+									"console.log('Contactid:'+contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstname\":\"{{firstname}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{$randomInt}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.fullname;",
+									"});",
+									"",
+									"pm.globals.set('gcontactid1',contact_id);",
+									"console.log(Name);",
+									"console.log('Contactid:'+contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstname\":\"{{firstname}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{$randomInt}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Normal Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var eventid;",
+									"pm.test(\"Event Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    eventid = jsonData.msevtmgt_eventid ;",
+									"    var eventName=jsonData.msevtmgt_name;",
+									"    console.log(\"Normal Event name is: \" +eventName);",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('geventid',eventid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"msevtmgt_name\": \"{{msevtmgt_name}}{{$randomInt}}{{$randomInt}}\",\r\n    \"msevtmgt_eventtype\": \"{{msevtmgt_eventtype}}\",\r\n    \"msevtmgt_eventstartdate\": \"{{timestamp}}\",\r\n    \"msevtmgt_eventenddate\": \"{{timestampEndDate}}\",\r\n    \"msevtmgt_eventtimezone\": {{msevtmgt_eventtimezone}},\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_events",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var evenRegtid;",
+									"pm.test(\"Event Registration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    evenRegtid = jsonData.msevtmgt_eventregistrationid ;",
+									"    var eventRegName=jsonData.msevtmgt_name;",
+									"    console.log(\"Event registration name is: \" +eventRegName);",
+									"    var normaleventId=jsonData._msevtmgt_eventid_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contactid_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid');",
+									"    var eventId=pm.globals.get('geventid');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId))",
+									"    {",
+									"        console.log(\"Event registration is correctly linked to Event and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console/log(\"Event registration is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('gevenRegtid',evenRegtid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"msevtmgt_ContactId@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\t\"msevtmgt_EventId@odata.bind\": \"/msevtmgt_events({{geventid}})\",\r\n\t\"msevtmgt_primaryrole\": {{msevtmgt_primaryrole}}\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_eventregistrations",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_eventregistrations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var sessionid;",
+									"pm.test(\"Session Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sessionid = jsonData.msevtmgt_sessionid ;",
+									"    var sessionName=jsonData.msevtmgt_name;",
+									"    console.log(\"Session name is: \" +sessionName);",
+									"    ",
+									"    var eventId= jsonData._msevtmgt_event_value;",
+									"    var orgEventId=pm.globals.get('geventid');",
+									"    ",
+									"    if(eventId===orgEventId)",
+									"    {",
+									"        console.log(\"Session is correctly linked to Event record\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Session is not linked to Event. Check again\");",
+									"    }",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gsessionid',sessionid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(10, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{geventid}})\",\r\n\t\"msevtmgt_endtime\": \"{{timestampEndDate}}\",\r\n\t\"msevtmgt_name\": \"{{msevtmgt_name1}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"msevtmgt_publishstatus\": {{msevtmgt_publishstatus}},\r\n\t\"msevtmgt_sessionformat\": {{msevtmgt_sessionformat}},\r\n\t\"msevtmgt_starttime\": \"{{timestamp}}\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_sessions",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var sessionRegtid;",
+									"pm.test(\"Session Registration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sessionRegtid = jsonData.msevtmgt_sessionregistrationid ;",
+									"    var sessionRegName=jsonData.msevtmgt_name;",
+									"    console.log(\"session registration name is: \" +sessionRegName);",
+									"    var normaleventId=jsonData._msevtmgt_event_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contactid_value;",
+									"    var actsessionId=jsonData._msevtmgt_sessionid_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid1');",
+									"    var eventId=pm.globals.get('geventid');",
+									"    var sessionId=pm.globals.get('gsessionid');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId) && (actsessionId===sessionId))",
+									"    {",
+									"        console.log(\"Session registration is correctly linked to Event, session and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console/log(\"session registration is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('gsessionRegtid',sessionRegtid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{geventid}})\",\r\n\t\"msevtmgt_SessionId@odata.bind\": \"/msevtmgt_sessions({{gsessionid}})\",\r\n\t\"msevtmgt_contactid@odata.bind\": \"/contacts({{gcontactid1}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_sessionregistrations",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_sessionregistrations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session Check-in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var sessionCheckintid;",
+									"pm.test(\"Session check-in Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sessionCheckintid = jsonData.msevtmgt_checkinid ;",
+									"    var sessionCheckinName=jsonData.msevtmgt_name;",
+									"    console.log(\"session check-in name is: \" +sessionCheckinName);",
+									"    var normaleventId=jsonData._msevtmgt_event_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contact_value;",
+									"    //var actsessionId=jsonData._msevtmgt_sessionid_value;",
+									"    var actsessionRegId=jsonData._msevtmgt_sessionregistration_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid1');",
+									"    var eventId=pm.globals.get('geventid');",
+									"    //var sessionId=pm.globals.get('gsessionid');",
+									"    var sessionRegId=pm.globals.get('gsessionRegtid');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId) && (actsessionRegId===sessionRegId))",
+									"    {",
+									"        console.log(\"Session Check-in is correctly linked to Event, session and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"session Check-in is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('gsessionCheckintid',sessionCheckintid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();\r",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\t\"msevtmgt_Contact@odata.bind\": \"/contacts({{gcontactid1}})\",\r\n\t\"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{geventid}})\",\r\n\t\"msevtmgt_RegistrationId@odata.bind\": \"/msevtmgt_eventregistrations({{gevenRegtid}})\",\r\n\t\"msevtmgt_SessionAttended@odata.bind\": \"/msevtmgt_sessions({{gsessionid}})\",\r\n\t\"msevtmgt_SessionRegistration@odata.bind\": \"/msevtmgt_sessionregistrations({{gsessionRegtid}})\",\r\n\t\"msevtmgt_checkintime\": \"{{current_timestamp}}\",\r\n\t\"msevtmgt_checkintype\": {{msevtmgt_checkintype}},\r\n\t\"msevtmgt_checkouttime\": \"{{current_timestamp}}\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_checkins",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_checkins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event Check-in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var eventCheckintid;",
+									"pm.test(\"Session Registration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    eventCheckintid = jsonData.msevtmgt_checkinid ;",
+									"    var eventCheckinName=jsonData.msevtmgt_name;",
+									"    console.log(\"Event check-in name is: \" +eventCheckinName);",
+									"    var normaleventId=jsonData._msevtmgt_event_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contact_value;",
+									"    //var actsessionId=jsonData._msevtmgt_sessionid_value;",
+									"    var actEventRegId=jsonData._msevtmgt_registrationid_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid');",
+									"    var eventId=pm.globals.get('geventid');",
+									"    //var sessionId=pm.globals.get('gsessionid');",
+									"    var eventRegId=pm.globals.get('gevenRegtid');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId) && (actEventRegId===eventRegId))",
+									"    {",
+									"        console.log(\"Session Check-in is correctly linked to Event, session and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"session Check-in is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('geventCheckintid',eventCheckintid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();\r",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString())"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\t\"msevtmgt_Contact@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\t\"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{geventid}})\",\r\n\t\"msevtmgt_RegistrationId@odata.bind\": \"/msevtmgt_eventregistrations({{gevenRegtid}})\",\r\n\t\"msevtmgt_checkintime\": \"{{current_timestamp}}\",\r\n\t\"msevtmgt_checkintype\": {{msevtmgt_checkintype1}},\r\n\t\"msevtmgt_checkouttime\": \"{{current_timestamp}}\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_checkins",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_checkins"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recuring Event",
+			"item": [
+				{
+					"name": "Create RecurringEvent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var receventid,receventName;",
+									"pm.test(\"Recurring Event Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    receventid = jsonData.msevtmgt_eventid ;",
+									"    receventName=jsonData.msevtmgt_name;",
+									"    console.log(\"Recurring Event name is: \" +receventName);",
+									"    ",
+									"   ",
+									"  ",
+									"});",
+									"  pm.globals.set('greceventName',receventName);",
+									"  pm.globals.set('greceventid',receventid);",
+									"  setTimeout(function(){}, 200000); ",
+									"",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(10, 'days').format(\"YYYY-MM-DD\"))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\t\"msevtmgt_allowanonymousregistrations\": true,\r\n\t\"msevtmgt_allowcustomagenda\": false,\r\n\t\"msevtmgt_autoregisterwaitlistitems\": true,\r\n\t\"msevtmgt_checkincount\": 0,\r\n\t\"msevtmgt_createleadsforeventregistrations\": true,\r\n\t\"msevtmgt_customeventurl\": false,\r\n\t\"msevtmgt_enablecaptcha\": true,\r\n\t\"msevtmgt_enablemultiattendeeregistration\": true,\r\n\t\"msevtmgt_eventenddate\": \"{{timestampEndDate}}\",\r\n\t\"msevtmgt_eventformat\": \"{{msevtmgt_eventformat}}\",\r\n\t\"msevtmgt_eventstartdate\": \"{{timestamp}}\",\r\n\t\"msevtmgt_eventtimezone\": {{msevtmgt_eventtimezone}},\r\n\t\"msevtmgt_eventtype\": \"{{msevtmgt_eventtype}}\",\r\n\t\"msevtmgt_isrecurringevent\": true,\r\n\t\"msevtmgt_istemplate\": \"{{msevtmgt_istemplate}}\",\r\n\t\"msevtmgt_manageregistrationcount\": \"{{msevtmgt_manageregistrationcount}}\",\r\n\t\"msevtmgt_name\": \"Recurring {{$randomInt}} API {{$randomInt}}\",\r\n\t\"msevtmgt_recurrencepattern\": \"{\\\"Range_of_recurrence\\\":{\\\"Type\\\":\\\"End_after\\\",\\\"Start\\\":\\\"2019-07-19\\\",\\\"End_after\\\":{\\\"Count\\\":3}},\\\"Recurrent_pattern\\\":{\\\"Type\\\":\\\"Daily\\\",\\\"Daily\\\":{\\\"Type\\\":\\\"Every_days\\\",\\\"Every_days\\\":{\\\"Days\\\":1}}},\\\"Time_range\\\":{\\\"StartTime\\\":\\\"12:51\\\",\\\"Duration\\\":30,\\\"FirstDay\\\":1}}\",\r\n\t\"msevtmgt_registrationcount\": 0,\r\n\t\"msevtmgt_revenuefromsponsorship\": 0,\r\n\t\"msevtmgt_showautomaticregistrationcheckbox\": false,\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_events",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get RecurringEvent records",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var childRecEvent1id,endtime,starttime;",
+									"pm.test(\"Get recurring child events Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var result=jsonData.value;",
+									"    if(result.length===0)",
+									"    {",
+									"        console.log('No child recurring events created');",
+									"    }",
+									"    else",
+									"    {",
+									"        childRecEvent1id = jsonData.value[1].msevtmgt_eventid;",
+									"        var childEventName=jsonData.value[1].msevtmgt_name;",
+									"        console.log(\"Event name is: \" +childEventName);",
+									"        endtime=jsonData.value[1].cmc_enddatetime;",
+									"        starttime=jsonData.value[1].cmc_startdatetime;",
+									"        ",
+									"        ",
+									"      ",
+									"      ",
+									"      /*for(i=0;i<result.length;i++)",
+									"      {",
+									"        ",
+									"        childRecEvent1id = jsonData.value[i].msevtmgt_eventid;",
+									"        var childEventName=jsonData.value[i].msevtmgt_name;",
+									"        console.log(\"Event name is: \" +childEventName);",
+									"      } ",
+									"        ",
+									"        if(i==1)",
+									"        {",
+									"            childRecEvent1id = jsonData.value[1].msevtmgt_eventid;",
+									"            console.log(\"childRecEvent1id\",+childRecEvent1id);",
+									"        }*/",
+									"",
+									"      ",
+									"    }",
+									"});",
+									"",
+									" pm.globals.set('gchildRecEvent1id',childRecEvent1id);",
+									"  pm.globals.set('gendtime',endtime);",
+									"   pm.globals.set('gstarttime',starttime);",
+									" ",
+									"  ",
+									"",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_events?$filter=msevtmgt_name eq '{{greceventName}}'",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_events"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "msevtmgt_name eq '{{greceventName}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var evenRegtid;",
+									"pm.test(\"Event Registration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    evenRegtid = jsonData.msevtmgt_eventregistrationid ;",
+									"    var eventRegName=jsonData.msevtmgt_name;",
+									"    console.log(\"Event registration name is: \" +eventRegName);",
+									"    var normaleventId=jsonData._msevtmgt_eventid_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contactid_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid');",
+									"    var eventId=pm.globals.get('gchildRecEvent1id');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId))",
+									"    {",
+									"        console.log(\"Event registration is correctly linked to Event and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console/log(\"Event registration is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('gevenRegtid1',evenRegtid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"msevtmgt_ContactId@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\t\"msevtmgt_EventId@odata.bind\": \"/msevtmgt_events({{gchildRecEvent1id}})\",\r\n\t\"msevtmgt_primaryrole\": {{msevtmgt_primaryrole}}\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_eventregistrations",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_eventregistrations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var sessionid;",
+									"pm.test(\"Session Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sessionid = jsonData.msevtmgt_sessionid ;",
+									"    var sessionName=jsonData.msevtmgt_name;",
+									"    console.log(\"Session name is: \" +sessionName);",
+									"    ",
+									"    var eventId= jsonData._msevtmgt_event_value;",
+									"    var orgEventId=pm.globals.get('gchildRecEvent1id');",
+									"    ",
+									"    if(eventId===orgEventId)",
+									"    {",
+									"        console.log(\"Session is correctly linked to Event record\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Session is not linked to Event. Check again\");",
+									"    }",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gsessionid1',sessionid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{gchildRecEvent1id}})\",\r\n\t\"msevtmgt_endtime\": \"{{gendtime}}\",\r\n\t\"msevtmgt_name\": \"{{msevtmgt_name1}} {{$randomInt}}{{$randomInt}}\",\r\n\t\"msevtmgt_publishstatus\": {{msevtmgt_publishstatus}},\r\n\t\"msevtmgt_sessionformat\": {{msevtmgt_sessionformat}},\r\n\t\"msevtmgt_starttime\": \"{{gstarttime}}\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_sessions",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var sessionRegtid;",
+									"pm.test(\"Session Registration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sessionRegtid = jsonData.msevtmgt_sessionregistrationid ;",
+									"    var sessionRegName=jsonData.msevtmgt_name;",
+									"    console.log(\"session registration name is: \" +sessionRegName);",
+									"    var normaleventId=jsonData._msevtmgt_event_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contactid_value;",
+									"    var actsessionId=jsonData._msevtmgt_sessionid_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid1');",
+									"    var eventId=pm.globals.get('gchildRecEvent1id');",
+									"    var sessionId=pm.globals.get('gsessionid1');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId) && (actsessionId===sessionId))",
+									"    {",
+									"        console.log(\"Session registration is correctly linked to Event, session and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"session registration is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('gsessionRegtid1',sessionRegtid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{gchildRecEvent1id}})\",\r\n\t\"msevtmgt_SessionId@odata.bind\": \"/msevtmgt_sessions({{gsessionid1}})\",\r\n\t\"msevtmgt_contactid@odata.bind\": \"/contacts({{gcontactid1}})\"\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_sessionregistrations",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_sessionregistrations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session Check-in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var sessionCheckintid;",
+									"pm.test(\"Session check-in Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    sessionCheckintid = jsonData.msevtmgt_checkinid ;",
+									"    var sessionCheckinName=jsonData.msevtmgt_name;",
+									"    console.log(\"session check-in name is: \" +sessionCheckinName);",
+									"    var normaleventId=jsonData._msevtmgt_event_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contact_value;",
+									"    //var actsessionId=jsonData._msevtmgt_sessionid_value;",
+									"    var actsessionRegId=jsonData._msevtmgt_sessionregistration_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid1');",
+									"    var eventId=pm.globals.get('gchildRecEvent1id');",
+									"    //var sessionId=pm.globals.get('gsessionid');",
+									"    var sessionRegId=pm.globals.get('gsessionRegtid1');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId) && (actsessionRegId===sessionRegId))",
+									"    {",
+									"        console.log(\"Session Check-in is correctly linked to Event, session and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"session Check-in is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('gsessionCheckintid',sessionCheckintid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\t\"msevtmgt_Contact@odata.bind\": \"/contacts({{gcontactid1}})\",\r\n\t\"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{gchildRecEvent1id}})\",\r\n\t\"msevtmgt_RegistrationId@odata.bind\": \"/msevtmgt_eventregistrations({{gevenRegtid1}})\",\r\n\t\"msevtmgt_SessionAttended@odata.bind\": \"/msevtmgt_sessions({{gsessionid1}})\",\r\n\t\"msevtmgt_SessionRegistration@odata.bind\": \"/msevtmgt_sessionregistrations({{gsessionRegtid1}})\",\r\n\t\"msevtmgt_checkintime\": \"{{gstarttime}}\",\r\n\t\"msevtmgt_checkintype\": {{msevtmgt_checkintype}},\r\n\t\"msevtmgt_checkouttime\": \"{{gendtime}}\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_checkins",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_checkins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event Check-in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var eventCheckintid;",
+									"pm.test(\"Session Registration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    eventCheckintid = jsonData.msevtmgt_checkinid ;",
+									"    var eventCheckinName=jsonData.msevtmgt_name;",
+									"    console.log(\"Event check-in name is: \" +eventCheckinName);",
+									"    var normaleventId=jsonData._msevtmgt_event_value;",
+									"    var eventcontactId=jsonData._msevtmgt_contact_value;",
+									"    //var actsessionId=jsonData._msevtmgt_sessionid_value;",
+									"    var actEventRegId=jsonData._msevtmgt_registrationid_value;",
+									"    ",
+									"    var conatctId=pm.globals.get('gcontactid');",
+									"    var eventId=pm.globals.get('gchildRecEvent1id');",
+									"    //var sessionId=pm.globals.get('gsessionid');",
+									"    var eventRegId=pm.globals.get('gevenRegtid1');",
+									"    ",
+									"    if((normaleventId===eventId) && (eventcontactId===conatctId) && (actEventRegId===eventRegId))",
+									"    {",
+									"        console.log(\"Session Check-in is correctly linked to Event, session and Contact\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"session Check-in is not linked correctly, please check\");",
+									"    }",
+									"});",
+									"",
+									"  pm.globals.set('geventCheckintid',eventCheckintid);",
+									"  ",
+									" //var description = data.phonedescription;",
+									" //var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\t\"msevtmgt_Contact@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\t\"msevtmgt_Event@odata.bind\": \"/msevtmgt_events({{gchildRecEvent1id}})\",\r\n\t\"msevtmgt_RegistrationId@odata.bind\": \"/msevtmgt_eventregistrations({{gevenRegtid1}})\",\r\n\t\"msevtmgt_checkintime\": \"{{gstarttime}}\",\r\n\t\"msevtmgt_checkintype\": {{msevtmgt_checkintype1}},\r\n\t\"msevtmgt_checkouttime\": \"{{gendtime}}\"\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_checkins",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_checkins"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Event Pass",
+			"item": [
+				{
+					"name": "Create Contact3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.fullname;",
+									"});",
+									"",
+									"pm.globals.set('gcontactid2',contact_id);",
+									"console.log(Name);",
+									"console.log('Contactid:'+contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstname\":\"{{firstname}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{$randomInt}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction Currency",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var transactioncurrencyid, currencyname;",
+									"",
+									"pm.test(\"Get Transaction Currency\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    transactioncurrencyid = jsonData.value[0].transactioncurrencyid;",
+									"    currencyname = jsonData.value[0].currencyname;",
+									"    console.log('Currency name is : '+currencyname);",
+									"    ",
+									"});",
+									"pm.globals.set('gtransactioncurrencyid',transactioncurrencyid);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}transactioncurrencies",
+							"host": [
+								"{{Eresource_URL}}transactioncurrencies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var eventid;",
+									"pm.test(\"Event Activity Created\", function() ",
+									"{",
+									"  pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"  var jsonData =JSON.parse(responseBody);",
+									"  eventid = jsonData.msevtmgt_eventid ;",
+									"  var eventName=jsonData.msevtmgt_name;",
+									"  console.log(\"Event name is: \" +eventName);",
+									"  ",
+									"});",
+									"pm.globals.set('geventid1',eventid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(3, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"msevtmgt_name\": \"{{msevtmgt_name2}}{{$randomInt}}\",\r\n    \"msevtmgt_eventtype\": \"{{msevtmgt_eventtype2}}\",\r\n    \"msevtmgt_eventstartdate\": \"{{timestamp}}\",\r\n    \"msevtmgt_eventenddate\": \"{{timestampEndDate}}\",\r\n    \"msevtmgt_eventtimezone\": {{msevtmgt_eventtimezone}},\r\n    \"cmc_isenableforportal\": true,\r\n    \"msevtmgt_maximumeventcapacity\": {{maximumeventcapacity}},\r\n    \"msevtmgt_waitlistthisevent\": \"{{waitlistthisevent}}\",\r\n    \"cmc_paymentmethod\": \"{{cmc_paymentmethod}}\",\r\n    \"msevtmgt_numberofinvitations\": {{numberofinvitations}},\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n   \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_events",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Pass",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var passid, passprice;",
+									"pm.test(\"Event Pass Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    passid = jsonData.msevtmgt_passid ;",
+									"    var passName=jsonData.msevtmgt_name;",
+									"    passprice = jsonData.msevtmgt_passprice;",
+									"    console.log(\"Event Pass name is: \" +passName);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('gpassid',passid);",
+									"pm.globals.set('gpassprice',passprice);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"msevtmgt_eventid@odata.bind\": \"/msevtmgt_events({{geventid1}})\",\r\n    \"msevtmgt_name\": \"{{passname}}\",\r\n    \"msevtmgt_noofpassesallocated\": {{noofpassesallocated}},\r\n    \"msevtmgt_noofpassessold\": 0,\r\n    \"msevtmgt_noofpassesleft\": {{noofpassesallocated}},\r\n    \"msevtmgt_passprice\": {{passprice}},\r\n    \"transactioncurrencyid@odata.bind\": \"/transactioncurrencies({{gtransactioncurrencyid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_passes",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_passes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event Registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var eventregid;",
+									"pm.test(\"Event Registration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    eventregid = jsonData.msevtmgt_eventregistrationid ;",
+									"    var eventregName=jsonData.msevtmgt_name;",
+									"    console.log(\"Event Registration name is: \" +eventregName);  ",
+									"});",
+									"",
+									"pm.globals.set('geventregid2',eventregid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_eventpassid@odata.bind\": \"/msevtmgt_passes({{gpassid}})\",\r\n    \"msevtmgt_ContactId@odata.bind\": \"/contacts({{gcontactid2}})\",\r\n    \"msevtmgt_EventId@odata.bind\": \"/msevtmgt_events({{geventid1}})\",\r\n    \"msevtmgt_primaryrole\": {{msevtmgt_primaryrole}}\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_eventregistrations",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_eventregistrations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attendee Pass",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var attendeepassid, attendeepassname;",
+									"var eventid, passid, contactid, passprice;",
+									"pm.test(\"Attendee Pass Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    attendeepassid = jsonData.msevtmgt_attendeepassid;",
+									"    attendeepassname = jsonData.msevtmgt_name;",
+									"    eventid = jsonData._msevtmgt_eventid_value;",
+									"    passid = jsonData._msevtmgt_pass_value;",
+									"    contactid = jsonData._msevtmgt_contact_value;",
+									"    passprice = jsonData.msevtmgt_passprice;",
+									"    ",
+									"    console.log(\"Attendee Pass name is: \" +attendeepassname);",
+									"});",
+									"pm.globals.set('gattendeepassid',attendeepassid);",
+									"",
+									"pm.test(\"Validate Event\", function () {",
+									"    pm.expect(eventid).to.equal(pm.globals.get('geventid1'));",
+									"});",
+									"pm.test(\"Validate Pass\", function () {",
+									"    pm.expect(passid).to.equal(pm.globals.get('gpassid'));",
+									"});",
+									"pm.test(\"Validate Contact\", function () {",
+									"    pm.expect(contactid).to.equal(pm.globals.get('gcontactid2'));",
+									"});",
+									"pm.test(\"Validate Pass price\", function () {",
+									"    pm.expect(passprice).to.equal(pm.globals.get('gpassprice'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"msevtmgt_EventId@odata.bind\": \"/msevtmgt_events({{geventid1}})\",\r\n    \"msevtmgt_EventRegistrationId@odata.bind\": \"/msevtmgt_eventregistrations({{geventregid2}})\",\r\n    \"msevtmgt_pass@odata.bind\": \"/msevtmgt_passes({{gpassid}})\",\r\n    \"msevtmgt_passprice\": 10\r\n\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}msevtmgt_attendeepasses",
+							"host": [
+								"{{Eresource_URL}}msevtmgt_attendeepasses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

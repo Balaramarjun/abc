@@ -1,0 +1,1988 @@
+{
+	"info": {
+		"_postman_id": "f591a4f7-0683-4acf-b4ae-753c4973e061",
+		"name": "TC_753579_InternalConnection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken_DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Eadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Eadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser - DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid,fullname;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    fullname=jsonData.value[0].fullname;",
+							"    console.log(\"Application User name: \" +fullname);    ",
+							"});",
+							"pm.globals.set('guserid2',userid);",
+							"console.log('Systemuser:'+userid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq 'admin@api.com'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create AcademicPeriod",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var academicperiodid;",
+							"",
+							"pm.test(\"Academicperiodid Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    academicperiodid = jsonData.mshied_academicperiodid; ",
+							"});",
+							"var academicperiodname = data.mshied_name;",
+							"pm.environment.unset(\"variable_key\");",
+							"pm.variables.set(\"cmc_academicperiodname\", academicperiodname );",
+							"var ownerid1 = data.ownerid;",
+							"pm.variables.set(\"ownerid\", ownerid1);",
+							"pm.globals.set('gacademicperiodid',academicperiodid);",
+							"//console.log('{{gAcademic}}');"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"  var moment = require('moment');\r",
+							"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+							"\r",
+							"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"mshied_name\":\"{{AcademicName}}{{$randomInt}}\",\n\"mshied_code\":\"{{$randomInt}}{{cmc_code}}Irr{{$randomInt}}\",\n\"mshied_startdate\":\"{{timestamp}}\",\n\"mshied_enddate\":\"{{timestampEndDate}}\",\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}\n\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"mshied_academicperiods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var accountid;",
+							"var autoid;",
+							"pm.test(\"Accountid created\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    accountid = jsonData.accountid;",
+							"    autoid = jsonData.cmc_engageaccountid;",
+							"    console.log('accountid:'+accountid);",
+							"});",
+							"pm.test(\"Auto id validation\", function () {",
+							"    pm.expect(autoid).to.include(\"AC-\");",
+							"});",
+							"",
+							"pm.globals.set('gaccountid',accountid); ",
+							"pm.globals.set('gaccountautoid',autoid); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"{{AccName}}{{$randomInt}}\",\n\"mshied_accounttype\": \"494280000\",\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var accountid;",
+							"var autoid;",
+							"pm.test(\"Accountid created\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    accountid = jsonData.accountid;",
+							"    autoid = jsonData.cmc_engageaccountid;",
+							"    console.log('accountid:'+accountid);",
+							"});",
+							"    pm.test(\"Auto id validation\", function () {",
+							"        pm.expect(autoid).to.include(\"AC-\");",
+							"    });",
+							"",
+							"    pm.test(\"Validate Auto id\", function () {",
+							"        pm.expect(autoid).to.not.equal(pm.globals.get('gaccountautoid'));",
+							"    });",
+							"",
+							"pm.globals.set('gaccountid2',accountid); ",
+							"pm.globals.set('gaccountautoid2',autoid); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"{{AccName}}{{$randomInt}}\",\n\"mshied_accounttype\": \"494280000\",\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetToken_DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Eadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Eadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Role 'Primary Advisor'",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var titleID,titleName;",
+							"pm.test(\"Fetch Title\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    titleID = jsonData.value[0].cmc_titleid;",
+							"    titleName=jsonData.value[0].cmc_titlename;",
+							"",
+							"    ",
+							"});",
+							"pm.globals.set('gtitleID1',titleID);",
+							"",
+							"console.log(\"Title ID is: \"+titleID);",
+							"console.log(\"Title Name is: \"+titleName);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_titles?$filter=cmc_titlename eq 'Primary Advisor'",
+					"host": [
+						"{{Eresource_URL}}cmc_titles"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "cmc_titlename eq 'Primary Advisor'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get SourceCategory",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var sourceCategoryid;",
+							"",
+							"pm.test(\"Source category record Fetched\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    sourceCategoryid = jsonData.value[0].cmc_sourcecategoryid;",
+							"    var sourceCategoryName = jsonData.value[0].cmc_sourcecategoryname;",
+							"    console.log('SourceCategory Name is: ' + sourceCategoryName);",
+							"",
+							"});",
+							"",
+							"pm.globals.set('gsourceCategoryid1', sourceCategoryid);",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_sourcecategories",
+					"host": [
+						"{{Eresource_URL}}cmc_sourcecategories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get SourceMethod",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var sourceMethodid;",
+							"",
+							"pm.test(\"Source Method record Fetched\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+							"    var sourceMethodName = jsonData.value[0].cmc_sourcemethodname;",
+							"    console.log('SourceMethod Name is: ' + sourceMethodName);",
+							"",
+							"});",
+							"",
+							"pm.globals.set('gsourceMethodid1', sourceMethodid);",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_sourcemethods",
+					"host": [
+						"{{Eresource_URL}}cmc_sourcemethods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contact(Alumni)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contact_id;",
+							"var contactname;",
+							"",
+							"pm.test(\"Contact Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contact_id = jsonData.contactid;",
+							"    contactname = jsonData.fullname;",
+							"});",
+							"  ",
+							"var Fname1 = data.firstname;",
+							"var Lname1 = data.lastname;",
+							"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+							"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+							"pm.globals.set('gcontactid1',contact_id);",
+							"console.log(\"contactid:\"+contact_id);",
+							"console.log(\"contactname:\"+contactname);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\": \"{{firstname}}{{$randomInt}}\",\n    \"lastname\": \"{{lastname}}\",\n    \"mshied_contacttype\":\"{{ContType1}}\",\n    \"mshied_CurrentAcademicPeriodId@odata.bind\":\"/mshied_academicperiods({{gacademicperiodid}})\",\n    \"birthdate\":\"1985-04-01\",\n    \"emailaddress1\":\"ankur{{$randomInt}}@test.com\",\n    \"cmc_recentsat\":266,\n    \"cmc_recentact\":100,\n    \"mshied_legacy\":\"true\",\n    \"gendercode\":\"1\",\n    \"shippingmethodcode\":\"1\",\n    \"preferredcontactmethodcode\": \"1\",\n    \"cmc_sourcecategoryid@odata.bind\":\"/contacts({{gsourceCategoryid1}})\",\n    \"cmc_sourcemethodid@odata.bind\":\"/contacts({{gsourceMethodid1}})\",\n    \"cmc_titleid@odata.bind\": \"/contacts({{gtitleID1}})\",\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}contacts",
+					"host": [
+						"{{Eresource_URL}}contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contact(Student)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contact_id;",
+							"var contactname;",
+							"",
+							"pm.test(\"Contact Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contact_id = jsonData.contactid;",
+							"    contactname = jsonData.fullname;",
+							"});",
+							"  ",
+							"var Fname1 = data.firstname;",
+							"var Lname1 = data.lastname;",
+							"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+							"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+							"pm.globals.set('gcontactid2',contact_id);",
+							"console.log(\"contactid:\"+contact_id);",
+							"console.log(\"contactname:\"+contactname);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\": \"{{firstname}}{{$randomInt}}\",\n    \"lastname\": \"{{lastname}}\",\n    \"mshied_contacttype\":\"{{ContType2}}\",\n    \"mshied_CurrentAcademicPeriodId@odata.bind\":\"/mshied_academicperiods({{gacademicperiodid}})\",\n    \"birthdate\":\"1985-04-01\",\n    \"emailaddress1\":\"ankur{{$randomInt}}@test.com\",\n    \"cmc_sourcedate\":\"2018-10-17\",\n    \"cmc_recentsat\":266,\n    \"cmc_recentact\":100,\n    \"mshied_legacy\":\"true\",\n    \"gendercode\":\"1\",\n    \"shippingmethodcode\":\"1\",\n    \"preferredcontactmethodcode\": \"1\",\n    \"cmc_sourcecategoryid@odata.bind\":\"/contacts({{gsourceCategoryid1}})\",\n    \"cmc_sourcemethodid@odata.bind\":\"/contacts({{gsourceMethodid1}})\",\n    \"cmc_titleid@odata.bind\": \"/contacts({{gtitleID1}})\",\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}contacts",
+					"host": [
+						"{{Eresource_URL}}contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Alumni ConnectionRole",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var connectionroleid1;",
+							"var rolename1;",
+							"",
+							"pm.test(\"GettingConnectionRoleID\",function()",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData=JSON.parse(responseBody);",
+							"    connectionroleid1 = jsonData.value[1].connectionroleid;",
+							"    rolename1 = jsonData.value[1].name;    ",
+							"});",
+							"var expected = data.AlumniConnection;",
+							"",
+							"    pm.test(\"Validate ConnectionRole\", function () {",
+							"        pm.expect(rolename1).to.equal(expected);",
+							"    });",
+							"    ",
+							"pm.globals.set('gconnectionroleid1',connectionroleid1);",
+							" console.log(\"Connectionroleid:\" +connectionroleid1);",
+							" console.log(\"Connectionrole name:\" +rolename1);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}connectionroles?$select=connectionroleid,name&$filter=contains(name, 'Alumni')",
+					"host": [
+						"{{Eresource_URL}}connectionroles"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "connectionroleid,name"
+						},
+						{
+							"key": "$filter",
+							"value": "contains(name, 'Alumni')"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Child ConnectionRole",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var connectionroleid2;",
+							"var rolename2;",
+							"",
+							"pm.test(\"GettingConnectionRoleID\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);    ",
+							"    connectionroleid2 = jsonData.value[0].connectionroleid;",
+							"    rolename2 = jsonData.value[0].name;    ",
+							"});",
+							"",
+							"var expected = data.ChildConnection;",
+							"",
+							"    pm.test(\"Validate ConnectionRole\", function () {",
+							"        pm.expect(rolename2).to.equal(expected);",
+							"    });",
+							"",
+							"pm.globals.set('gconnectionroleid2', connectionroleid2);",
+							"console.log(\"Connectionroleid:\" + connectionroleid2);",
+							"console.log(\"Connectionrole name:\" + rolename2);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}connectionroles?$select=connectionroleid,name&$filter=contains(name, 'Child')",
+					"host": [
+						"{{Eresource_URL}}connectionroles"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "connectionroleid,name"
+						},
+						{
+							"key": "$filter",
+							"value": "contains(name, 'Child')"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Connection b/w Account and Contact",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var connectionid1;",
+							"pm.test(\"Connection created\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    connectionid1 = jsonData.connectionid;",
+							"    var record1id_value = jsonData._record1id_value;",
+							"    var record2id_value = jsonData._record2id_value;",
+							"    ",
+							"    console.log('record1id_value:'+record1id_value);",
+							"    console.log('record2id_value:'+record2id_value);",
+							"    console.log('connectionid:'+connectionid1);",
+							"    ",
+							"    var connectioncontact= pm.globals.get('gcontactid1');",
+							"    var connectionaccount= pm.globals.get('gaccountid');",
+							"    ",
+							"    if(record1id_value===connectioncontact && record2id_value===connectionaccount)",
+							"    {",
+							"        console.log( \"connection created\");",
+							"    }",
+							"    else",
+							"    {",
+							"        console.log( \"connection not created\");",
+							"    }",
+							"",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"record2id_account@odata.bind\":\"/contacts({{gaccountid}})\",\r\n\"record1id_contact@odata.bind\":\"/accounts({{gcontactid1}})\",\r\n\r\n\"record2roleid@odata.bind\":\"/connectionroles({{gconnectionroleid1}})\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/connections",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"connections"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Connection b/w Parent and Child",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var connectionid1;",
+							"pm.test(\"Connection created\", function() {",
+							"    ",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    connectionid1 = jsonData.connectionid;",
+							"    var record1id_value = jsonData._record1id_value;",
+							"    var record2id_value = jsonData._record2id_value;",
+							"    ",
+							"    console.log('record1id_value:'+record1id_value);",
+							"    console.log('record2id_value:'+record2id_value);",
+							"    console.log('connectionid:'+connectionid1);",
+							"    ",
+							"    ",
+							"    pm.globals.set('gconnectionid', connectionid1);",
+							"",
+							"    var connectioncontact1= pm.globals.get('gcontactid1');",
+							"    var connectioncontact2= pm.globals.get('gcontactid2');",
+							"    ",
+							"    if(record1id_value===connectioncontact2 && record2id_value===connectioncontact1)",
+							"    {",
+							"        console.log( \"connection created\");",
+							"    }",
+							"    else",
+							"    {",
+							"        console.log( \"connection not created\");",
+							"    }",
+							"",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"record1id_contact@odata.bind\": \"/contacts({{gcontactid2}})\",\r\n\"record2id_contact@odata.bind\": \"/contacts({{gcontactid1}})\",\r\n\r\n\"record2roleid@odata.bind\":\"/connectionroles({{gconnectionroleid2}})\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/connections",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"connections"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Legacy status of Contact",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var legacy;",
+							"pm.test(\"Legacy Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    //contact_id = jsonData.contactid;",
+							"    //contactname = jsonData.fullname;",
+							"    legacy = jsonData.mshied_legacy;",
+							"    console.log('Legacy check: '+legacy);",
+							"    ",
+							"    pm.test(\"Validate Legacy check\", function()",
+							"    {",
+							"        pm.expect(legacy).to.equal(true);",
+							"    });",
+							"",
+							"});",
+							"//setTimeout(function(){}, 20000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}contacts({{gcontactid2}})",
+					"host": [
+						"{{Eresource_URL}}contacts({{gcontactid2}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Connection b/w Parent and Child",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Connection deleted\", function() {",
+							"    ",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"   ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/connections({{gconnectionid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"connections({{gconnectionid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Legacy status of Contact after Deletion of Connection",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var legacy;",
+							"pm.test(\"Legacy Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    legacy = jsonData.mshied_legacy;",
+							"    ",
+							"    console.log('Legacy check: '+legacy);",
+							"    ",
+							"    pm.test(\"Validate Legacy check\", function()",
+							"    {",
+							"        pm.expect(legacy).to.equal(false);",
+							"    });",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}contacts({{gcontactid2}})",
+					"host": [
+						"{{Eresource_URL}}contacts({{gcontactid2}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Configurations",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var legacycheck;",
+							"var configurationid;",
+							"",
+							"pm.test(\"Stop Legacy Check\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    legacycheck = jsonData.value[0].cmc_stoplegacycheck;",
+							"    configurationid = jsonData.value[0].cmc_configurationid;",
+							"    ",
+							"    console.log('Legacy check: '+legacycheck);",
+							"    ",
+							"    pm.globals.set('gconfigurationid', configurationid);",
+							"    ",
+							"    pm.test(\"Validate Legacy check\", function()",
+							"    {",
+							"        pm.expect(legacycheck).to.equal(false);",
+							"    });",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_configurations",
+					"host": [
+						"{{Eresource_URL}}cmc_configurations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Configurations",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var legacycheck;",
+							"pm.test(\"Stop Legacy Check\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    legacycheck = jsonData.cmc_stoplegacycheck;",
+							"    ",
+							"    console.log('Legacy check: '+legacycheck);",
+							"    ",
+							"    pm.test(\"Validate Legacy check\", function()",
+							"    {",
+							"        pm.expect(legacycheck).to.equal(true);",
+							"    });",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"cmc_stoplegacycheck\":true\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_configurations({{gconfigurationid}})",
+					"host": [
+						"{{Eresource_URL}}cmc_configurations({{gconfigurationid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Connection b/w Parent and Child again",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var connectionid1;",
+							"pm.test(\"Connection created\", function() {",
+							"    ",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    connectionid1 = jsonData.connectionid;",
+							"    var record1id_value = jsonData._record1id_value;",
+							"    var record2id_value = jsonData._record2id_value;",
+							"    ",
+							"    console.log('record1id_value:'+record1id_value);",
+							"    console.log('record2id_value:'+record2id_value);",
+							"    console.log('connectionid:'+connectionid1);",
+							"    ",
+							"    ",
+							"    pm.globals.set('gconnectionid2', connectionid1);",
+							"",
+							"    var connectioncontact1= pm.globals.get('gcontactid1');",
+							"    var connectioncontact2= pm.globals.get('gcontactid2');",
+							"    ",
+							"    if(record1id_value===connectioncontact2 && record2id_value===connectioncontact1)",
+							"    {",
+							"        console.log( \"connection created\");",
+							"    }",
+							"    else",
+							"    {",
+							"        console.log( \"connection not created\");",
+							"    }",
+							"",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"record1id_contact@odata.bind\": \"/contacts({{gcontactid2}})\",\r\n\"record2id_contact@odata.bind\": \"/contacts({{gcontactid1}})\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\",\r\n\"record2roleid@odata.bind\":\"/connectionroles({{gconnectionroleid2}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/connections",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"connections"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Legacy status of Contact again",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var legacy;",
+							"pm.test(\"Legacy Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    //contact_id = jsonData.contactid;",
+							"    //contactname = jsonData.fullname;",
+							"    legacy = jsonData.mshied_legacy;",
+							"    console.log('Legacy check: '+legacy);",
+							"    ",
+							"    pm.test(\"Validate Legacy check\", function()",
+							"    {",
+							"        pm.expect(legacy).to.equal(false);",
+							"    });",
+							"",
+							"});",
+							"//setTimeout(function(){}, 20000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}contacts({{gcontactid2}})",
+					"host": [
+						"{{Eresource_URL}}contacts({{gcontactid2}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Connection b/w Parent and Child again",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//var connectionid1;",
+							"pm.test(\"Connection deleted\", function() {",
+							"    ",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"   ",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/connections({{gconnectionid2}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"connections({{gconnectionid2}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Configurations StopLegacyCheck as false",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var legacycheck;",
+							"pm.test(\"Stop Legacy Check\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    legacycheck = jsonData.cmc_stoplegacycheck;",
+							"    ",
+							"    console.log('Legacy check: '+legacycheck);",
+							"    ",
+							"    pm.test(\"Validate Legacy check\", function()",
+							"    {",
+							"        pm.expect(legacycheck).to.equal(false);",
+							"    });",
+							"",
+							"});",
+							"setTimeout(function(){}, 25000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"cmc_stoplegacycheck\":false\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_configurations({{gconfigurationid}})",
+					"host": [
+						"{{Eresource_URL}}cmc_configurations({{gconfigurationid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Connection b/w Parent and Child one more time",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var connectionid1;",
+							"pm.test(\"Connection created\", function() {",
+							"    ",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    connectionid1 = jsonData.connectionid;",
+							"    var record1id_value = jsonData._record1id_value;",
+							"    var record2id_value = jsonData._record2id_value;",
+							"    ",
+							"    console.log('record1id_value:'+record1id_value);",
+							"    console.log('record2id_value:'+record2id_value);",
+							"    console.log('connectionid:'+connectionid1);",
+							"    ",
+							"    ",
+							"    //pm.globals.set('gconnectionid2', connectionid1);",
+							"",
+							"    var connectioncontact1= pm.globals.get('gcontactid1');",
+							"    var connectioncontact2= pm.globals.get('gcontactid2');",
+							"    ",
+							"    if(record1id_value===connectioncontact2 && record2id_value===connectioncontact1)",
+							"    {",
+							"        console.log( \"connection created\");",
+							"    }",
+							"    else",
+							"    {",
+							"        console.log( \"connection not created\");",
+							"    }",
+							"",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"record1id_contact@odata.bind\": \"/contacts({{gcontactid2}})\",\r\n\"record2id_contact@odata.bind\": \"/contacts({{gcontactid1}})\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\",\r\n\"record2roleid@odata.bind\":\"/connectionroles({{gconnectionroleid2}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/connections",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"connections"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Legacy status of Contact again",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var legacy;",
+							"pm.test(\"Legacy Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    legacy = jsonData.mshied_legacy;",
+							"    console.log('Legacy check: '+legacy);",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}contacts({{gcontactid2}})",
+					"host": [
+						"{{Eresource_URL}}contacts({{gcontactid2}})"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

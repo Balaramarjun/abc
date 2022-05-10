@@ -1,0 +1,798 @@
+{
+	"info": {
+		"_postman_id": "a26f73d7-2529-427f-b67e-fcf5a9123e2b",
+		"name": "TC_1054362_StudentGroupStatic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Eadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Eadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    ",
+							"});",
+							"pm.globals.set('gownerid',userid);",
+							"console.log('Ownerid/Systemuser/staffid:'+userid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var crm1 = data.crm2;",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress  eq 'admin@api.com'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "systemuserid"
+						},
+						{
+							"key": "$filter",
+							"value": "internalemailaddress  eq 'admin@api.com'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account 1 in Engage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var account_id; ",
+							"pm.test(\"Account Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody); ",
+							"    account_id = jsonData.accountid;     ",
+							"    accname = jsonData.name;",
+							"    console.log('Name:' +accname);   ",
+							"   ",
+							"});",
+							"",
+							"pm.globals.set('gaccount1b',account_id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"name\":\"Dynamic{{DynamicvalueAcc}}{{$randomInt}}\",\r\n \"mshied_accounttype\":\"494280000\",\r\n \"cmc_accountcode\":\"A{{$randomInt}}{{$randomInt}}\",\r\n \"preferredcontactmethodcode\":1\r\n\r\n     \r\n\r\n} \r\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}accounts",
+					"host": [
+						"{{Eresource_URL}}accounts"
+					]
+				},
+				"description": "Create Account with new Address"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account 2 in Engage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var account_id; ",
+							"pm.test(\"Account Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody); ",
+							"    account_id = jsonData.accountid;     ",
+							"    accname = jsonData.name;",
+							"    console.log('Name:' +accname);   ",
+							"   ",
+							"});",
+							"",
+							"pm.globals.set('gaccount2b',account_id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"name\":\"Dynamic{{DynamicvalueAcc}}{{$randomInt}}\",\r\n \"mshied_accounttype\":\"494280000\",\r\n \"cmc_accountcode\":\"A{{$randomInt}}{{$randomInt}}\",\r\n \"preferredcontactmethodcode\":1\r\n\r\n     \r\n\r\n} \r\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}accounts",
+					"host": [
+						"{{Eresource_URL}}accounts"
+					]
+				},
+				"description": "Create Account with new Address"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Static Student Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var listid,SGName,expirationdate,membercount;",
+							"pm.test(\"Student Group Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    listid = jsonData.listid;",
+							"   expirationdate =jsonData.cmc_expirationdate;",
+							"   membercount =jsonData.membercount;     ",
+							"  SGName =jsonData.listname;   ",
+							" ",
+							"});",
+							"",
+							"pm.globals.set('glistid', listid);",
+							"pm.globals.set('gexpirationdate', expirationdate);",
+							"console.log(\"SGName: \" +SGName);",
+							"console.log(\"Student Group expirationdate: \" +expirationdate);",
+							"console.log(\"membercount: \" +membercount);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require(\"moment\");\r",
+							"pm.environment.set('expirationdate', moment().format(\"YYYY-MM-DD\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"listname\":\"AccountDynamic{{$randomInt}}\",\r\n\"description\": \"{{$randomAbbreviation}}\",\r\n\"createdfromcode\":1,\r\n\"cmc_expirationdate\": \"{{expirationdate}}\",\r\n\"type\": false\r\n\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}lists",
+					"host": [
+						"{{Eresource_URL}}lists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adding Accounts to StudentGroup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Contact Addedd to StudentGroup\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+							"  ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"List\": {\r\n        \"listid\": \"{{glistid}}\",\r\n        \"@odata.type\": \"Microsoft.Dynamics.CRM.list\"\r\n    },\r\n\"Members\":\r\n[{\"@odata.type\": \"Microsoft.Dynamics.CRM.account\", \"accountid\": \"{{gaccount1b}}\"},\r\n{\"@odata.type\": \"Microsoft.Dynamics.CRM.account\", \"accountid\": \"{{gaccount2b}}\"}]\r\n}\r\n\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}AddListMembersList",
+					"host": [
+						"{{Eresource_URL}}AddListMembersList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deactivate StudentGroup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Student Group Deactivated\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([204,201,202]);",
+							"",
+							"    ",
+							"     ",
+							"});",
+							"",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"StudentGroups\":[\r\n      {\r\n         \"@odata.type\":\"Microsoft.Dynamics.CRM.list\",\r\n         \"listid\":\"{{glistid}}\",\r\n         \"statecode\":1\r\n      }\r\n   ]\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_activatestudentgroups",
+					"host": [
+						"{{Eresource_URL}}cmc_activatestudentgroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Student Group is Deactivated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var statecode;",
+							"pm.test(\"Verify Student Group is Deactivated \", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    statecode =jsonData.statecode;     ",
+							"    ",
+							"",
+							"",
+							"pm.test(\"Validate Student Group statecode\", function()",
+							"        {",
+							"            pm.expect(statecode).to.equal(1);",
+							"            console.log(\"Student Group is Deactivated\");",
+							"        });",
+							"        ",
+							"",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}lists({{glistid}})",
+					"host": [
+						"{{Eresource_URL}}lists({{glistid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Activate StudentGroup with new Expiry date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Student Group Activated\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"   ",
+							"     ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require(\"moment\");\r",
+							"pm.environment.set('newexpirationdate', moment().add(3, 'days').format(\"YYYY-MM-DD\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"StudentGroups\":[\r\n      {\r\n         \"@odata.type\":\"Microsoft.Dynamics.CRM.list\",\r\n         \"listid\":\"{{glistid}}\",\r\n         \"statecode\":0,\r\n         \"cmc_expirationdate\":\"{{newexpirationdate}}\"\r\n      }\r\n   ]\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_activatestudentgroups",
+					"host": [
+						"{{Eresource_URL}}cmc_activatestudentgroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validate Expiry date is updated and Student Group is Activated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var listid,SGName,Updatedexpirationdate,statecode,NewExpirydate;",
+							"pm.test(\"Get Student Group \", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    listid = jsonData.listid;    ",
+							"    SGName =jsonData.listname;   ",
+							"    Updatedexpirationdate =jsonData.cmc_expirationdate; ",
+							"    statecode =jsonData.statecode;      ",
+							"     NewExpirydate = pm.environment.get(\"newexpirationdate\");",
+							"    console.log(NewExpirydate);",
+							"    console.log(Updatedexpirationdate);",
+							"",
+							" pm.test(\"Validate ExpiryDate Updated\", function()",
+							"        {",
+							"            pm.expect(Updatedexpirationdate).to.equal(NewExpirydate+'T00:00:00Z');",
+							"        });",
+							"pm.test(\"Validate Student Group statecode\", function()",
+							"        {",
+							"            pm.expect(statecode).to.equal(0);",
+							"        });",
+							"        ",
+							"",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}lists({{glistid}})",
+					"host": [
+						"{{Eresource_URL}}lists({{glistid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Associate Contacts from Student Group for verification",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var account1,account2;",
+							"pm.test(\"Get Assosicated contacts from Student Group \", function() ",
+							" {",
+							"",
+							"var jsonData =JSON.parse(responseBody);",
+							"account1 = jsonData.value[0]._entityid_value;  ",
+							"account2 =  jsonData.value[1]._entityid_value;  ",
+							"console.log(\"account1: \" +account1);",
+							"console.log(\"account2: \" +account2);",
+							" }); ",
+							"",
+							"var queryaccount1=pm.globals.get(\"gaccount1b\");",
+							"var queryaccount2=pm.globals.get(\"gaccount2b\");",
+							"console.log(\"queryaccount1: \" +queryaccount1);",
+							"console.log(\"queryaccount2: \" +queryaccount2);",
+							"",
+							"pm.test(\"Validate Account1 Assosicated with SG \", function()",
+							"        {            ",
+							"            if(queryaccount1==account1||account2)",
+							"                {",
+							"                        console.log(\"Account is matching\");        ",
+							"                }",
+							"                else",
+							"                {",
+							"                        console.log(\"Account is not matching\");",
+							"                         pm.expect.fail(1,2,\"Account2 is not matching\")",
+							"                }",
+							"        });",
+							"pm.test(\"Validate Validate Account2 Assosicated with SG\", function()",
+							"        {",
+							"         ",
+							"            if(queryaccount2==account1||account2)",
+							"                {",
+							"                        console.log(\"Account is matching\");        ",
+							"                }",
+							"                else",
+							"                {",
+							"                        console.log(\"Account is not matching\");",
+							"                         pm.expect.fail(1,2,\"Account2 is not matching\")",
+							"                }",
+							"        });",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}listmembers?$select=_entityid_value&$filter=_listid_value eq '{{glistid}}'",
+					"host": [
+						"{{Eresource_URL}}listmembers"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "_entityid_value"
+						},
+						{
+							"key": "$filter",
+							"value": "_listid_value eq '{{glistid}}'"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

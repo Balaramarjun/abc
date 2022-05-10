@@ -1,0 +1,1152 @@
+{
+	"info": {
+		"_postman_id": "7898fe97-815f-416f-925a-06642516e945",
+		"name": "TC_1236572_ErrorLog",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Admin",
+			"item": [
+				{
+					"name": "GetToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"//console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"//Genarate global session value",
+									"",
+									"var number = Math.floor(Math.random() * 1000);",
+									"pm.globals.set('globalsessionvalue',number)",
+									"",
+									"console.log(pm.globals.get(\"globalsessionvalue\"));",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users-Assigned&Fallback",
+			"item": [
+				{
+					"name": "Get Owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid1;",
+									"pm.test(\"AssingedTO\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid1 = jsonData.value[0].systemuserid;",
+									"    ",
+									"});",
+									"pm.globals.set('ownerid',userid1);",
+									"",
+									"console.log('ownerid:'+userid1);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq '{{Owner}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{Owner}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AssignDOMtoUser1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AssigntoUser1,fullname1;",
+									"pm.test(\"AssingedTO\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AssigntoUser1 = jsonData.value[0].systemuserid;",
+									"    fullname1=jsonData.value[0].yomifullname;",
+									"    ",
+									"});",
+									"pm.globals.set('gAssigntoUser1',AssigntoUser1);",
+									"pm.globals.set('gfullname1',fullname1);",
+									"",
+									"console.log('AssigntoUser1:'+AssigntoUser1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User1}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User1}}'"
+								}
+							]
+						},
+						"description": "Get user1 to assign to Account records"
+					},
+					"response": []
+				},
+				{
+					"name": "Get FallBack User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Fallbackuser,fallBackusername;",
+									"pm.test(\"Fallbackuser\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    Fallbackuser = jsonData.value[0].systemuserid;",
+									"    fallBackusername=jsonData.value[0].yomifullname;",
+									"    ",
+									"});",
+									"pm.globals.set('gFallbackuser',Fallbackuser);",
+									"pm.globals.set('gfallBackusername',fallBackusername);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{Fallbackuser}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{Fallbackuser}}'"
+								}
+							]
+						},
+						"description": "Get FallAbck User"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "AssignmentGroup_FetchxmlCheck",
+			"item": [
+				{
+					"name": "Create Assignmentgroup_differentBaseEntityFetchxml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Base Entity mismatch fetch xml\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"account\\\"><attribute name=\\\"accountid\\\"/><attribute name=\\\"createdon\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/></entity></fetch>\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_FallBackUserId@odata.bind\":\"/systemusers({{gFallbackuser}})\",\r\n   \"cmc_assigntofield\":\"ownerid\",\r\n   \"cmc_name\":\"QueryerroringOutCheck{{$randomInt}}\",\r\n   \"statuscode\":1,\r\n   \"statecode\":0,\r\n   \"cmc_baseentityname\": \"Contact\"\r\n   \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assignmentgroup_incorrect fetchxml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Base Entity mismatch fetch xml\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\">\\n <entity name=\\\"contact\\\">\\n <attribute name=\\\"fullnamezz\\\" />\\n <attribute name=\\\"telephone1zz\\\" />\\n <attribute name=\\\"contactidzz\\\" />\\n <order attribute=\\\"fullname\\\" descending=\\\"false\\\" />\\n <filter type=\\\"and\\\">\\n <condition attribute=\\\"firstname\\\" operator=\\\"like\\\" value=\\\"API%\\\" />\\n </filter>\\n </entity>\\n</fetch>\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_FallBackUserId@odata.bind\":\"/systemusers({{gFallbackuser}})\",\r\n   \"cmc_assigntofield\":\"ownerid\",\r\n   \"cmc_name\":\"QueryerroringOutCheck{{$randomInt}}\",\r\n   \"statuscode\":1,\r\n   \"statecode\":0,\r\n   \"cmc_baseentityname\": \"Contact\"\r\n   \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AssignmentRule_FetchxmlCheck-After AG is published",
+			"item": [
+				{
+					"name": "Create Assignmentgroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var assignmentgroupid;",
+									"",
+									"pm.test(\"Assignmentgroups Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    assignmentgroupid = jsonData.cmc_assignmentgroupid;",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gassignmentgroupid',assignmentgroupid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\">\\n <entity name=\\\"contact\\\">\\n <attribute name=\\\"fullname\\\" />\\n <attribute name=\\\"telephone1\\\" />\\n <attribute name=\\\"contactid\\\" />\\n <order attribute=\\\"fullname\\\" descending=\\\"false\\\" />\\n <filter type=\\\"and\\\">\\n <condition attribute=\\\"firstname\\\" operator=\\\"like\\\" value=\\\"API{{globalsessionvalue}}%\\\" />\\n </filter>\\n </entity>\\n</fetch>\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_FallBackUserId@odata.bind\":\"/systemusers({{gFallbackuser}})\",\r\n   \"cmc_assigntofield\":\"ownerid\",\r\n   \"cmc_name\":\"Balatest{{$randomInt}}\",\r\n   \"statuscode\":1,\r\n   \"statecode\":0,\r\n   \"cmc_baseentityname\": \"Contact\"\r\n \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create assignmentrule_differentBaseEntityFetchxml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Base Entity mismatch fetch xml\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"account\\\"><attribute name=\\\"accountid\\\"/><attribute name=\\\"createdon\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/></entity></fetch>\",\r\n   \"cmc_executionorder\":1,\r\n   \"cmc_assignmenttype\":175490000,\r\n   \"cmc_name\":\"AR-1{{$randomInt}}\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_UsertoAssignId@odata.bind\": \"/systemusers({{gAssigntoUser1}})\",  \r\n   \"cmc_AssignmentGroupId@odata.bind\":\"/cmc_assignmentgroups({{gassignmentgroupid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentrules",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentrules"
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Create assignmentrules_incorrect fetchxml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Base Entity mismatch fetch xml\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"true\\\">\\n  <entity name=\\\"contact\\\">\\n    <attribute name=\\\"fullnamezz\\\" />\\n    <attribute name=\\\"telephone1zz\\\" />\\n    <attribute name=\\\"contactidzz\\\" />\\n    <order attribute=\\\"fullnamezz\\\" descending=\\\"false\\\" />\\n    <filter type=\\\"and\\\">\\n      <condition attribute=\\\"mshied_contacttype\\\" operator=\\\"eq\\\" value=\\\"494280011\\\" />\\n    </filter>\\n    <link-entity name=\\\"mshied_testscore\\\" from=\\\"mshied_studentid\\\" to=\\\"contactid\\\" link-type=\\\"inner\\\" alias=\\\"ac\\\">\\n      <link-entity name=\\\"mshied_testtype\\\" from=\\\"mshied_testtypeid\\\" to=\\\"mshied_testtypeid\\\" link-type=\\\"inner\\\" alias=\\\"ad\\\">\\n        <filter type=\\\"and\\\">\\n          <condition attribute=\\\"mshied_name\\\" operator=\\\"eq\\\" value=\\\"ACT\\\" />\\n        </filter>\\n      </link-entity>\\n    </link-entity>\\n  </entity>\\n</fetch>\",\r\n   \"cmc_executionorder\":1,\r\n   \"cmc_assignmenttype\":175490000,\r\n   \"cmc_name\":\"AR-1a{{$randomInt}}\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_UsertoAssignId@odata.bind\": \"/systemusers({{gAssigntoUser1}})\",  \r\n   \"cmc_AssignmentGroupId@odata.bind\":\"/cmc_assignmentgroups({{gassignmentgroupid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentrules",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentrules"
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AssignmentRule_FetchxmlCheck-Before AG is published",
+			"item": [
+				{
+					"name": "Create Assignmentgroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var assignmentgroupid;",
+									"",
+									"pm.test(\"Assignmentgroups Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    assignmentgroupid = jsonData.cmc_assignmentgroupid;",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gassignmentgroupid1',assignmentgroupid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\">\\n <entity name=\\\"contact\\\">\\n <attribute name=\\\"fullname\\\" />\\n <attribute name=\\\"telephone1\\\" />\\n <attribute name=\\\"contactid\\\" />\\n <order attribute=\\\"fullname\\\" descending=\\\"false\\\" />\\n <filter type=\\\"and\\\">\\n <condition attribute=\\\"firstname\\\" operator=\\\"like\\\" value=\\\"API{{globalsessionvalue}}%\\\" />\\n </filter>\\n </entity>\\n</fetch>\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_FallBackUserId@odata.bind\":\"/systemusers({{gFallbackuser}})\",\r\n   \"cmc_assigntofield\":\"ownerid\",\r\n   \"cmc_name\":\"Balatest{{$randomInt}}\",\r\n   \"cmc_baseentityname\": \"Contact\"\r\n \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create assignmentrule_differentBaseEntityFetchxml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var usertoassignid_value,assignmentruleid,assignmentgroupid_value;",
+									"",
+									"pm.test(\"Assignment Rule 1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    usertoassignid_value = jsonData._cmc_usertoassignid_value;",
+									"    assignmentruleid = jsonData.cmc_assignmentruleid;",
+									"    assignmentgroupid_value = jsonData._cmc_assignmentgroupid_value;  ",
+									"",
+									"    console.log(\" usertoassignid_value:\" +usertoassignid_value)",
+									"    console.log(\" assignmentruleid:\" +assignmentruleid)",
+									"    console.log(\" assignmentgroupid_value:\" +assignmentgroupid_value)",
+									"  ",
+									"});",
+									"pm.globals.set('gusertoassignid_value1',usertoassignid_value);",
+									"pm.globals.set('gassignmentruleid1',assignmentruleid);",
+									"pm.globals.set('gassignmentgroupid_value1',assignmentgroupid_value);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"account\\\"><attribute name=\\\"accountid\\\"/><attribute name=\\\"createdon\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/></entity></fetch>\",\r\n   \"cmc_executionorder\":1,\r\n   \"cmc_assignmenttype\":175490000,\r\n   \"cmc_name\":\"AR-1{{$randomInt}}\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_UsertoAssignId@odata.bind\": \"/systemusers({{gAssigntoUser1}})\",  \r\n   \"cmc_AssignmentGroupId@odata.bind\":\"/cmc_assignmentgroups({{gassignmentgroupid1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentrules",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentrules"
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Assignmentgroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Base Entity mismatch fetch xml\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n   \"statuscode\":1,\r\n   \"statecode\":0\r\n \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create assignmentrules_incorrect fetchxml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var usertoassignid_value,assignmentruleid,assignmentgroupid_value;",
+									"",
+									"pm.test(\"Assignment Rule 1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    usertoassignid_value = jsonData._cmc_usertoassignid_value;",
+									"    assignmentruleid = jsonData.cmc_assignmentruleid;",
+									"    assignmentgroupid_value = jsonData._cmc_assignmentgroupid_value;  ",
+									"",
+									"    console.log(\" usertoassignid_value:\" +usertoassignid_value)",
+									"    console.log(\" assignmentruleid:\" +assignmentruleid)",
+									"    console.log(\" assignmentgroupid_value:\" +assignmentgroupid_value)",
+									"  ",
+									"});",
+									"pm.globals.set('gusertoassignid_value1',usertoassignid_value);",
+									"pm.globals.set('gassignmentruleid1',assignmentruleid);",
+									"pm.globals.set('gassignmentgroupid_value1',assignmentgroupid_value);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"true\\\">\\n  <entity name=\\\"contact\\\">\\n    <attribute name=\\\"fullnamezz\\\" />\\n    <attribute name=\\\"telephone1zz\\\" />\\n    <attribute name=\\\"contactidzz\\\" />\\n    <order attribute=\\\"fullnamezz\\\" descending=\\\"false\\\" />\\n    <filter type=\\\"and\\\">\\n      <condition attribute=\\\"mshied_contacttype\\\" operator=\\\"eq\\\" value=\\\"494280011\\\" />\\n    </filter>\\n    <link-entity name=\\\"mshied_testscore\\\" from=\\\"mshied_studentid\\\" to=\\\"contactid\\\" link-type=\\\"inner\\\" alias=\\\"ac\\\">\\n      <link-entity name=\\\"mshied_testtype\\\" from=\\\"mshied_testtypeid\\\" to=\\\"mshied_testtypeid\\\" link-type=\\\"inner\\\" alias=\\\"ad\\\">\\n        <filter type=\\\"and\\\">\\n          <condition attribute=\\\"mshied_name\\\" operator=\\\"eq\\\" value=\\\"ACT\\\" />\\n        </filter>\\n      </link-entity>\\n    </link-entity>\\n  </entity>\\n</fetch>\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentrules({{gassignmentruleid1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentrules({{gassignmentruleid1}})"
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Assignmentgroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Base Entity mismatch fetch xml\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n   \"statuscode\":1,\r\n   \"statecode\":0\r\n \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid1}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deactivate Assignment Group",
+			"item": [
+				{
+					"name": "Deactivate Assignment Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Assignment Group Deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n   \"statuscode\":2,\r\n   \"statecode\":1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Assignment Group 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Assignment Group Deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n   \"statuscode\":2,\r\n   \"statecode\":1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid1}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

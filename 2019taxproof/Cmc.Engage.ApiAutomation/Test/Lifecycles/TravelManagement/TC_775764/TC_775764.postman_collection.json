@@ -1,0 +1,2049 @@
+{
+	"info": {
+		"_postman_id": "a8d2a3e5-05a1-4b25-9f09-6c55882b3d68",
+		"name": "TC_775764",
+		"description": "TravelManagement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Prerequisite",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid2',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id; ",
+									"var Accname;",
+									"pm.test(\"Account Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    account_id = jsonData.accountid;",
+									"    Accname = jsonData.name;",
+									"    console.log(Accname);",
+									"    ",
+									"});",
+									"",
+									"",
+									"var accname = data.name;",
+									"var accounttype = data.mshied_accounttype;",
+									"",
+									"",
+									"",
+									"pm.globals.set('gaccountId',account_id);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{name}}{{$randomInt}}{{$randomInt}}{{$randomInt}}\",\r\n    \"mshied_accounttype\": 494280001,\r\n    \"cmc_accountcode\": \"Acc{{$randomInt}}\",\r\n    \"preferredcontactmethodcode\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Programs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching existing Programs\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var mshied_programid= jsonData.value[0].mshied_programid;",
+									"    console.log(\"Program ID: \" +mshied_programid);",
+									"    ",
+									"    var Program1Name= jsonData.value[0].mshied_name;",
+									"    console.log(\"Program1 Name: \" +Program1Name);",
+									"    ",
+									"    pm.globals.set('gProgram',mshied_programid);   ",
+									"    ",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create programlevels",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Fetching existing Programs\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var mshied_programlevelid= jsonData.value[0].mshied_programlevelid;",
+									"    console.log(\"mshied_programlevelid ID: \" +mshied_programlevelid);",
+									"    ",
+									"    var ProgramlName= jsonData.value[0].mshied_name;",
+									"    console.log(\"Program1 Name: \" +ProgramlName);",
+									"    pm.globals.set('gProgramlevl',mshied_programlevelid);  ",
+									"   ",
+									"     ",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_programlevels"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Prerequisite"
+		},
+		{
+			"name": "Get Staff and Team",
+			"item": [
+				{
+					"name": "GetTeams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var teamid;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    teamid = jsonData.value[0].teamid;",
+									"    ",
+									"});",
+									"pm.globals.set('gteamid',teamid);",
+									"console.log('Ownerid/Systemuser/staffid:'+teamid);",
+									"var user=data.username;",
+									"pm.variables.set(\"username\",user);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/teams",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Staffid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var staffid;",
+									"pm.test(\"GetStaffID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    staffid = jsonData.value[0].systemuserid;",
+									"    ",
+									"});",
+									"pm.globals.set('gstaffid',staffid);",
+									"console.log('Ownerid/Systemuser/staffid:'+staffid);",
+									"",
+									"var user=data.username;",
+									"pm.variables.set(\"username\",user);",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress  eq 'anthologydev1@campusnexus.dev'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress  eq 'anthologydev1@campusnexus.dev'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Department and Assign it to user",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Department",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var departmentid;",
+									"",
+									"pm.test(\"Academicperiodid Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    departmentid = jsonData.cmc_departmentid;",
+									" ",
+									"});",
+									"pm.globals.set('gdepartmentid',departmentid);",
+									"//console.log('{{gAcademic}}');",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_code\": \"123\",\r\n    \"cmc_departmentname\": \"testdepartmanet\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_departments",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_departments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AssignDepartmentToUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var department;",
+									"pm.test(\"Department assgined to User\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    departmentid = jsonData._cmc_departmentid_value;",
+									"    console.log(\"departmentid: \", departmentid);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gdepartment', department);",
+									"",
+									"var departmentname = data.cmc_departmentname;",
+									"var phonenumber = data.cmc_phonenumber;",
+									"var cmc_code = data.cmc_code; ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\": \"{{Eresource}}api/data/v9.1/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}/cmc_departments({{gdepartmentid}})/cmc_department_systemuser_departmentid/$ref",
+							"host": [
+								"{{Eresource_URL}}"
+							],
+							"path": [
+								"cmc_departments({{gdepartmentid}})",
+								"cmc_department_systemuser_departmentid",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetDepartmentbyusinguserid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var departmentid;",
+									"pm.test(\"GetDepartmentID\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    departmentid = jsonData._cmc_departmentid_value;",
+									"    console.log(\"departmentid: \", departmentid);",
+									"});",
+									"pm.globals.set('gdepartmentid', departmentid);",
+									"console.log('gdepartmentid:' + departmentid);",
+									"",
+									"var user = data.username;",
+									"pm.variables.set(\"username\", user);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid4}})",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetDepartmentNamebyusingDeptID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var departmentname;",
+									"pm.test(\"GetUserID\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    departmentname = jsonData.cmc_departmentname;",
+									"});",
+									"pm.globals.set('gdepartmentname', departmentname);",
+									"console.log('Departmentname:' + departmentname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_departments({{gdepartmentid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_departments({{gdepartmentid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCurrencyID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var transactioncurrencyid;",
+									"pm.test(\"GetTransactioncurrencyID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    transactioncurrencyid = jsonData.value[0].transactioncurrencyid;",
+									"    ",
+									"});",
+									"pm.globals.set('gtransactioncurrencyid',transactioncurrencyid);",
+									"console.log('gtransactioncurrencyid:'+transactioncurrencyid);",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}transactioncurrencies",
+							"host": [
+								"{{Eresource_URL}}transactioncurrencies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"",
+									"pm.test(\"Academicperiodid Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"",
+									"});",
+									"",
+									"",
+									"var academicperiodname = data.cmc_academicperiodname;",
+									"var startDate = data.cmc_startdate;",
+									"var endDate = data.cmc_enddate;",
+									"var Code = data.cmc_code;",
+									"var ownerid1 = data.ownerid;",
+									"pm.globals.set('gacademicperiodid', academicperiodid);",
+									"//console.log('{{gAcademic}}');",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mshied_name\": \"{{cmc_academicperiodname}}{{$randomInt}}\",\r\n    \"mshied_startdate\": \"{{timestamp}}\",\r\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\r\n    \"mshied_code\": \"{{$randomInt}}{{cmc_code}}TB{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Trip & Trip Activity",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.firstname;",
+									"});",
+									"",
+									"",
+									"var addressnamecontact = data.cmc_addressname2;",
+									"var cmc_sourcemethod = data.cmc_sourcemethodid;",
+									"var cmc_sourcecategory = data.cmc_sourcecategoryid;",
+									"var CurrentProgramLevelId = data.mshied_CurrentProgramLevelId;",
+									"var CurrentProgramId = data.mshied_CurrentProgramId;",
+									"var titleid = data.cmc_titleid;",
+									"var srcpogramlevelid = data.cmc_srcpogramlevelid;",
+									"var srcprogramid = data.cmc_srcprogramid;",
+									"var educationlevelid = data.cmc_educationlevelid;",
+									"var StudentStatusId = data.mshied_StudentStatusId;",
+									"var mshied_contacttype = data.mshied_contacttype;",
+									"var emailaddress1 = data.emailaddress1;",
+									"var cmc_dateofbirth = data.cmc_dateofbirth;",
+									"var cmc_sourcedate = data.cmc_sourcedate;",
+									"var recentsat = data.cmc_recentsat;",
+									"var recentact = data.cmc_recentact;",
+									"var gendercode = data.gendercode;",
+									"var shippingmethodcode = data.shippingmethodcode;",
+									"var firstname = data.firstname;",
+									"var lastname = data.lastname;",
+									"var anniversary = data.anniversary;",
+									"var lastonholdtime = data.lastonholdtime;",
+									"var numberofchildren = data.numberofchildren;",
+									"var familystatuscode = data.familystatuscode;",
+									"var race = data.mshied_race;",
+									"var miltarystatus = data.mshied_miltarystatus;",
+									"var ethnicgroup = data.mshied_ethnicgroup;",
+									"var nationality = data.mshied_nationality;",
+									"",
+									"//Address variables",
+									"var Zip = data.cmc_zip;",
+									"var City = data.cmc_city;",
+									"var addresstype1 = data.cmc_addresstypeid;",
+									"pm.globals.set('gcontactid', contact_id);",
+									"console.log(Name);",
+									"console.log('Contactid:' + contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}\",\r\n    \"middlename\": \"mid{{$randomInt}}\",\r\n    \"mshied_maidenname\": \"maid{{$randomInt}}\",\r\n    \"mshied_legacy\": \"true\",\r\n    \"emailaddress1\": \"{{$randomInt}}{{emailaddress1}}\",\r\n    \"gendercode\": \"{{gendercode}}\",\r\n    \"anniversary\": \"{{timestamp}}\",\r\n    \"lastonholdtime\": \"{{timestamp}}\",\r\n    \"numberofchildren\": \"{{numberofchildren}}\",\r\n    \"nickname\": \"Nickname{{$randomInt}}\",\r\n    \"familystatuscode\": 2,\r\n    \"cmc_sourcedate\": \"{{timestamp}}\",\r\n    \"cmc_recentsat\": \"{{cmc_recentsat}}\",\r\n    \"cmc_recentact\": \"{{cmc_recentact}}\",\r\n    \"mshied_contacttype\": \"{{mshied_contacttype}}\",\r\n    \"mshied_race\": {{mshied_race}},\r\n    \"mshied_ethnicgroup\": {{mshied_ethnicgroup}},\r\n    \"mshied_miltarystatus\": \"{{mshied_miltarystatus}}\",\r\n    \"mshied_hipaaindicator\": false,\r\n    \"creditonhold\": \"true\",\r\n    \"leadsourcecode\": 1,\r\n    \"territorycode\": 1,\r\n    \"spousesname\": \"wife{{$randomInt}}\",\r\n    \"shippingmethodcode\": \"{{shippingmethodcode}}\",\r\n    \"preferredcontactmethodcode\": \"{{preferredcontactmethodcode}}\",\r\n    \"mshied_nationality\": \"{{mshied_nationality}}\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{cmc_sourcecategoryid}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{cmc_sourcemethodid}})\",\r\n    \"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\r\n    \"donotemail\": true,\r\n    \"followemail\": true,\r\n    \"cmc_donotsmstext\": true,\r\n    \"donotbulkemail\": true,\r\n    \"donotpostalmail\": true,\r\n    \"donotphone\": true,\r\n    \"donotfax\": true,\r\n    \"cmc_autoupdatepicture\": true,\r\n    \"fax\": \"78865{{$randomInt}}30\",\r\n    \"mobilephone\": \"78965{{$randomInt}}30\",\r\n    \"telephone1\": \"8569{{$randomInt}}230\",\r\n    \"cmc_phone2extension\": \"8083{{$randomInt}}569\",\r\n    \"websiteurl\": \"www.dcrm{{$randomInt}}.com\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateTrip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tripid;",
+									"var autoid;",
+									"pm.test(\"GetTripID\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    tripid = jsonData.cmc_tripid;",
+									"    autoid = jsonData.cmc_engagetripid;",
+									"",
+									"});",
+									"pm.globals.set('gtripid', tripid);",
+									"",
+									"pm.test(\"Auto id validation\", function () {",
+									"    pm.expect(autoid).to.include(\"TR-\");",
+									"});",
+									"",
+									"var enddate = data.cmc_enddate;",
+									"var startdate = data.cmc_startdate;",
+									"var description = data.cmc_description;",
+									"var tripname = data.cmc_tripname;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());",
+									"",
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));",
+									"pm.environment.set(\"timestampEndDate\", moment().add(50, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_tripname\": \"{{cmc_tripname}}{{$randomInt}}\",\r\n    \"cmc_startdate\": \"{{timestamp}}\",\r\n    \"cmc_enddate\": \"{{timestampEndDate}}\",\r\n    \"cmc_description\": \"{{cmc_description}}{{$randomInt}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"cmc_statusdate\": \"{{current_timestamp}}\",\r\n    \"transactioncurrencyid@odata.bind\": \"/transactioncurrencies({{gtransactioncurrencyid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_trips",
+							"host": [
+								"{{Eresource_URL}}cmc_trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Appointment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appointmentid;",
+									"var location1;",
+									"var scheduledend1;",
+									"var scheduledstart1;",
+									"pm.test(\"Appointment Activity Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    appointmentid = jsonData.activityid;",
+									"    location1 = jsonData.location;",
+									"    scheduledend1 = jsonData.scheduledend;",
+									"    scheduledstart1 = jsonData.scheduledstart;",
+									"    console.log(location1);",
+									"    console.log(scheduledend1);",
+									"    console.log(scheduledstart1);",
+									"});",
+									"",
+									"pm.globals.set('gappointmentid', appointmentid);",
+									"pm.globals.set('genddate', scheduledend1);",
+									"pm.globals.set('gstartdate', scheduledstart1);",
+									"pm.globals.set('glocation', location1);",
+									"",
+									"var scheduledstart = data.scheduledstart;",
+									"var scheduledend = data.scheduledend;",
+									"var subject = data.Appointmentsubject;",
+									"var location2 = data.cmc_location;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(10, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"subject\": \"{{Appointmentsubject}}{{$randomInt}}\",\r\n    \"scheduledstart\": \"{{timestamp}}\",\r\n    \"scheduledend\": \"{{timestampEndDate}}\",\r\n    \"regardingobjectid_contact@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"location\": \"{{cmc_location}}\",\r\n    \"appointment_activity_parties\": [\r\n        {\r\n            \"partyid_systemuser@odata.bind\": \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\": 5\r\n        },\r\n        {\r\n            \"partyid_contact@odata.bind\": \"/contacts({{gcontactid}})\",\r\n            \"participationtypemask\": 5\r\n        }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}appointments",
+							"host": [
+								"{{Eresource_URL}}appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateTripActivity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tripactivityid;",
+									"var autoid;",
+									"pm.test(\"GetTripactivityiD\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    tripactivityid = jsonData.cmc_tripactivityid;",
+									"    autoid = jsonData.cmc_engagetripactivityid;",
+									"",
+									"});",
+									"pm.globals.set('gtripactivityid', tripactivityid);",
+									"pm.test(\"Auto id validation\", function () {",
+									"    pm.expect(autoid).to.include(\"TRA-\");",
+									"});",
+									"",
+									"",
+									"var activitytype = data.cmc_activitytype;",
+									"var tripdescription = data.cmc_tripdescription;",
+									"// var triplocation = data.cmc_location;",
+									"var activitytype = data.cmc_activitytype;",
+									"var tripdescription = data.cmc_tripdescription;",
+									"var tripactivityname = data.cmc_name;",
+									"// var startdatetime = data.cmc_startdatetime;",
+									"// var enddatetime = data.cmc_enddatetime;",
+									"// var purposeoftrip = data.cmc_purposeoftrip;",
+									"var purpose = data.cmc_purpose;",
+									"var tripactivitystatus = data.cmc_tripactivitystatus;",
+									"var appointments = data.appointments;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(5, 'days').format(\"YYYY-MM-DD\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_activitytype\": \"{{cmc_activitytype}}\",\r\n    \"cmc_trip@odata.bind\": \"/cmc_trips({{gtripid}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"cmc_location\": \"{{glocation}}\",\r\n    \"cmc_LinkedToAppointment@odata.bind\": \"/appointments({{gappointmentid}})\",\r\n    \"cmc_startdatetime\": \"{{timestamp}}\",\r\n    \"cmc_enddatetime\": \"{{timestampEndDate}}\",\r\n    \"cmc_purpose\": \"1\",\r\n    \"cmc_tripactivitystatus\": \"{{cmc_tripactivitystatus}}\",\r\n    \"transactioncurrencyid@odata.bind\": \"/transactioncurrencies({{gtransactioncurrencyid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_tripactivities",
+							"host": [
+								"{{Eresource_URL}}cmc_tripactivities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Additional Valunteers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Added Valunteers\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([204, 200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}contacts({{gcontactid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})/cmc_tripactivity_contact/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})"
+							],
+							"path": [
+								"cmc_tripactivity_contact",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add AdditionalStaffMembers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Addedd Staff\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([204, 200, 201, 202]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\": \"{{Eresource_URL}}systemusers({{gstaffid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})/cmc_tripactivity_systemuser/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})"
+							],
+							"path": [
+								"cmc_tripactivity_systemuser",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Trip & TripActivity Validation",
+			"item": [
+				{
+					"name": "Add Expenses to Trip Acitvity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var estdExpense, actualExpense;",
+									"pm.test(\"Estimated and Actual expenses Added to Trip Activity\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([204, 200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    console.log(\"Estimated and Actual expenses Added to Trip Activity\");",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_acttransportation\": 20,\r\n    \"cmc_actlodging\": 10,\r\n    \"cmc_actmeals\": 5,\r\n    \"cmc_actothers\": 5,\r\n    \"cmc_estdlodging\": 5,\r\n    \"cmc_estdmeals\": 15,\r\n    \"cmc_estdothers\": 10,\r\n    \"cmc_estdtransportation\": 5\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})"
+							]
+						},
+						"description": "Add Expenses to Trip Acitvity"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Estimmated Expense on Trip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var EstimatedExpense;",
+									"pm.test(\"Validate EstimatedExpense\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    EstimatedExpense = jsonData.cmc_estexpense;",
+									"    if (EstimatedExpense === 35) {",
+									"        console.log(\"Estimated Expense Validated.\");",
+									"        console.log(\"Estimated Expense is of the Trip is :\" + EstimatedExpense);",
+									"    }",
+									"    else {",
+									"",
+									"        console.log(\"Error occured, Estimated Expense cant be Validated.\");",
+									"    }",
+									"});",
+									"",
+									"pm.globals.set(\"gestimatedExpense\", EstimatedExpense);",
+									"",
+									"var enddate = data.cmc_enddate;",
+									"var startdate = data.cmc_startdate;",
+									"var description = data.cmc_description;",
+									"var tripname = data.cmc_tripname;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_trips({{gtripid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_trips({{gtripid}})"
+							]
+						},
+						"description": "Validate Estimmated Expense on Trip"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Actual Expense on Trip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ActualExpense;",
+									"pm.test(\"Validate ActualExpense\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    ActualExpense = jsonData.cmc_actexpense;",
+									"",
+									"    if (ActualExpense === 40) {",
+									"        console.log(\"Actual Expense Validated.\");",
+									"        console.log(\"Actual Expense is of the Trip is :\" + ActualExpense);",
+									"    }",
+									"    else {",
+									"        console.log(\"Error occured, Estimated Expense cant be Validated.\");",
+									"    }",
+									"",
+									"});",
+									"var enddate = data.cmc_enddate;",
+									"var startdate = data.cmc_startdate;",
+									"var description = data.cmc_description;",
+									"var tripname = data.cmc_tripname;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_trips({{gtripid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_trips({{gtripid}})"
+							]
+						},
+						"description": "Validate Estimmated Expense on Trip"
+					},
+					"response": []
+				},
+				{
+					"name": "Rate Trip Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var rating;",
+									"pm.test(\"Estimated and Actual expenses Added to Trip Activity\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([204, 200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    rating = jsonData.cmc_tripactivityrating;",
+									"    console.log(\"Trip Activity Rating is: \" + rating);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_ratingcomments\": \"Great Event\",\r\n    \"cmc_tripactivityrating\": 3\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_tripactivities({{gtripactivityid}})"
+							]
+						},
+						"description": "Rate Trip Activity "
+					},
+					"response": []
+				}
+			],
+			"description": "Validation of Trip & TripActivity",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

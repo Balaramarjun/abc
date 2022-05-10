@@ -1,0 +1,4381 @@
+{
+	"info": {
+		"_postman_id": "46f81064-e4ed-4bce-b6d9-ab852ab66fe8",
+		"name": "TC_1272853_RecordAssignmentforStudentAlert",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users-Assigned&Fallback",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"//Genarate global session value",
+									"",
+									"var number = Math.floor(Math.random() * 1000);",
+									"pm.globals.set('globalsessionvalue',number)",
+									"",
+									"console.log(pm.globals.get(\"globalsessionvalue\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid1;",
+									"pm.test(\"AssingedTO\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid1 = jsonData.value[0].systemuserid;    ",
+									"});",
+									"pm.globals.set('ownerid',userid1);",
+									"console.log('ownerid:'+userid1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq '{{Owner}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{Owner}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AssignDOMtoUser1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AssigntoUser1,fullname1;",
+									"pm.test(\"AssingedTO\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AssigntoUser1 = jsonData.value[0].systemuserid;",
+									"    fullname1=jsonData.value[0].yomifullname;    ",
+									"});",
+									"pm.globals.set('gAssigntoUser1',AssigntoUser1);",
+									"pm.globals.set('gfullname1',fullname1);",
+									"console.log('AssigntoUser1:'+AssigntoUser1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User1}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User1}}'"
+								}
+							]
+						},
+						"description": "Get user1 to assign to Account records"
+					},
+					"response": []
+				},
+				{
+					"name": "AssignDOMtoUser2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AssigntoUser2,fullname2;",
+									"pm.test(\"AssingedTO\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AssigntoUser2 = jsonData.value[0].systemuserid;",
+									"    fullname2=jsonData.value[0].yomifullname;    ",
+									"});",
+									"pm.globals.set('gAssignDOMtoUser2',AssigntoUser2);",
+									"pm.globals.set('gfullname2',fullname2);",
+									"console.log('AssigntoUser2:'+AssigntoUser2);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User2}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User2}}'"
+								}
+							]
+						},
+						"description": "Get user2 to assign to Account records"
+					},
+					"response": []
+				},
+				{
+					"name": "AssignDOMtoUser 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AssigntoUser3,fullname3;",
+									"pm.test(\"AssingedTO\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AssigntoUser3 = jsonData.value[0].systemuserid;",
+									"    fullname3=jsonData.value[0].yomifullname;    ",
+									"});",
+									"pm.globals.set('gAssignDOMtoUser3',AssigntoUser3);",
+									"pm.globals.set('gfullname3',fullname3);",
+									"console.log('AssigntoUser3:'+AssigntoUser3);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User3}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User3}}'"
+								}
+							]
+						},
+						"description": "Get user3 to assign to Account records"
+					},
+					"response": []
+				},
+				{
+					"name": "AssignDOMtoUser 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AssigntoUser4,fullname4;",
+									"pm.test(\"AssingedTO\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AssigntoUser4 = jsonData.value[0].systemuserid;",
+									"    fullname4=jsonData.value[0].yomifullname;    ",
+									"});",
+									"pm.globals.set('gAssignDOMtoUser4',AssigntoUser4);",
+									"pm.globals.set('gfullname4',fullname4);",
+									"console.log('AssigntoUser4:'+AssigntoUser4);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User4}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User4}}'"
+								}
+							]
+						},
+						"description": "Get user3 to assign to Account records"
+					},
+					"response": []
+				},
+				{
+					"name": "Get FallBack User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Fallbackuser,fallBackusername;",
+									"pm.test(\"Fallbackuser\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    Fallbackuser = jsonData.value[0].systemuserid;",
+									"    fallBackusername=jsonData.value[0].yomifullname;    ",
+									"});",
+									"pm.globals.set('gFallbackuser',Fallbackuser);",
+									"pm.globals.set('gfallBackusername',fallBackusername);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{Fallbackuser}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{Fallbackuser}}'"
+								}
+							]
+						},
+						"description": "Get FallAbck User"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var teamId,teamname;",
+									"pm.test(\"Team\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    teamId = jsonData.value[0].teamid;",
+									"    teamname=jsonData.value[0].name;    ",
+									"});",
+									"pm.globals.set('gteamId',teamId);",
+									"pm.globals.set('gteamname',teamname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}teams?$filter=isdefault eq true",
+							"host": [
+								"{{Eresource_URL}}teams"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "isdefault eq true"
+								}
+							]
+						},
+						"description": "Get Default Team that is present in the Org"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create Static User list",
+			"item": [
+				{
+					"name": "Create Static User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistid = jsonData.cmc_userlistid;    ",
+									"});",
+									"pm.globals.set('guserlistid', userlistid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_description\": \"Api created description\",\r\n    \"cmc_listtype\": 175490000,\r\n    \"cmc_name\": \"StaticList API {{$randomInt}}\",\r\n    \"cmc_purpose\": \"Static User List\",\r\n    \"statecode\": 0,\r\n    \"statuscode\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creation of Userlist member1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistmemberid1;",
+									"pm.test(\"User1 Added to UserList \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistmemberid1 = jsonData.cmc_userlistmemberid;    ",
+									"});",
+									" ",
+									"pm.globals.set('guserlistmemberid1', userlistmemberid1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_userid@odata.bind\": \"/systemusers({{gAssigntoUser1}})\",\r\n    \"cmc_UserMember@odata.bind\": \"/cmc_userlists({{guserlistid}})\",    \r\n    \"cmc_roundrobinweight\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlistmembers",
+							"host": [
+								"{{Eresource_URL}}cmc_userlistmembers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creation of Userlist member2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistmemberid2;",
+									"pm.test(\"User1 Added to UserList \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistmemberid2 = jsonData.cmc_userlistmemberid;    ",
+									"});",
+									" ",
+									"pm.globals.set('guserlistmemberid2', userlistmemberid2);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_userid@odata.bind\": \"/systemusers({{gAssignDOMtoUser2}})\",\r\n    \"cmc_UserMember@odata.bind\": \"/cmc_userlists({{guserlistid}})\",    \r\n    \"cmc_roundrobinweight\": 2    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlistmembers",
+							"host": [
+								"{{Eresource_URL}}cmc_userlistmembers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creation of Userlist member3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistmemberid3;",
+									"pm.test(\"User3 Added to UserList \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistmemberid3 = jsonData.cmc_userlistmemberid;",
+									"});",
+									" ",
+									"pm.globals.set('guserlistmemberid3', userlistmemberid3);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_userid@odata.bind\": \"/systemusers({{gAssignDOMtoUser3}})\",\r\n    \"cmc_UserMember@odata.bind\": \"/cmc_userlists({{guserlistid}})\",    \r\n    \"cmc_roundrobinweight\": 3    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlistmembers",
+							"host": [
+								"{{Eresource_URL}}cmc_userlistmembers"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Assign Role to Default Team",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var uniqueid;\r",
+									"var AzureFunction;\r",
+									"var FacultyInstructor;\r",
+									"var EventCoordinator;\r",
+									"var AddOnTripApprover;\r",
+									"var AdmissionsRepresentative;\r",
+									"var Base;\r",
+									"var Shared;\r",
+									"var AddOnApplicationReviewer;\r",
+									"var AddOnApplicationCoordinator;\r",
+									"var SystemAdministrator;\r",
+									"var AddOnApplicationAdmin;\r",
+									"var AdmissionsDecision;\r",
+									"var StudentAdvisorRecruiter;\r",
+									"var AddOnDeletePermissions;\r",
+									"var BusinessUnitAdministrator;\r",
+									"var GlobalBusinessAdministrator;\r",
+									"\r",
+									"pm.test(\"GetUserID\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    \r",
+									"    uniqueid = jsonData.value.length;\r",
+									"    var name;\r",
+									"  \r",
+									"\r",
+									" jsonData.value.forEach(function(role) {\r",
+									"     \r",
+									"     if(role.name.indexOf(\"System \") >= 0)\r",
+									"     {\r",
+									"        console.log(\"System Admin: \"+role.roleid);\r",
+									"        pm.globals.set('gsysAdminId',role.roleid);\r",
+									"     }\r",
+									"     \r",
+									"     if(role.name.indexOf(\"Azure\") >0)\r",
+									"     {\r",
+									"        console.log(\"AzureFunction: \"+role.roleid);\r",
+									"        pm.globals.set('gAzureFunction',role.roleid);\r",
+									"     }\r",
+									"     \r",
+									"     if(role.name.indexOf(\"Faculty\") >0)\r",
+									"     {\r",
+									"        console.log(\"Faculty: \"+role.roleid);\r",
+									"        pm.globals.set('gFacultyInstructor',role.roleid);\r",
+									"     }\r",
+									"     \r",
+									"     if(role.name.indexOf(\"Event Coordinator\") >0)\r",
+									"     {\r",
+									"        console.log(\"Event Coordinator: \"+role.roleid);\r",
+									"        pm.globals.set('gEventCoordinator',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Trip Approver\") >0)\r",
+									"     {\r",
+									"        console.log(\"Trip Approver: \"+role.roleid);\r",
+									"        pm.globals.set('gAddOnTripApprover',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Admissions Representative\") >0)\r",
+									"     {\r",
+									"        console.log(\"Admissions Representative: \"+role.roleid);\r",
+									"        pm.globals.set('gAdmissionsRepresentative',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Base\") >0)\r",
+									"     {\r",
+									"        console.log(\"CMC - Base: \"+role.roleid);\r",
+									"        pm.globals.set('gBase',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Shared\") >0)\r",
+									"     {\r",
+									"        console.log(\"CMC - Shared: \"+role.roleid);\r",
+									"        pm.globals.set('gShared',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Application Reviewer\") >0)\r",
+									"     {\r",
+									"        console.log(\"Application Reviewer: \"+role.roleid);\r",
+									"        pm.globals.set('gAddOnApplicationReviewer',role.roleid);\r",
+									"     }\r",
+									"     \r",
+									"     if(role.name.indexOf(\"Application Coordinator\") >0)\r",
+									"     {\r",
+									"        console.log(\"Application Coordinator: \"+role.roleid);\r",
+									"        pm.globals.set('gAddOnApplicationCoordinator',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Application Admin\") >0)\r",
+									"     {\r",
+									"        console.log(\"Application Admin: \"+role.roleid);\r",
+									"        pm.globals.set('gAddOnApplicationAdmin',role.roleid);\r",
+									"     }\r",
+									"      if(role.name.indexOf(\"Admissions Decision\") >0)\r",
+									"     {\r",
+									"        console.log(\"Admissions Decision: \"+role.roleid);\r",
+									"        pm.globals.set('gAdmissionsDecision',role.roleid);\r",
+									"     }\r",
+									"      if(role.name.indexOf(\"Student Advisor\") >0)\r",
+									"     {\r",
+									"        console.log(\"Student Advisor: \"+role.roleid);\r",
+									"        pm.globals.set('gStudentAdvisorRecruiter',role.roleid);\r",
+									"     }\r",
+									"      if(role.name.indexOf(\"Delete Permissions\") >0)\r",
+									"     {\r",
+									"        console.log(\"Delete Permissions: \"+role.roleid);\r",
+									"        pm.globals.set('gAddOnDeletePermissions',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Business Unit Administrator\") >0)\r",
+									"     {\r",
+									"        console.log(\"Business Unit Administrator: \"+role.roleid);\r",
+									"        pm.globals.set('gBusinessUnitAdministrator',role.roleid);\r",
+									"     }\r",
+									"     if(role.name.indexOf(\"Global Business Administrator\") >0)\r",
+									"     {\r",
+									"        console.log(\"Global Business Administrator: \"+role.roleid);\r",
+									"        pm.globals.set('gGlobalBusinessAdministrator',role.roleid);\r",
+									"     }     \r",
+									" });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}roles?$select=roleid,name&$filter=contains(name, 'CMC') or contains(name, 'System Administrator')",
+							"host": [
+								"{{Eresource_URL}}roles"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "roleid,name"
+								},
+								{
+									"key": "$filter",
+									"value": "contains(name, 'CMC') or contains(name, 'System Administrator')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate systemAdmin role to Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gsysAdminId}})\"  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}teams({{gteamId}})/teamroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}teams({{gteamId}})"
+							],
+							"path": [
+								"teamroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Account",
+			"item": [
+				{
+					"name": "Create AcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"var academicperiodname",
+									"pm.test(\"Academicperiodid Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"    academicperiodname = jsonData.mshied_name;",
+									"    console.log(\"academicperiodname \", academicperiodname);",
+									"});",
+									"",
+									"pm.globals.set('gacademicperiodname', academicperiodname);",
+									"pm.globals.set('gacademicperiodid', academicperiodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_name\": \"{{$randomInt}}-AcademicName-{{globalsessionvalue}}\",\n    \"mshied_code\": \"{{$randomInt}}{{$randomInt}}Ayer{{$randomInt}}\",\n    \"mshied_startdate\": \"{{timestamp}}\",\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\n\t\"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var accountid;",
+									"var accountname;",
+									"pm.test(\"Accountid created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    accountid = jsonData.accountid;",
+									"    accountname = jsonData.name;",
+									"    console.log('Accountid:' + accountid);",
+									"    console.log('Account Name:' + accountname);",
+									"});",
+									"pm.globals.set('gaccountid', accountid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"TestAccount {{globalsessionvalue}}\",\n    \"mshied_accounttype\": \"494280000\",\n\t\"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var coursename;",
+									"var courseid;",
+									"",
+									"pm.test(\"Course Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    courseid = jsonData.mshied_courseid;",
+									"    console.log('course ID is: ' + courseid);",
+									"    coursename = jsonData.mshied_name;",
+									"    console.log('course name is: ' + coursename);",
+									"    pm.globals.set('gcourseid', courseid);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"mshied_coursenumber\": \"{{$randomInt}}cours1{{$randomInt}}{{$randomInt}}\",\n   \"mshied_enddate\": \"{{timestampEndDate}}\",\n   \"mshied_name\": \"{{$randomInt}}-Testcourse-{{globalsessionvalue}}\",\n   \"mshied_section\": \"TestSection\",\n   \"mshied_startdate\": \"{{timestamp}}\",\n   \"mshied_subject\": \"TestSubject\",\n\t\"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_courses",
+							"host": [
+								"{{Eresource_URL}}mshied_courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var coursesectionname;",
+									"var coursesectionid;",
+									"",
+									"pm.test(\"course Section is Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    coursesectionid = jsonData.mshied_coursesectionid;",
+									"    console.log('coursesection id is: ' + coursesectionid);",
+									"    coursesectionname = jsonData.mshied_name;",
+									"    console.log('coursesectionname is: ' + coursesectionname);",
+									"    pm.globals.set('gcoursesectionid', coursesectionid);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"mshied_AcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\n   \"mshied_CampusId@odata.bind\": \"/accounts({{gaccountid}})\",\n   \"mshied_CourseId@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n   \"mshied_coursedaytime\": \"2\",\n   \"mshied_location\": \"Banglore\",\n   \"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_coursesections",
+							"host": [
+								"{{Eresource_URL}}mshied_coursesections"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Configuration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var configid;",
+									"pm.test(\"Get COnfiguration\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    configid = jsonData.value[0].cmc_configurationid;",
+									"    console.log(\"Configurationid: \"+configid);    ",
+									"});",
+									"pm.globals.set('gconfigid',configid);",
+									"console.log(\"configuration id: \"+configid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_configurations?$select=*&$filter=statecode eq 0 and statuscode eq 1",
+							"host": [
+								"{{Eresource_URL}}cmc_configurations"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "statecode eq 0 and statuscode eq 1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Staff  Role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Get Staff Role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].cmc_titleid;",
+									"    console.log(\"userid: \"+userid);    ",
+									"});",
+									"pm.globals.set('gAdvisor',userid);",
+									"console.log(\"Systemuser: \"+userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_titles?$select=cmc_titleid&$filter=cmc_titlename eq 'Academic Advisor'",
+							"host": [
+								"{{Eresource_URL}}cmc_titles"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "cmc_titleid"
+								},
+								{
+									"key": "$filter",
+									"value": "cmc_titlename eq 'Academic Advisor'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Staff Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Get Staff Member ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    console.log(\"userid: \"+userid);",
+									"    ",
+									"});",
+									"pm.globals.set('gstaff',userid);",
+									"console.log(\"Systemuser: \"+userid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Configutation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var config_advisor;",
+									"var config_advisor_role;",
+									"",
+									"pm.test(\"Updating Configuration\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    config_advisor = jsonData._cmc_studentalertbusinessprocessnotification_value;",
+									"    config_advisor_role = jsonData._cmc_studentalertownerrole_value;",
+									"    console.log(\"config_advisor: \" + config_advisor);",
+									"console.log(\"config_advisorRole: \" + config_advisor_role);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_StudentAlertBusinessProcessNotification@odata.bind\": \"/systemusers({{gstaff}})\",\r\n    \"cmc_StudentAlertOwnerRole@odata.bind\": \"/cmc_titles({{gAdvisor}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_configurations({{gconfigid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_configurations({{gconfigid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DCRM Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Creating Alert",
+			"item": [
+				{
+					"name": "Get Instructor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Get Instructor Id\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    console.log(\"userid: \"+userid);",
+									"    ",
+									"});",
+									"pm.globals.set('ginstructor',userid);",
+									"console.log(\"Systemuser: \"+userid);",
+									"",
+									"var user=data.username;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq '{{User4}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User4}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Get Reviewer ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    console.log(\"userid: \"+userid);",
+									"    ",
+									"});",
+									"pm.globals.set('greviewer',userid);",
+									"console.log(\"Systemuser: \"+userid);",
+									"",
+									"var user=data.username;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq '{{User5}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User5}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceCategory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceCategoryid;",
+									"pm.test(\"Source category record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceCategoryid = jsonData.value[0].cmc_sourcecategoryid;",
+									"    var sourceCategoryName = jsonData.value[0].cmc_sourcecategoryname;",
+									"    console.log('SourceCategory Name is: ' + sourceCategoryName);",
+									"});",
+									"pm.globals.set('gsourceCategoryid1', sourceCategoryid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceMethod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceMethodid;",
+									"",
+									"pm.test(\"Source Method record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+									"    var sourceMethodName = jsonData.value[0].cmc_sourcemethodname;",
+									"    console.log('SourceMethod Name is: ' + sourceMethodName);",
+									"",
+									"});",
+									"pm.globals.set('gsourceMethodid1', sourceMethodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting option set",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertreasonname;",
+									"",
+									"pm.test(\"Verify Alert Name\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertreasonname = jsonData.OptionSet.Options[0].Label.LocalizedLabels[0].Label",
+									"    console.log(alertreasonname);",
+									"",
+									"pm.globals.set(\"galertreasonname\", alertreasonname);",
+									"});  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='cmc_alert')/Attributes(LogicalName='cmc_alertreason')/Microsoft.Dynamics.CRM.PicklistAttributeMetadata?$select=LogicalName&$expand=OptionSet($select=Options)",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='cmc_alert')"
+							],
+							"path": [
+								"Attributes(LogicalName='cmc_alertreason')",
+								"Microsoft.Dynamics.CRM.PicklistAttributeMetadata"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "LogicalName"
+								},
+								{
+									"key": "$expand",
+									"value": "OptionSet($select=Options)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid1;",
+									"var fullname;",
+									"var fname1;",
+									"var lname1;",
+									"var stmail;",
+									"",
+									"pm.test(\"Contact1 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid1 = jsonData.contactid;",
+									"    fullname=jsonData.fullname; ",
+									"     fname1=jsonData.firstname; ",
+									"      lname1=jsonData.lastname; ",
+									"      stmail=jsonData.emailaddress1;",
+									"      ",
+									"    console.log(\"contactid1 \",contactid1);",
+									"    console.log(\"fullname \",fullname);",
+									"    console.log(\"firstname \",fname1);",
+									"    console.log(\"lastname \",lname1);",
+									"    console.log(\"studente Mail \",stmail);",
+									"});",
+									"",
+									"pm.globals.set('gcontactid15', contactid1);",
+									"pm.globals.set('gfullname1', fullname);",
+									"pm.globals.set('gfname1', fname1);",
+									"pm.globals.set('glname1', lname1);",
+									"pm.globals.set('gmail1', stmail);",
+									"",
+									"//setTimeout(function () { }, 70000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{globalsessionvalue}}\",\r\n    \"emailaddress1\": \"Test{{$randomInt}}@gmail.com\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid1}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid1}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Success Network",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successnetworkname;",
+									"var studentid;",
+									"var networkid;",
+									"",
+									"pm.test(\"Contact1 Created\", function () {",
+									"  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"  var jsonData = JSON.parse(responseBody);",
+									"  successnetworkname = jsonData.cmc_successnetworkname;",
+									"  studentid = jsonData._cmc_studentid_value;",
+									"  networkid = jsonData.cmc_successnetworkid;",
+									"",
+									"  console.log(\"successnetworkname \", successnetworkname);",
+									"  console.log(\"networkid \", networkid);",
+									"  console.log(\"studentid \", studentid);",
+									"",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_staffmemberid@odata.bind\": \"/systemusers({{gstaff}})\",\r\n    \"cmc_staffroleid@odata.bind\": \"/cmc_titles({{gAdvisor}})\",\r\n    \"cmc_studentid@odata.bind\": \"/contacts({{gcontactid15}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successnetworks",
+							"host": [
+								"{{Eresource_URL}}cmc_successnetworks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Submitter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid2;",
+									"var fullname;",
+									"var fname2;",
+									"var lname2;",
+									"var submail;",
+									"",
+									"pm.test(\"Contact2 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid2 = jsonData.contactid;",
+									"    fullname=jsonData.fullname;",
+									"    submail=jsonData.emailaddress1;",
+									"      fname2=jsonData.firstname; ",
+									"      lname2=jsonData.lastname; ",
+									"      console.log(\"contactid2 \",contactid2);",
+									"    console.log(\"fullname \",fullname);",
+									"    console.log(\"firstname \",fname2);",
+									"    console.log(\"lastname \",lname2);",
+									"    console.log(\"Submitter Mail \",submail); ",
+									"});",
+									"",
+									"pm.globals.set('gcontactid2', contactid2);",
+									"pm.globals.set('gfullname2', fullname);",
+									"pm.globals.set('gfname2', fname2);",
+									"pm.globals.set('glname2', lname2);",
+									"pm.globals.set('gmail2', submail);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{$randomInt}}\",\r\n    \"emailaddress1\": \"Test{{$randomInt}}{{$randomInt}}@gmail.com\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid1}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid1}})\",\r\n   \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student Alert",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    alertname = jsonData.cmc_name;",
+									"    console.log('Alertid is: ' + alertid);",
+									"    console.log('Alert name is: ' + alertname);",
+									"    pm.globals.set('galertid', alertid);",
+									"    ",
+									"    setTimeout(function () { }, 50000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_Instructor@odata.bind\": \"/systemusers({{ginstructor}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid15}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"100000000\",\n    \"cmc_alertreasondetails\": \"100000000\",\n    \"cmc_alertsource\": \"100000003\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"description-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"121660000\",\n    \"statecode\": 0,\n    \"statuscode\": 1,\n\t\"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Scenario 1 Round Robin",
+			"item": [
+				{
+					"name": "Create Student 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid1;",
+									"var fullname;",
+									"var fname1;",
+									"var lname1;",
+									"var stmail;",
+									"",
+									"pm.test(\"Contact21 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid1 = jsonData.contactid;",
+									"    fullname=jsonData.fullname; ",
+									"     fname1=jsonData.firstname; ",
+									"      lname1=jsonData.lastname; ",
+									"      stmail=jsonData.emailaddress1;",
+									"      ",
+									"    console.log(\"contactid1 \",contactid1);",
+									"    console.log(\"fullname \",fullname);",
+									"    console.log(\"firstname \",fname1);",
+									"    console.log(\"lastname \",lname1);",
+									"    console.log(\"studente Mail \",stmail);",
+									"});",
+									"",
+									"pm.globals.set('gcontactid21', contactid1);",
+									"pm.globals.set('gfullname3', fullname);",
+									"pm.globals.set('gfname3', fname1);",
+									"pm.globals.set('glname3', lname1);",
+									"pm.globals.set('gmail3', stmail);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{globalsessionvalue}}\",\r\n    \"emailaddress1\": \"Test1111{{$randomInt}}@gmail.com\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid1}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid1}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student Alert 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    alertname = jsonData.cmc_name;",
+									"    console.log('Alertid is: ' + alertid);",
+									"    console.log('Alert name is: ' + alertname);",
+									"    pm.globals.set('galertid21', alertid);",
+									"    ",
+									"});",
+									"",
+									"",
+									"setTimeout(function () { }, 5000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_Instructor@odata.bind\": \"/systemusers({{ginstructor}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid21}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"100000000\",\n    \"cmc_alertreasondetails\": \"100000000\",\n    \"cmc_alertsource\": \"100000003\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"description-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"121660000\",\n    \"statecode\": 0,\n    \"statuscode\": 1,\n\t\"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid1;",
+									"var fullname;",
+									"var fname1;",
+									"var lname1;",
+									"var stmail;",
+									"",
+									"pm.test(\"Contact22 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid1 = jsonData.contactid;",
+									"    fullname=jsonData.fullname; ",
+									"     fname1=jsonData.firstname; ",
+									"      lname1=jsonData.lastname; ",
+									"      stmail=jsonData.emailaddress1;",
+									"      ",
+									"    console.log(\"contactid1 \",contactid1);",
+									"    console.log(\"fullname \",fullname);",
+									"    console.log(\"firstname \",fname1);",
+									"    console.log(\"lastname \",lname1);",
+									"    console.log(\"studente Mail \",stmail);",
+									"});",
+									"",
+									"pm.globals.set('gcontactid22', contactid1);",
+									"pm.globals.set('gfullname3', fullname);",
+									"pm.globals.set('gfname3', fname1);",
+									"pm.globals.set('glname3', lname1);",
+									"pm.globals.set('gmail3', stmail);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{globalsessionvalue}}\",\r\n    \"emailaddress1\": \"Test1111{{$randomInt}}@gmail.com\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid1}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid1}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student Alert 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    alertname = jsonData.cmc_name;",
+									"    console.log('Alertid is: ' + alertid);",
+									"    console.log('Alert name is: ' + alertname);",
+									"    pm.globals.set('galertid22', alertid);",
+									"    ",
+									"});",
+									"",
+									"setTimeout(function () { }, 5000);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_Instructor@odata.bind\": \"/systemusers({{ginstructor}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid22}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"100000000\",\n    \"cmc_alertreasondetails\": \"100000000\",\n    \"cmc_alertsource\": \"100000003\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"description-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"121660000\",\n    \"statecode\": 0,\n    \"statuscode\": 1,\n\t\"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid1;",
+									"var fullname;",
+									"var fname1;",
+									"var lname1;",
+									"var stmail;",
+									"",
+									"pm.test(\"Contact23 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid1 = jsonData.contactid;",
+									"    fullname=jsonData.fullname; ",
+									"     fname1=jsonData.firstname; ",
+									"      lname1=jsonData.lastname; ",
+									"      stmail=jsonData.emailaddress1;",
+									"      ",
+									"    console.log(\"contactid1 \",contactid1);",
+									"    console.log(\"fullname \",fullname);",
+									"    console.log(\"firstname \",fname1);",
+									"    console.log(\"lastname \",lname1);",
+									"    console.log(\"studente Mail \",stmail);",
+									"});",
+									"",
+									"pm.globals.set('gcontactid23', contactid1);",
+									"pm.globals.set('gfullname3', fullname);",
+									"pm.globals.set('gfname3', fname1);",
+									"pm.globals.set('glname3', lname1);",
+									"pm.globals.set('gmail3', stmail);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{globalsessionvalue}}\",\r\n    \"emailaddress1\": \"Test1111{{$randomInt}}@gmail.com\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid1}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid1}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student Alert 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    alertname = jsonData.cmc_name;",
+									"    console.log('Alertid is: ' + alertid);",
+									"    console.log('Alert name is: ' + alertname);",
+									"    pm.globals.set('galertid23', alertid);",
+									"    ",
+									"});",
+									"",
+									"setTimeout(function () { }, 5000);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_Instructor@odata.bind\": \"/systemusers({{ginstructor}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid23}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"100000000\",\n    \"cmc_alertreasondetails\": \"100000000\",\n    \"cmc_alertsource\": \"100000003\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"description-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"121660000\",\n    \"statecode\": 0,\n    \"statuscode\": 1,\n\t\"ownerid@odata.bind\": \"/systemusers({{ownerid}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AssignmentGroup&Rule",
+			"item": [
+				{
+					"name": "Create Assignmentgroups",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var assignmentgroupid,cmc_assigntofield,assignmentGroupName;",
+									"",
+									"pm.test(\"Assignmentgroups Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    assignmentgroupid = jsonData.cmc_assignmentgroupid;",
+									"    cmc_assigntofield = jsonData.cmc_assigntofield;",
+									"    assignmentGroupName=jsonData.cmc_name;",
+									"    console.log(\"Assignment Group Name is: \"+assignmentGroupName);",
+									"});",
+									"",
+									"pm.globals.set('gassigntofield',cmc_assigntofield);",
+									"pm.globals.set('gassignmentgroupid',assignmentgroupid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\">\\n  <entity name=\\\"cmc_alert\\\">\\n    <attribute name=\\\"cmc_alertid\\\" />\\n    <attribute name=\\\"createdon\\\" />\\n     <order attribute=\\\"createdon\\\" descending=\\\"false\\\" />\\n    <filter type=\\\"and\\\">\\n      <condition attribute=\\\"cmc_name\\\" operator=\\\"like\\\" value=\\\"%test-{{globalsessionvalue}}%\\\" />\\n    </filter>\\n  </entity>\\n</fetch>\",\r\n   \r\n   \"cmc_FallBackUserId@odata.bind\":\"/systemusers({{gFallbackuser}})\",\r\n   \"cmc_assigntofield\":\"cmc_reviewedby\",\r\n   \"cmc_assigntofieldname\": \"Reviewed By\",\r\n   \"cmc_name\":\"AG-StudentAlert{{globalsessionvalue}}\",\r\n   \"statecode\": 0,\r\n   \"statuscode\": 175490000,\r\n   \"cmc_baseentity\": \"cmc_alert\",\r\n   \"cmc_baseentityname\": \"Student Alert\",\r\n   \"ownerid@odata.bind\":\"/systemusers({{ownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assignment Rule User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var usertoassignid_value,assignmentruleid,assignmentgroupid_value;",
+									"",
+									"pm.test(\"Assignment Rule 1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    usertoassignid_value = jsonData._cmc_usertoassignid_value;",
+									"    assignmentruleid = jsonData.cmc_assignmentruleid;",
+									"    assignmentgroupid_value = jsonData._cmc_assignmentgroupid_value;  ",
+									"    console.log(\" usertoassignid_value:\" +usertoassignid_value);",
+									"    console.log(\" assignmentruleid:\" +assignmentruleid);",
+									"    console.log(\" assignmentgroupid_value:\" +assignmentgroupid_value);  ",
+									"});",
+									"pm.globals.set('gusertoassignid_value1',usertoassignid_value);",
+									"pm.globals.set('gassignmentruleid1',assignmentruleid);",
+									"pm.globals.set('gassignmentgroupid_value1',assignmentgroupid_value);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"cmc_alert\\\"><attribute name=\\\"cmc_alertid\\\"/><attribute name=\\\"createdon\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"cmc_name\\\" operator=\\\"like\\\" value=\\\"%test-{{globalsessionvalue}}%\\\"/><condition attribute=\\\"createdon\\\" operator=\\\"today\\\"/><condition attribute=\\\"cmc_studentemail\\\" operator=\\\"not-like\\\" value=\\\"%test1111%\\\"/></filter></entity></fetch>\",\r\n\r\n   \"cmc_executionorder\":1,\r\n   \"cmc_assignmenttype\":175490000,\r\n   \"cmc_name\":\"AR1-StudentAlert-{{$randomInt}}\",\r\n   \"ownerid@odata.bind\":\"/systemusers({{ownerid}})\",\r\n   \"cmc_baseentity\":\"cmc_alert\",\r\n   \"cmc_UsertoAssignId@odata.bind\": \"/systemusers({{gAssigntoUser1}})\",  \r\n   \"cmc_AssignmentGroupId@odata.bind\":\"/cmc_assignmentgroups({{gassignmentgroupid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentrules",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentrules"
+							]
+						},
+						"description": "Assign Account to User A when Account type=Campus and\r\nrelated Entity Address 'mail type' = 'Primary' and Country = 'India'"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assignment Rule RR",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var usertoassignid_value,assignmentruleid,assignmentgroupid_value;",
+									"",
+									"pm.test(\"Assignment Rule 2 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    usertoassignid_value = jsonData._cmc_usertoassignid_value;",
+									"    assignmentruleid = jsonData.cmc_assignmentruleid;",
+									"    assignmentgroupid_value = jsonData._cmc_assignmentgroupid_value;  ",
+									"",
+									"    console.log(\" assignmentruleid:\" +assignmentruleid)",
+									"    console.log(\" assignmentgroupid_value:\" +assignmentgroupid_value)  ",
+									"});",
+									"pm.globals.set('gassignmentruleid2',assignmentruleid);",
+									"pm.globals.set('gassignmentgroupid_value2',assignmentgroupid_value);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"cmc_alert\\\"><attribute name=\\\"cmc_alertid\\\"/><attribute name=\\\"createdon\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"cmc_name\\\" operator=\\\"like\\\" value=\\\"%test-{{globalsessionvalue}}%\\\"/><condition attribute=\\\"cmc_studentemail\\\" operator=\\\"like\\\" value=\\\"%test1111%\\\"/></filter></entity></fetch>\",\r\n\r\n   \"cmc_executionorder\":2,\r\n   \"cmc_assignmenttype\":175490002,\r\n   \"cmc_name\":\"AR2-StudentAlert-{{$randomInt}}\",\r\n   \"ownerid@odata.bind\":\"/systemusers({{ownerid}})\",\r\n   \"cmc_baseentity\":\"cmc_alert\",\r\n   \"cmc_userlistid@odata.bind\": \"/cmc_userlists({{guserlistid}})\",\r\n   \"cmc_AssignmentGroupId@odata.bind\":\"/cmc_assignmentgroups({{gassignmentgroupid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentrules",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentrules"
+							]
+						},
+						"description": "Assign Account to User B when Account's Industry code = 'Financial' and created By is DCRMAPI user"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Assignmentgroups status to Live",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var assignmentgroupid,cmc_assigntofield,assignmentGroupName;",
+									"",
+									"pm.test(\"Assignmentgroups Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    ",
+									"    console.log(\"Assignment Group status is Live\");",
+									"});",
+									"",
+									"setTimeout(function () { }, 140000);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n   \"statecode\": 0,\r\n   \"statuscode\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Validation-DOM Status and Uservalidation",
+			"item": [
+				{
+					"name": "VerifyCurrentDOMStatus for Alert1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Assgineduser;",
+									"pm.test(\"GetDOM Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var domstatus =jsonData.cmc_domstatus;",
+									"    console.log('cmc_domstatus:'+domstatus);",
+									"    var csv_domstatus = 175490000;",
+									"    ",
+									"    Assgineduser = jsonData._cmc_reviewedby_value;",
+									"    ",
+									"    var declaredassigneduser1 = pm.globals.get(\"gAssigntoUser1\");",
+									"    var declaredassigneduser2 = pm.globals.get(\"gAssignDOMtoUser2\");",
+									"    var declaredassigneduser3 = pm.globals.get(\"gAssignDOMtoUser3\");",
+									"    var declaredassigneduser4 = pm.globals.get(\"gAssignDOMtoUser4\");",
+									"       ",
+									"        pm.test(\"Validate DOM status\", function()",
+									"        {",
+									"            pm.expect(domstatus).to.equal(csv_domstatus);",
+									"        });",
+									"        ",
+									"        pm.test(\"Validate Reviewer\", function()",
+									"        {",
+									"            pm.expect(Assgineduser).not.eql(null);",
+									"        });",
+									"",
+									"     pm.test(\"Assigned to User check\", () => {",
+									"        pm.expect(Assgineduser).to.be.oneOf([declaredassigneduser1,declaredassigneduser2,declaredassigneduser3,declaredassigneduser4]);",
+									"        console.log('Assgineduser from Engage:' +Assgineduser);",
+									"        console.log('declaredassigneduser1:' +declaredassigneduser1);",
+									"        console.log('declaredassigneduser2:' +declaredassigneduser2);",
+									"        console.log('declaredassigneduser3:' +declaredassigneduser3);",
+									"        console.log('declaredassigneduser4:' +declaredassigneduser4);",
+									"",
+									"         });",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_alerts({{galertid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_alerts({{galertid}})"
+							]
+						},
+						"description": "Verify DOM Status and Assigned User validation"
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyCurrentDOMStatus for Alert2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Assgineduser;",
+									"pm.test(\"GetDOM Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);    ",
+									"    var domstatus =jsonData.cmc_domstatus;",
+									"    console.log('cmc_domstatus:'+domstatus);",
+									"    var csv_domstatus = 175490000;    ",
+									"    Assgineduser = jsonData._cmc_reviewedby_value;",
+									"",
+									"    var declaredassigneduser1 = pm.globals.get(\"gAssigntoUser1\");",
+									"    var declaredassigneduser2 = pm.globals.get(\"gAssignDOMtoUser2\");",
+									"    var declaredassigneduser3 = pm.globals.get(\"gAssignDOMtoUser3\");",
+									"    var declaredassigneduser4 = pm.globals.get(\"gAssignDOMtoUser4\");",
+									"        ",
+									"        pm.test(\"Validate DOM status\", function()",
+									"        {",
+									"            pm.expect(domstatus).to.equal(csv_domstatus);",
+									"        });",
+									"        ",
+									"        pm.test(\"Validate Reviewer\", function()",
+									"        {",
+									"            pm.expect(Assgineduser).not.eql(null);",
+									"        });",
+									"    ",
+									"     pm.test(\"Assigned to User check\", () => {",
+									"        pm.expect(Assgineduser).to.be.oneOf([declaredassigneduser1,declaredassigneduser2,declaredassigneduser3,declaredassigneduser4]);",
+									"        ",
+									"        console.log('Assgineduser from Engage:' +Assgineduser);",
+									"        console.log('declaredassigneduser1:' +declaredassigneduser1);",
+									"        console.log('declaredassigneduser2:' +declaredassigneduser2);",
+									"        console.log('declaredassigneduser3:' +declaredassigneduser3);",
+									"        console.log('declaredassigneduser4:' +declaredassigneduser4);",
+									"         });",
+									"     ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_alerts({{galertid21}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_alerts({{galertid21}})"
+							]
+						},
+						"description": "Verify DOM Status and Assigned User validation"
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyCurrentDOMStatus for Alert3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Assgineduser;",
+									"pm.test(\"GetDOM Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var domstatus =jsonData.cmc_domstatus;",
+									"    console.log('cmc_domstatus:'+domstatus);",
+									"    var csv_domstatus = 175490000;",
+									"    ",
+									"    Assgineduser = jsonData._cmc_reviewedby_value;",
+									"    ",
+									"   var declaredassigneduser1 = pm.globals.get(\"gAssigntoUser1\");",
+									"    var declaredassigneduser2 = pm.globals.get(\"gAssignDOMtoUser2\");",
+									"    var declaredassigneduser3 = pm.globals.get(\"gAssignDOMtoUser3\");",
+									"    var declaredassigneduser4 = pm.globals.get(\"gAssignDOMtoUser4\");",
+									"    ",
+									"        pm.test(\"Validate DOM status\", function()",
+									"        {",
+									"            pm.expect(domstatus).to.equal(csv_domstatus);",
+									"        });",
+									"        ",
+									"        pm.test(\"Validate Reviewer\", function()",
+									"        {",
+									"            pm.expect(Assgineduser).not.eql(null);",
+									"        });",
+									"",
+									"        pm.test(\"Assigned to User check\", () => {",
+									"        pm.expect(Assgineduser).to.be.oneOf([declaredassigneduser1,declaredassigneduser2,declaredassigneduser3,declaredassigneduser4]);",
+									"",
+									"        console.log('Assgineduser from Engage:' +Assgineduser);",
+									"        console.log('declaredassigneduser1:' +declaredassigneduser1);",
+									"        console.log('declaredassigneduser2:' +declaredassigneduser2);",
+									"        console.log('declaredassigneduser3:' +declaredassigneduser3);",
+									"        console.log('declaredassigneduser4:' +declaredassigneduser4);",
+									"         });",
+									"     ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_alerts({{galertid22}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_alerts({{galertid22}})"
+							]
+						},
+						"description": "Verify DOM Status and Assigned User validation"
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyCurrentDOMStatus for Alert4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Assgineduser;",
+									"pm.test(\"GetDOM Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var domstatus =jsonData.cmc_domstatus;",
+									"    console.log('cmc_domstatus:'+domstatus);",
+									"    var csv_domstatus = 175490000;",
+									"    ",
+									"    Assgineduser = jsonData._cmc_reviewedby_value;",
+									"    ",
+									"   var declaredassigneduser1 = pm.globals.get(\"gAssigntoUser1\");",
+									"    var declaredassigneduser2 = pm.globals.get(\"gAssignDOMtoUser2\");",
+									"    var declaredassigneduser3 = pm.globals.get(\"gAssignDOMtoUser3\");",
+									"    var declaredassigneduser4 = pm.globals.get(\"gAssignDOMtoUser4\");",
+									"            ",
+									"        pm.test(\"Validate DOM status\", function()",
+									"        {",
+									"            pm.expect(domstatus).to.equal(csv_domstatus);",
+									"        });",
+									"        ",
+									"        pm.test(\"Validate Reviewer\", function()",
+									"        {",
+									"            pm.expect(Assgineduser).not.eql(null);",
+									"        });",
+									"",
+									"        pm.test(\"Assigned to User check\", () => {",
+									"        pm.expect(Assgineduser).to.be.oneOf([declaredassigneduser1,declaredassigneduser2,declaredassigneduser3,declaredassigneduser4]);",
+									"",
+									"        console.log('Assgineduser from Engage:' +Assgineduser);",
+									"        console.log('declaredassigneduser1:' +declaredassigneduser1);",
+									"        console.log('declaredassigneduser2:' +declaredassigneduser2);",
+									"        console.log('declaredassigneduser3:' +declaredassigneduser3);",
+									"        console.log('declaredassigneduser4:' +declaredassigneduser4);",
+									"         });",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_alerts({{galertid23}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_alerts({{galertid23}})"
+							]
+						},
+						"description": "Verify DOM Status and Assigned User validation"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Validation of Assignment History",
+			"item": [
+				{
+					"name": "Get Assignment History-Alert1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var historyassignmentgroupid,historyassignmentruleid_value,historyassignedvalue,historyassignedtofield,historyassignmentmethod;",
+									"",
+									"pm.test(\"Assignment History Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    historyassignmentgroupid = jsonData.value[0]._cmc_assignmentgroupid_value;",
+									"    historyassignmentruleid_value = jsonData.value[0]._cmc_assignmentruleid_value;",
+									"    historyassignedvalue = jsonData.value[0].cmc_assignedvalue;",
+									"    historyassignedtofield = jsonData.value[0].cmc_assignedtofield;",
+									"    historyassignmentmethod=jsonData.value[0].cmc_assignmentmethod",
+									"",
+									"    console.log(\"AassignmentMethod  :\" +historyassignmentmethod);",
+									"    console.log(\"AassignmentGroupID  :\" +historyassignmentgroupid);",
+									"    console.log(\"AassignmentValue  :\" +historyassignedvalue);",
+									"    console.log(\"AassignmentRuleID :\" +historyassignmentruleid_value);",
+									"    console.log(\"AassigntoField:\" +historyassignedtofield);",
+									"});",
+									"",
+									"var usertoassignidvalueAR = pm.globals.get(\"gusertoassignid_value1\");",
+									"var assignmentruleidAR = pm.globals.get(\"gassignmentruleid1\");",
+									"var assignmentgroupid_valueAR = pm.globals.get(\"gassignmentgroupid\");",
+									"var assigntofieldAG = pm.globals.get(\"gassigntofield\");",
+									"var assigntouser=pm.globals.get(\"gAssigntoUser1\");",
+									"",
+									" pm.test(\"Validate assignmentruleid\", function()",
+									"        {",
+									"            pm.expect(historyassignmentruleid_value).to.equal(assignmentruleidAR);",
+									"        });",
+									"",
+									" pm.test(\"Validate Assignmentgroupid_value\", function()",
+									"        {",
+									"            pm.expect(historyassignmentgroupid).to.equal(assignmentgroupid_valueAR);",
+									"        });",
+									" pm.test(\"Validate assigntofield\", function()",
+									"        {",
+									"            pm.expect(historyassignedtofield).to.equal(assigntofieldAG);",
+									"        });",
+									"",
+									"     pm.test(\"Validate Assgined to user\", function()",
+									"        {",
+									"            pm.expect(historyassignedvalue).not.eql(null);",
+									"        });",
+									"",
+									"",
+									"if (historyassignmentmethod===175490001 )",
+									"{",
+									"    console.log(\"Aassignmentmethod is Trigger\");",
+									"}",
+									"else",
+									"{",
+									"    console.log(\"Aassignmentmethod is Scheduled\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmenthistories?$filter=_cmc_studentalertassignmenthistoryid_value eq '{{galertid}}'",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmenthistories"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_studentalertassignmenthistoryid_value eq '{{galertid}}'"
+								}
+							]
+						},
+						"description": "Validate below fields in Assignment History\r\n\r\nAssignmentGroup\r\nAssignmentRule\r\nAssigned Value( Assigned User)\r\nAssign to Field"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignment History-Alert2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var historyassignmentgroupid,historyassignmentruleid_value,historyassignedvalue,historyassignedtofield,historyassignmentmethod;",
+									"",
+									"pm.test(\"Assignment History Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    historyassignmentgroupid = jsonData.value[0]._cmc_assignmentgroupid_value;",
+									"    historyassignmentruleid_value = jsonData.value[0]._cmc_assignmentruleid_value;",
+									"    historyassignedvalue = jsonData.value[0].cmc_assignedvalue;",
+									"    historyassignedtofield = jsonData.value[0].cmc_assignedtofield;",
+									"    historyassignmentmethod=jsonData.value[0].cmc_assignmentmethod",
+									"",
+									"    console.log(\"AassignmentMethod  :\" +historyassignmentmethod);",
+									"    console.log(\"AassignmentGroupID  :\" +historyassignmentgroupid);",
+									"    console.log(\"AassignmentValue  :\" +historyassignedvalue);",
+									"    console.log(\"AassignmentRuleID :\" +historyassignmentruleid_value);",
+									"    console.log(\"AassigntoField:\" +historyassignedtofield);",
+									"});",
+									"",
+									"var usertoassignidvalueAR = pm.globals.get(\"gusertoassignid_value1\");",
+									"var assignmentruleidAR = pm.globals.get(\"gassignmentruleid2\");",
+									"var assignmentgroupid_valueAR = pm.globals.get(\"gassignmentgroupid\");",
+									"var assigntofieldAG = pm.globals.get(\"gassigntofield\");",
+									"var assigntouser=pm.globals.get(\"gAssigntoUser1\");",
+									"",
+									" pm.test(\"Validate assignmentruleid\", function()",
+									"        {",
+									"            pm.expect(historyassignmentruleid_value).to.equal(assignmentruleidAR);",
+									"        });",
+									"",
+									" pm.test(\"Validate Assignmentgroupid_value\", function()",
+									"        {",
+									"            pm.expect(historyassignmentgroupid).to.equal(assignmentgroupid_valueAR);",
+									"        });",
+									" pm.test(\"Validate assigntofield\", function()",
+									"        {",
+									"            pm.expect(historyassignedtofield).to.equal(assigntofieldAG);",
+									"        });",
+									"    pm.test(\"Validate Assgined to user\", function()",
+									"        {",
+									"            pm.expect(historyassignedvalue).not.eql(null);",
+									"        });",
+									"",
+									"",
+									"",
+									"if (historyassignmentmethod===175490001 )",
+									"{",
+									"    console.log(\"Aassignmentmethod is Trigger\");",
+									"}",
+									"else",
+									"{",
+									"    console.log(\"Aassignmentmethod is Scheduled\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmenthistories?$filter=_cmc_studentalertassignmenthistoryid_value eq '{{galertid21}}'",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmenthistories"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_studentalertassignmenthistoryid_value eq '{{galertid21}}'"
+								}
+							]
+						},
+						"description": "Validate below fields in Assignment History\r\n\r\nAssignmentGroup\r\nAssignmentRule\r\nAssigned Value( Assigned User)\r\nAssign to Field"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignment History-Alert3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var historyassignmentgroupid,historyassignmentruleid_value,historyassignedvalue,historyassignedtofield,historyassignmentmethod;",
+									"",
+									"pm.test(\"Assignment History Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    historyassignmentgroupid = jsonData.value[0]._cmc_assignmentgroupid_value;",
+									"    historyassignmentruleid_value = jsonData.value[0]._cmc_assignmentruleid_value;",
+									"    historyassignedvalue = jsonData.value[0].cmc_assignedvalue;",
+									"    historyassignedtofield = jsonData.value[0].cmc_assignedtofield;",
+									"    historyassignmentmethod=jsonData.value[0].cmc_assignmentmethod",
+									"",
+									"    console.log(\"AassignmentMethod  :\" +historyassignmentmethod);",
+									"    console.log(\"AassignmentGroupID  :\" +historyassignmentgroupid);",
+									"    console.log(\"AassignmentValue  :\" +historyassignedvalue);",
+									"    console.log(\"AassignmentRuleID :\" +historyassignmentruleid_value);",
+									"    console.log(\"AassigntoField:\" +historyassignedtofield);",
+									"});",
+									"",
+									"var usertoassignidvalueAR = pm.globals.get(\"gusertoassignid_value1\");",
+									"var assignmentruleidAR = pm.globals.get(\"gassignmentruleid2\");",
+									"var assignmentgroupid_valueAR = pm.globals.get(\"gassignmentgroupid\");",
+									"var assigntofieldAG = pm.globals.get(\"gassigntofield\");",
+									"var assigntouser=pm.globals.get(\"gAssignDOMtoUser2\");",
+									"",
+									" pm.test(\"Validate assignmentruleid\", function()",
+									"        {",
+									"            pm.expect(historyassignmentruleid_value).to.equal(assignmentruleidAR);",
+									"        });",
+									"",
+									" pm.test(\"Validate Assignmentgroupid_value\", function()",
+									"        {",
+									"            pm.expect(historyassignmentgroupid).to.equal(assignmentgroupid_valueAR);",
+									"        });",
+									" pm.test(\"Validate assigntofield\", function()",
+									"        {",
+									"            pm.expect(historyassignedtofield).to.equal(assigntofieldAG);",
+									"        });",
+									"    ",
+									"    pm.test(\"Validate Assgined to user\", function()",
+									"        {",
+									"            pm.expect(historyassignedvalue).not.eql(null);",
+									"        });",
+									"",
+									"",
+									"if (historyassignmentmethod===175490001 )",
+									"{",
+									"    console.log(\"Aassignmentmethod is Trigger\");",
+									"}",
+									"else",
+									"{",
+									"    console.log(\"Aassignmentmethod is Scheduled\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmenthistories?$filter=_cmc_studentalertassignmenthistoryid_value eq '{{galertid22}}'",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmenthistories"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_studentalertassignmenthistoryid_value eq '{{galertid22}}'"
+								}
+							]
+						},
+						"description": "Validate below fields in Assignment History\r\n\r\nAssignmentGroup\r\nAssignmentRule\r\nAssigned Value( Assigned User)\r\nAssign to Field"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignment History-Alert4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var historyassignmentgroupid,historyassignmentruleid_value,historyassignedvalue,historyassignedtofield,historyassignmentmethod;",
+									"",
+									"pm.test(\"Assignment History Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    historyassignmentgroupid = jsonData.value[0]._cmc_assignmentgroupid_value;",
+									"    historyassignmentruleid_value = jsonData.value[0]._cmc_assignmentruleid_value;",
+									"    historyassignedvalue = jsonData.value[0].cmc_assignedvalue;",
+									"    historyassignedtofield = jsonData.value[0].cmc_assignedtofield;",
+									"    historyassignmentmethod=jsonData.value[0].cmc_assignmentmethod",
+									"",
+									"    console.log(\"AassignmentMethod  :\" +historyassignmentmethod);",
+									"    console.log(\"AassignmentGroupID  :\" +historyassignmentgroupid);",
+									"    console.log(\"AassignmentValue  :\" +historyassignedvalue);",
+									"    console.log(\"AassignmentRuleID :\" +historyassignmentruleid_value);",
+									"    console.log(\"AassigntoField:\" +historyassignedtofield);",
+									"});",
+									"",
+									"var usertoassignidvalueAR = pm.globals.get(\"gusertoassignid_value1\");",
+									"var assignmentruleidAR = pm.globals.get(\"gassignmentruleid2\");",
+									"var assignmentgroupid_valueAR = pm.globals.get(\"gassignmentgroupid\");",
+									"var assigntofieldAG = pm.globals.get(\"gassigntofield\");",
+									"var assigntouser=pm.globals.get(\"gAssignDOMtoUser3\");",
+									"",
+									" pm.test(\"Validate assignmentruleid\", function()",
+									"        {",
+									"            pm.expect(historyassignmentruleid_value).to.equal(assignmentruleidAR);",
+									"        });",
+									"",
+									" pm.test(\"Validate Assignmentgroupid_value\", function()",
+									"        {",
+									"            pm.expect(historyassignmentgroupid).to.equal(assignmentgroupid_valueAR);",
+									"        });",
+									" pm.test(\"Validate assigntofield\", function()",
+									"        {",
+									"            pm.expect(historyassignedtofield).to.equal(assigntofieldAG);",
+									"        });",
+									"    ",
+									"    pm.test(\"Validate Assgined to user\", function()",
+									"        {",
+									"            pm.expect(historyassignedvalue).not.eql(null);",
+									"        });",
+									"",
+									" ",
+									"if (historyassignmentmethod===175490001 )",
+									"{",
+									"    console.log(\"Aassignmentmethod is Trigger\");",
+									"}",
+									"else",
+									"{",
+									"    console.log(\"Aassignmentmethod is Scheduled\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmenthistories?$filter=_cmc_studentalertassignmenthistoryid_value eq '{{galertid23}}'",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmenthistories"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_studentalertassignmenthistoryid_value eq '{{galertid23}}'"
+								}
+							]
+						},
+						"description": "Validate below fields in Assignment History\r\n\r\nAssignmentGroup\r\nAssignmentRule\r\nAssigned Value( Assigned User)\r\nAssign to Field"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Disassociate team roles",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Default Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var teamId,teamname;",
+									"pm.test(\"Team\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    teamId = jsonData.value[0].teamid;",
+									"    teamname=jsonData.value[0].name;    ",
+									"});",
+									"pm.globals.set('gteamId',teamId);",
+									"pm.globals.set('gteamname',teamname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}teams?$filter=isdefault eq true",
+							"host": [
+								"{{Eresource_URL}}teams"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "isdefault eq true"
+								}
+							]
+						},
+						"description": "Get Default Team that is present in the Org"
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser current Roles of Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get current roles of Team\", function() {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+									"    var jsonData = JSON.parse(responseBody);\r",
+									"    var rolesassosiated;\r",
+									"    totallen = jsonData.value.length;\r",
+									"    var extraRcord = [];\r",
+									"    for(var i=0;i<totallen;i++)\r",
+									"    {\r",
+									"        rolesassosiated = jsonData.value[i].roleid;\r",
+									"        console.log('Rolesassosiated:'+rolesassosiated);\r",
+									"        extraRcord.add(rolesassosiated);//adding values to array        \r",
+									"    }\r",
+									"    console.log('TotalRecords '+ extraRcord.length);//display total records added to array\r",
+									"    pm.globals.set('gLoops',extraRcord);//setting array values in global\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}teams({{gteamId}})/teamroles_association",
+							"host": [
+								"{{Eresource_URL}}teams({{gteamId}})"
+							],
+							"path": [
+								"teamroles_association"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dissociate all roles from Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"DisAssociate Roles for user\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202]);\r",
+									"});\r",
+									"\r",
+									"var gLoops=pm.globals.get(\"gLoops\");\r",
+									"console.log(gLoops.length);\r",
+									"if (gLoops && gLoops.length>0)\r",
+									"{\r",
+									"    postman.setNextRequest(\"Dissociate all roles from Team\");\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var  extraid =pm.globals.get(\"gLoops\");\r",
+									"var currentvalue=extraid.shift();\r",
+									"\r",
+									"console.log(currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gLoop\",currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gLoops\",extraid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}teams({{gteamId}})/teamroles_association/$ref?$id={{Eresource_URL}}roles({{gLoop}})",
+							"host": [
+								"{{Eresource_URL}}teams({{gteamId}})"
+							],
+							"path": [
+								"teamroles_association",
+								"$ref"
+							],
+							"query": [
+								{
+									"key": "$id",
+									"value": "{{Eresource_URL}}roles({{gLoop}})"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deactivate Assignment Group",
+			"item": [
+				{
+					"name": "Deactivate Assignment Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Assignment Group Deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n   \"statuscode\":2,\r\n   \"statecode\":1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

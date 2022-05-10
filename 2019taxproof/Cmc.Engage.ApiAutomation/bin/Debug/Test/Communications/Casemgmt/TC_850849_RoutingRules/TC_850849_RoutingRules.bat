@@ -1,0 +1,1 @@
+newman run "%TestLocation%\%projectname%\Test\Communications\Casemgmt\TC_850849_RoutingRules\TC_850849_RoutingRules.postman_collection.json" -r htmlextra --reporters cli,junit,htmlextra --reporter-junit-export Results\TC_850849\junitReport.xml --reporter--reporter-htmlextra-export newmanReport/newmantests.html -e "%TestLocation%\Common\%ApiTestConfig%.postman_environment.json"

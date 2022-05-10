@@ -1,0 +1,1875 @@
+{
+	"info": {
+		"_postman_id": "3a55bb57-5b50-4488-b30e-7496a9e4603a",
+		"name": "TC_813298_CreatingActivitiesToLifecycle",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona- Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid2',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id; ",
+									"var Accname;",
+									"pm.test(\"Account Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    account_id = jsonData.accountid;",
+									"    Accname = jsonData.name;",
+									"    console.log(Accname);",
+									"});",
+									"",
+									"pm.globals.set('gaccountId',account_id);",
+									"pm.globals.set('gaccountname',Accname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\":\"{{name}}{{$randomInt}}\",\r\n\t\"mshied_accounttype\":\"{{mshied_accounttype}}\",\r\n\t\"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n\t\"preferredcontactmethodcode\":1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"var apname;",
+									"var code;",
+									"",
+									"pm.test(\"Academicperiodid Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"    apname = jsonData.mshied_name;",
+									"    code = jsonData.mshied_code;",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gacademicperiodid',academicperiodid);",
+									"pm.globals.set('gacademicperiodname',apname);",
+									"pm.globals.set('gacademicperiodcode',code);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"mshied_name\":\"{{cmc_academicperiodname}}{{$randomInt}}\",\r\n\t\"mshied_startdate\":\"{{timestamp}}\",\r\n\t\"mshied_enddate\":\"{{timestampEndDate}}\",\r\n\t\"mshied_code\":\"{{$randomInt}}{{cmc_code}}Ljk{{$randomInt}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"var programname;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid;",
+									"    programname = jsonData.mshied_name;",
+									"    console.log(\"Program ID: \" + programid);",
+									"    console.log(\"Program Name: \" + programname);",
+									"});",
+									"pm.globals.set('gProgram1', programid);",
+									"pm.globals.set('gProgramName1', programname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}{{$randomInt}}Prg1{{$randomInt}}\",\n    \"mshied_name\": \"code{{$randomInt}}\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Source Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourcecategoryid;",
+									"pm.test(\"Create Sourcecategory\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    sourcecategoryid = jsonData.cmc_sourcecategoryid;",
+									"    console.log(\"sourcecategoryid : \" + sourcecategoryid);",
+									"});",
+									"pm.globals.set('gsourcecategoryid', sourcecategoryid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_sourcecategoryname\": \"{{$randomInt}}-TestSoucreCategor-y{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Source Method",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourcemethodid;",
+									"pm.test(\"Create sourcemethod\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    sourcemethodid = jsonData.cmc_sourcemethodid;",
+									"    console.log(\"sourcemethodid : \" + sourcemethodid);",
+									"});",
+									"pm.globals.set('gsourcemethodid', sourcemethodid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"cmc_sourcemethodname\": \"{{$randomInt}}-TestSoucreMethod{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Role/Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var titleid;",
+									"pm.test(\"Create title\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    titleid = jsonData.cmc_titleid;",
+									"    console.log(\"titleid : \" + titleid);",
+									"});",
+									"pm.globals.set('gtitleid', titleid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"cmc_titlename\": \"{{$randomInt}}-Test-Title-{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_titles",
+							"host": [
+								"{{Eresource_URL}}cmc_titles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programlevelid;",
+									"pm.test(\"Create Sourcecategory\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programlevelid = jsonData.mshied_programlevelid;",
+									"    console.log(\"programlevelid : \" + programlevelid);",
+									"});",
+									"pm.globals.set('gprogramlevelid', programlevelid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-Co{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-PrgLevel-{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_programlevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Education Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var educationlevelid;",
+									"pm.test(\"Create educationlevelid\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    educationlevelid = jsonData.mshied_educationlevelid;",
+									"    console.log(\"educationlevelid : \" + educationlevelid);",
+									"});",
+									"pm.globals.set('geducationlevelid', educationlevelid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-Co{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-EduLevel-{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_educationlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_educationlevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var studentstatusid;",
+									"pm.test(\"Create Sourcecategory\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    studentstatusid = jsonData.mshied_studentstatusid;",
+									"    console.log(\"studentstatusid : \" + studentstatusid);",
+									"});",
+									"pm.globals.set('gstudentstatusid', studentstatusid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-Co{{$randomInt}} {{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-StudentStatus-{{$randomInt}}\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_studentstatuses",
+							"host": [
+								"{{Eresource_URL}}mshied_studentstatuses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lifecycle Activities",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.firstname;",
+									"});",
+									" ",
+									"  ",
+									"  var addressnamecontact = data.cmc_addressname2;",
+									"  var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"  var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"  var CurrentProgramLevelId =data.mshied_CurrentProgramLevelId;",
+									"  var CurrentProgramId =data.mshied_CurrentProgramId;",
+									"  var titleid =data.cmc_titleid;",
+									"  var srcpogramlevelid =data.cmc_srcpogramlevelid;",
+									"  var srcprogramid =data.cmc_srcprogramid;",
+									"  var educationlevelid =data.cmc_educationlevelid;",
+									"  var StudentStatusId =data.mshied_StudentStatusId;",
+									"  var mshied_contacttype =data.mshied_contacttype;",
+									"  var emailaddress1 =data.emailaddress1;",
+									"  var cmc_dateofbirth =data.cmc_dateofbirth;",
+									"  var cmc_sourcedate =data.cmc_sourcedate;",
+									"  var recentsat =data.cmc_recentsat;",
+									"  var recentact =data.cmc_recentact;",
+									"  var gendercode =data.gendercode;",
+									"  var shippingmethodcode =data.shippingmethodcode;",
+									"  var firstname = data.firstname;",
+									"  var lastname = data.lastname;",
+									"  var anniversary = data.anniversary;",
+									"  var lastonholdtime = data.lastonholdtime;",
+									"  var numberofchildren = data.numberofchildren;",
+									"  var familystatuscode = data.familystatuscode;",
+									"  var race = data.mshied_race;",
+									"  var miltarystatus = data.mshied_miltarystatus;",
+									"  var ethnicgroup = data.mshied_ethnicgroup;",
+									"  var nationality = data.mshied_nationality;",
+									"  ",
+									"  //Address variables",
+									"  var Zip = data.cmc_zip;",
+									"  var City = data.cmc_city;",
+									"  var addresstype1 = data.cmc_addresstypeid;",
+									"pm.globals.set('gcontactid',contact_id);",
+									"console.log(Name);",
+									"console.log('Contactid:'+contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();\r",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"{{firstname}}{{$randomInt}}1\",\r\n\"lastname\": \"{{lastname}}\",\r\n\"middlename\":\"mid{{$randomInt}}\",\r\n\"mshied_maidenname\":\"maid{{$randomInt}}\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{emailaddress1}}\",\r\n\"gendercode\":\"{{gendercode}}\",\r\n\"anniversary\":\"{{anniversary}}\",\r\n\"lastonholdtime\":\"{{current_timestamp}}\",\r\n\"numberofchildren\":\"{{numberofchildren}}\",\r\n\"nickname\":\"Nickname{{$randomInt}}\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{current_timestamp}}\",\r\n\"birthdate\":\"{{cmc_dateofbirth}}\",\r\n\"cmc_recentsat\":\"{{cmc_recentsat}}\",\r\n\"cmc_recentact\":\"{{cmc_recentact}}\",\r\n\"mshied_contacttype\":\"{{mshied_contacttype}}\",\r\n\"mshied_race\":{{mshied_race}},\r\n\"mshied_ethnicgroup\":{{mshied_ethnicgroup}},\r\n\"mshied_miltarystatus\":\"{{mshied_miltarystatus}}\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife{{$randomInt}}\",\r\n\"shippingmethodcode\":\"{{shippingmethodcode}}\",\r\n\"preferredcontactmethodcode\": \"{{preferredcontactmethodcode}}\",\r\n\"mshied_nationality\":\"{{mshied_nationality}}\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts({{gsourcecategoryid}})\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts({{gsourcemethodid}})\",\r\n\"cmc_titleid@odata.bind\": \"/contacts({{gtitleid}})\",\r\n\"cmc_srcpogramlevelid@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\"cmc_srcprogramid@odata.bind\": \"/contacts({{gProgram1}})\",\r\n\"cmc_educationlevelid@odata.bind\": \"/contacts({{geducationlevelid}})\",\r\n\"mshied_CurrentProgramLevelId@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\"mshied_CurrentProgramId@odata.bind\": \"/contacts({{gProgram1}})\",\r\n\"mshied_StudentStatusId@odata.bind\": \"/contacts({{gstudentstatusid}})\",\r\n\"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"78865{{$randomInt}}30\",\r\n\"mobilephone\":\"78965{{$randomInt}}30\",\r\n\"telephone1\":\"8569{{$randomInt}}230\",\r\n\"cmc_phone2extension\":\"8083{{$randomInt}}569\",\r\n\"websiteurl\":\"www.dcrm{{$randomInt}}.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create LifeCycle 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"var contactid ;",
+									"var accountid;",
+									"var lifecyclename;",
+									"",
+									"",
+									"pm.test(\"LifeCycle Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecycleid  = jsonData.opportunityid ;",
+									"  contactid = jsonData._cmc_campusid_value;",
+									"  accountid = jsonData._cmc_contactid_value;",
+									"  lifecyclename = jsonData.name;",
+									" // cmc_campusid_value",
+									"  //cmc_contactid_value",
+									"  ",
+									"  console.log('LifeCyleID:' +lifecycleid);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('LifeCyleName:' +lifecyclename);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('glifecycleid',lifecycleid);",
+									"pm.globals.set('glifecyclename',lifecyclename);",
+									"",
+									"// \"cmc_sourceexpectedstartid@odata.bind\":\"/opportunities({{cmc_sourceexpectedstartid}})\",",
+									"// \"cmc_sourceprogramid@odata.bind\":\"/opportunities({{cmc_sourceprogramid}})\",",
+									"var cmc_lifecycletypeid=data.cmc_lifecycletype;",
+									"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"var cmc_programid1 =data.cmc_programid;",
+									"var cmc_programlevelid1 =data.cmc_programlevelid;",
+									"var cmc_sourceprogram =data.cmc_sourceprogramid;",
+									"var cmc_sourceexpectedstart =data.cmc_sourceexpectedstartid;",
+									"var cmc_expectedstartdate =data.cmc_expectedstartdateid;",
+									"var cmc_sourceprogramlevelid =data.cmc_sourceprogramlevelid;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_lifecycletype\": \"{{cmc_lifecycletype}}\",\r\n    \"cmc_campusid@odata.bind\": \"/accounts({{gaccountId}})\",\r\n    \"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"cmc_prgmid@odata.bind\": \"/opportunities({{gProgram1}})\",\r\n    \"cmc_prgmlevelid@odata.bind\": \"/opportunities({{gprogramlevelid}})\",\r\n    \"cmc_expstartdateid@odata.bind\": \"/opportunities({{gacademicperiodid}})\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/opportunities({{gsourcecategoryid}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/opportunities({{gsourcemethodid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/opportunities",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"opportunities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Phonecall",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var phonecallid;",
+									"pm.test(\"Phonecall Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  phonecallid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gphonecallid',phonecallid);",
+									"  ",
+									" var description = data.phonedescription;",
+									" var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"description\":\"{{phonedescription}}{{$randomInt}}\",\r\n    \"directioncode\" : true,\r\n    \"leftvoicemail\": false,\r\n\t\"prioritycode\": 1,\r\n\t\"regardingobjectid_opportunity_phonecall@odata.bind\": \"/opportunities({{glifecycleid}})\",\r\n\t\"actualdurationminutes\": 30,\r\n    \"subject\" : \"{{phonesubject}}{{$randomInt}}\", \r\n    \"phonecall_activity_parties\" : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\" : 1\r\n        },\r\n        {\r\n           \"partyid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\r\n            \r\n            \"participationtypemask\" : 2\r\n        }]\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/phonecalls",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"phonecalls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email-Outgoing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var emailid;",
+									"pm.test(\"Email Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  emailid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gemailid',emailid);",
+									"  ",
+									" var description = data.emaildescription;",
+									" var subject = data.emailsubject;",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\":\"{{emaildescription}}{{$randomInt}}12312\",\r\n    \"directioncode\" : true,\r\n    \"subject\" : \"{{emailsubject}}{{$randomInt}}\",\r\n    \"regardingobjectid_opportunity_email@odata.bind\": \"/opportunities({{glifecycleid}})\",\r\n    \"prioritycode\": 1,\r\n    \"email_activity_parties\" : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\" : 1\r\n        },\r\n        {\r\n            \"partyid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\r\n            \"participationtypemask\" : 2\r\n        }]\r\n}\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/emails",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"emails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email-Incoming",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var emailid;",
+									"pm.test(\"Email Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  emailid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gemailid1',emailid);",
+									"  ",
+									" var description = data.emaildescription;",
+									" var subject = data.emailsubject;",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\":\"{{emaildescription}}{{$randomInt}}12312\",\r\n    \"directioncode\" : false,\r\n    \"subject\" : \"{{emailsubject}}{{$randomInt}}\",\r\n\t\"regardingobjectid_opportunity_email@odata.bind\": \"/opportunities({{glifecycleid}})\",\r\n    \"prioritycode\": 1,\r\n    \"email_activity_parties\" : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\" : 1\r\n        },\r\n        {\r\n            \"partyid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\r\n            \"participationtypemask\" : 2\r\n        }]\r\n}\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/emails",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"emails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Appointment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appointmentid;",
+									"pm.test(\"Appointment Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  appointmentid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gappointmentid',appointmentid);",
+									"  ",
+									" var scheduledstart = data.scheduledstart;",
+									" var scheduledend = data.scheduledend;",
+									" var subject = data.Appointmentsubject;",
+									" ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n\t\"subject\": \"{{Appointmentsubject}}{{$randomInt}}1231\",\r\n\t\"scheduledstart\": \"{{timestamp}}\",\r\n\t\"scheduledend\": \"{{timestampEndDate}}\",\r\n\t\"prioritycode\": 1,\r\n\t\"regardingobjectid_opportunity_appointment@odata.bind\": \"/opportunities({{glifecycleid}})\",\r\n\t\"scheduleddurationminutes\": 30,\r\n      \"appointment_activity_parties\"  : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\" : 5\r\n        },\r\n        {\r\n            \"partyid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\r\n            \"participationtypemask\" : 5\r\n        }]\r\n        \r\n  \r\n     \r\n}\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/appointments",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var taskid;",
+									"pm.test(\"Task Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  taskid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gtaskid',taskid);",
+									"  ",
+									" ",
+									" var subject = data.tasksubject;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n\t\"subject\": \"{{tasksubject}}{{$randomInt}}123\",\r\n    \"prioritycode\": 1,\r\n\t\"regardingobjectid_opportunity_task@odata.bind\": \"/opportunities({{glifecycleid}})\",\r\n\t\"actualdurationminutes\": 30\r\n}\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/tasks",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lifecycle Activities-2",
+			"item": [
+				{
+					"name": "Create LifeCycle 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"var contactid ;",
+									"var accountid;",
+									"var lifecyclename;",
+									"",
+									"",
+									"pm.test(\"LifeCycle Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecycleid  = jsonData.opportunityid ;",
+									"  contactid = jsonData._cmc_campusid_value;",
+									"  accountid = jsonData._cmc_contactid_value;",
+									"  lifecyclename = jsonData.name;",
+									" // cmc_campusid_value",
+									"  //cmc_contactid_value",
+									"  ",
+									"  console.log('LifeCyleID:' +lifecycleid);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('LifeCyleName:' +lifecyclename);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('glifecycleid1',lifecycleid);",
+									"pm.globals.set('glifecyclename1',lifecyclename);",
+									"",
+									"// \"cmc_sourceexpectedstartid@odata.bind\":\"/opportunities({{cmc_sourceexpectedstartid}})\",",
+									"// \"cmc_sourceprogramid@odata.bind\":\"/opportunities({{cmc_sourceprogramid}})\",",
+									"var cmc_lifecycletypeid=data.cmc_lifecycletype;",
+									"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"var cmc_programid1 =data.cmc_programid;",
+									"var cmc_programlevelid1 =data.cmc_programlevelid;",
+									"var cmc_sourceprogram =data.cmc_sourceprogramid;",
+									"var cmc_sourceexpectedstart =data.cmc_sourceexpectedstartid;",
+									"var cmc_expectedstartdate =data.cmc_expectedstartdateid;",
+									"var cmc_sourceprogramlevelid =data.cmc_sourceprogramlevelid;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_lifecycletype\": \"{{cmc_lifecycletype}}\",\r\n    \"cmc_campusid@odata.bind\": \"/accounts({{gaccountId}})\",\r\n    \"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"cmc_prgmid@odata.bind\": \"/opportunities({{gProgram1}})\",\r\n    \"cmc_prgmlevelid@odata.bind\": \"/opportunities({{gprogramlevelid}})\",\r\n    \"cmc_expstartdateid@odata.bind\": \"/opportunities({{gacademicperiodid}})\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/opportunities({{gsourcecategoryid}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/opportunities({{gsourcemethodid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/opportunities",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"opportunities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Phonecall",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var phonecallid;",
+									"pm.test(\"Phonecall Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  phonecallid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gphonecallid1',phonecallid);",
+									"  ",
+									" var description = data.phonedescription;",
+									" var subject = data.phonesubject;",
+									" ",
+									" //\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\"regardingobjectid_account@odata.bind\" : \"/accounts({{gaccountId}})\",",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"description\":\"{{phonedescription}}{{$randomInt}}\",\r\n    \"directioncode\" : true,\r\n    \"leftvoicemail\": false,\r\n\t\"prioritycode\": 1,\r\n\t\"regardingobjectid_opportunity_phonecall@odata.bind\": \"/opportunities({{glifecycleid1}})\",\r\n\t\"actualdurationminutes\": 30,\r\n    \"subject\" : \"{{phonesubject}}{{$randomInt}}\", \r\n    \"phonecall_activity_parties\" : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\" : 1\r\n        },\r\n        {\r\n           \"partyid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\r\n            \r\n            \"participationtypemask\" : 2\r\n        }]\r\n}\r\n\r\n\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/phonecalls",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"phonecalls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var emailid;",
+									"pm.test(\"Email Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  emailid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gemailid1',emailid);",
+									"  ",
+									" var description = data.emaildescription;",
+									" var subject = data.emailsubject;",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\":\"{{emaildescription}}{{$randomInt}}\",\r\n    \"directioncode\" : true,\r\n    \"subject\" : \"{{emailsubject}}{{$randomInt}}\", \r\n    \"regardingobjectid_opportunity_email@odata.bind\": \"/opportunities({{glifecycleid1}})\",\r\n    \"prioritycode\": 1,\r\n    \"email_activity_parties\" : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\" : 1\r\n        },\r\n        {\r\n            \"partyid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\r\n            \"participationtypemask\" : 2\r\n        }]\r\n}\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/emails",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"emails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Appointment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appointmentid;",
+									"pm.test(\"Appointment Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  appointmentid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gappointmentid1',appointmentid);",
+									"  ",
+									" var scheduledstart = data.scheduledstart;",
+									" var scheduledend = data.scheduledend;",
+									" var subject = data.Appointmentsubject;",
+									" ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n\t\"subject\": \"{{Appointmentsubject}}{{$randomInt}}\",\r\n\t\"scheduledstart\": \"{{timestamp}}\",\r\n\t\"scheduledend\": \"{{timestampEndDate}}\",\r\n\t\"prioritycode\": 1,\r\n\t\"regardingobjectid_opportunity_appointment@odata.bind\": \"/opportunities({{glifecycleid1}})\",\r\n\t\"scheduleddurationminutes\": 30,\r\n      \"appointment_activity_parties\"  : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{guserid4}})\",\r\n            \"participationtypemask\" : 5\r\n        },\r\n        {\r\n            \"partyid_account@odata.bind\" : \"/accounts({{gaccountId}})\",\r\n            \"participationtypemask\" : 5\r\n        }]\r\n        \r\n  \r\n     \r\n}\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/appointments",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var taskid;",
+									"pm.test(\"Task Activity Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  taskid  = jsonData.activityid ;",
+									"  ",
+									"});",
+									"",
+									"  pm.globals.set('gtaskid1',taskid);",
+									"  ",
+									" ",
+									" var subject = data.tasksubject;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n   \"subject\": \"{{tasksubject}}{{$randomInt}}\",\r\n    \"prioritycode\": 1,\r\n\t\"regardingobjectid_opportunity_task@odata.bind\": \"/opportunities({{glifecycleid1}})\",\r\n\t\"actualdurationminutes\": 30\r\n}\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/tasks",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

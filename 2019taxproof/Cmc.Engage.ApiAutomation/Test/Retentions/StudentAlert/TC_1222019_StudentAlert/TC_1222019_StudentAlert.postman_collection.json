@@ -1,0 +1,3047 @@
+{
+	"info": {
+		"_postman_id": "7afcf63c-98c0-4061-b062-866541366217",
+		"name": "TC_1222019_StudentAlert",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid, fullname;",
+									"pm.test(\"GetUserID\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname = jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" + fullname);",
+									"",
+									"});",
+									"pm.globals.set('guserid2', userid);",
+									"console.log('Systemuser:' + userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Account",
+			"item": [
+				{
+					"name": "Create AcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"var academicperiodname",
+									"pm.test(\"Academicperiodid Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"    academicperiodname = jsonData.mshied_name;",
+									"    console.log(\"academicperiodname \", academicperiodname);",
+									"});",
+									"",
+									"pm.globals.set('gacademicperiodname', academicperiodname);",
+									"pm.globals.set('gacademicperiodid', academicperiodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_name\": \"{{$randomInt}}-{{AcademicName}}-{{$randomInt}}\",\n    \"mshied_code\": \"{{$randomInt}}{{cmc_code}}At{{$randomInt}}\",\n    \"mshied_startdate\": \"{{timestamp}}\",\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\n    \"createdby@odata.bind\": \"/systemusers({{guserid2}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var accountid;",
+									"var accountname;",
+									"pm.test(\"Accountid created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    accountid = jsonData.accountid;",
+									"    accountname = jsonData.name;",
+									"    console.log('Accountid:' + accountid);",
+									"    console.log('Account Name:' + accountname);",
+									"});",
+									"pm.globals.set('gaccountid', accountid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{AccName}}{{$randomInt}}\",\n    \"mshied_accounttype\": \"{{accounttypecampus}}\",\n    \"createdby@odata.bind\": \"/systemusers({{guserid2}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var coursename;",
+									"var courseid;",
+									"",
+									"pm.test(\"Course Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    courseid = jsonData.mshied_courseid;",
+									"    console.log('course ID is: ' + courseid);",
+									"    coursename = jsonData.mshied_name;",
+									"    console.log('course name is: ' + coursename);",
+									"",
+									"    pm.globals.set('gcourseid', courseid);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"mshied_coursenumber\": \"{{$randomInt}}course{{$randomInt}}{{$randomInt}}\",\n   \"mshied_enddate\": \"{{timestampEndDate}}\",\n   \"mshied_name\": \"{{$randomInt}}-{{coursenm}}-{{$randomInt}}\",\n   \"mshied_section\": \"{{section}}\",\n   \"mshied_startdate\": \"{{timestamp}}\",\n   \"mshied_subject\": \"{{subject}}\",\n   \"createdby@odata.bind\": \"/systemusers({{guserid2}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_courses",
+							"host": [
+								"{{Eresource_URL}}mshied_courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course Section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var coursesectionname;",
+									"var coursesectionid;",
+									"",
+									"pm.test(\"course Section is Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    coursesectionid = jsonData.mshied_coursesectionid;",
+									"    console.log('coursesection id is: ' + coursesectionid);",
+									"    coursesectionname = jsonData.mshied_name;",
+									"    console.log('coursesectionname is: ' + coursesectionname);",
+									"",
+									"    pm.globals.set('gcoursesectionid', coursesectionid);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"mshied_AcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\n   \"mshied_CampusId@odata.bind\": \"/accounts({{gaccountid}})\",\n   \"mshied_CourseId@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n   \"mshied_coursedaytime\": \"2\",\n   \"mshied_location\": \"Banglore\",\n   \"createdby@odata.bind\": \"/systemusers({{guserid2}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_coursesections",
+							"host": [
+								"{{Eresource_URL}}mshied_coursesections"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Configuration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var configid;",
+									"pm.test(\"Get COnfiguration\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    configid = jsonData.value[0].cmc_configurationid;",
+									"    console.log(\"Configurationid: \"+configid);",
+									"    ",
+									"});",
+									"pm.globals.set('gconfigid',configid);",
+									"console.log(\"configuration id: \"+configid);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_configurations?$select=*&$filter=statecode eq 0 and statuscode eq 1",
+							"host": [
+								"{{Eresource_URL}}cmc_configurations"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "statecode eq 0 and statuscode eq 1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Staff  Role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Get Staff Role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].cmc_titleid;",
+									"    console.log(\"userid: \"+userid);",
+									"    ",
+									"});",
+									"pm.globals.set('gAdvisor',userid);",
+									"console.log(\"Systemuser: \"+userid);",
+									"",
+									"",
+									"var user=data.username;",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_titles?$select=cmc_titleid&$filter=cmc_titlename eq 'Academic Advisor'",
+							"host": [
+								"{{Eresource_URL}}cmc_titles"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "cmc_titleid"
+								},
+								{
+									"key": "$filter",
+									"value": "cmc_titlename eq 'Academic Advisor'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Staff Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Get Staff Member ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    console.log(\"userid: \"+userid);",
+									"    ",
+									"});",
+									"pm.globals.set('gstaff',userid);",
+									"console.log(\"Systemuser: \"+userid);",
+									"",
+									"",
+									"var user=data.username;",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq 'anthologydev1@campusnexus.dev'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'anthologydev1@campusnexus.dev'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Configutation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var config_advisor;",
+									"var config_advisor_role;",
+									"",
+									"pm.test(\"Updating Configuration\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    config_advisor = jsonData._cmc_studentalertbusinessprocessnotification_value;",
+									"    config_advisor_role = jsonData._cmc_studentalertownerrole_value;",
+									"    console.log(\"config_advisor: \" + config_advisor);",
+									"console.log(\"config_advisorRole: \" + config_advisor_role);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_StudentAlertBusinessProcessNotification@odata.bind\": \"/systemusers({{gstaff}})\",\r\n    \"cmc_StudentAlertOwnerRole@odata.bind\": \"/cmc_titles({{gAdvisor}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_configurations({{gconfigid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_configurations({{gconfigid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DCRM Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid4',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Creating Alert 1",
+			"item": [
+				{
+					"name": "Get Reviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Get Reviewer ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    console.log(\"userid: \"+userid);",
+									"    ",
+									"});",
+									"pm.globals.set('greviewer',userid);",
+									"console.log(\"Systemuser: \"+userid);",
+									"",
+									"",
+									"var user=data.username;",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq 'reviewer@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'reviewer@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceCategory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceCategoryid;",
+									"pm.test(\"Source category record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceCategoryid = jsonData.value[0].cmc_sourcecategoryid;",
+									"    var sourceCategoryName = jsonData.value[0].cmc_sourcecategoryname;",
+									"    console.log('SourceCategory Name is: ' + sourceCategoryName);",
+									"});",
+									"pm.globals.set('gsourceCategoryid111', sourceCategoryid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceMethod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceMethodid;",
+									"",
+									"pm.test(\"Source Method record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+									"    var sourceMethodName = jsonData.value[0].cmc_sourcemethodname;",
+									"    console.log('SourceMethod Name is: ' + sourceMethodName);",
+									"",
+									"});",
+									"pm.globals.set('gsourceMethodid111', sourceMethodid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Instructor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid1;",
+									"",
+									"pm.test(\"Contact1 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid1 = jsonData.contactid;",
+									"    console.log(\"contactid1 \",contactid1);",
+									"});",
+									"",
+									"pm.globals.set('ginstructor', contactid1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{$randomInt}}\",\r\n    \"emailaddress1\": \"Yashitas-{{$randomInt}}@campusmgmt.com\",\r\n    \"mshied_contacttype\": \"{{ContType1}}\",\r\n    \"mobilephone\": \"{{mobilephone}}\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid111}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid111}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting option set",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertreasonname;",
+									"",
+									"pm.test(\"Verify Alert Name\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertreasonname = jsonData.OptionSet.Options[0].Label.LocalizedLabels[0].Label",
+									"    console.log(alertreasonname);",
+									" ",
+									"",
+									"pm.globals.set(\"galertreasonname\", alertreasonname);",
+									" ",
+									"",
+									"});",
+									"",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='cmc_alert')/Attributes(LogicalName='cmc_alertreason')/Microsoft.Dynamics.CRM.PicklistAttributeMetadata?$select=LogicalName&$expand=OptionSet($select=Options)",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='cmc_alert')"
+							],
+							"path": [
+								"Attributes(LogicalName='cmc_alertreason')",
+								"Microsoft.Dynamics.CRM.PicklistAttributeMetadata"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "LogicalName"
+								},
+								{
+									"key": "$expand",
+									"value": "OptionSet($select=Options)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid1;",
+									"var fullname;",
+									"var mobile;",
+									"var fname1;",
+									"var lname1;",
+									"var stmail;",
+									"",
+									"pm.test(\"Contact1 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid1 = jsonData.contactid;",
+									"    fullname=jsonData.fullname; ",
+									"    mobile=jsonData.mobilephone; ",
+									"     fname1=jsonData.firstname; ",
+									"      lname1=jsonData.lastname; ",
+									"      stmail=jsonData.emailaddress1;",
+									"      ",
+									"      ",
+									"    console.log(\"contactid1 \",contactid1);",
+									"    console.log(\"fullname \",fullname);",
+									"    console.log(\"mobile \",mobile);",
+									"    console.log(\"firstname \",fname1);",
+									"    console.log(\"lastname \",lname1);",
+									"    console.log(\"studente Mail \",stmail);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gcontactid1', contactid1);",
+									"pm.globals.set('gfullname1', fullname);",
+									"pm.globals.set('gfname1', fname1);",
+									"pm.globals.set('glname1', lname1);",
+									"pm.globals.set('gmail1', stmail);",
+									"pm.globals.set('gmobile1', mobile);",
+									"",
+									"setTimeout(function () { }, 70000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{$randomInt}}\",\r\n    \"emailaddress1\": \"Test{{$randomInt}}{{emailaddress1}}\",\r\n    \"mshied_contacttype\": \"{{ContType1}}\",\r\n    \"mobilephone\": \"{{mobilephone}}\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid111}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid111}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Success Network",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successnetworkname;",
+									"var studentid;",
+									"var networkid;",
+									"",
+									"pm.test(\"Contact1 Created\", function () {",
+									"  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"  var jsonData = JSON.parse(responseBody);",
+									"  successnetworkname = jsonData.cmc_successnetworkname;",
+									"  studentid = jsonData._cmc_studentid_value;",
+									"  networkid = jsonData.cmc_successnetworkid;",
+									"",
+									"  console.log(\"successnetworkname \", successnetworkname);",
+									"  console.log(\"networkid \", networkid);",
+									"  console.log(\"studentid \", studentid);",
+									"",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_staffmemberid@odata.bind\": \"/systemusers({{gstaff}})\",\r\n    \"cmc_staffroleid@odata.bind\": \"/cmc_titles({{gAdvisor}})\",\r\n    \"cmc_studentid@odata.bind\": \"/contacts({{gcontactid1}})\",\r\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successnetworks",
+							"host": [
+								"{{Eresource_URL}}cmc_successnetworks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Submitter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid2;",
+									"var fullname;",
+									"var mobile;",
+									"var fname2;",
+									"var lname2;",
+									"var submail;",
+									"",
+									"pm.test(\"Contact2 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid2 = jsonData.contactid;",
+									"    fullname=jsonData.fullname;",
+									"    mobile=jsonData.mobilephone; ",
+									"    submail=jsonData.emailaddress1;",
+									"      fname2=jsonData.firstname; ",
+									"      lname2=jsonData.lastname; ",
+									"      console.log(\"contactid2 \",contactid2);",
+									"    console.log(\"fullname \",fullname);",
+									"    console.log(\"mobile \",mobile);",
+									"    console.log(\"firstname \",fname2);",
+									"    console.log(\"lastname \",lname2);",
+									"    console.log(\"Submitter Mail \",submail);",
+									"    ",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gcontactid2', contactid2);",
+									"pm.globals.set('gfullname2', fullname);",
+									"pm.globals.set('gfname2', fname2);",
+									"pm.globals.set('glname2', lname2);",
+									"pm.globals.set('gmail2', submail);",
+									"pm.globals.set('gmobile1', mobile);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{firstname}}-{{$randomInt}}\",\r\n    \"lastname\": \"{{lastname}}-{{$randomInt}}\",\r\n    \"emailaddress1\": \"Test{{$randomInt}}{{emailaddress1}}\",\r\n    \"mshied_contacttype\": \"{{ContType1}}\",\r\n    \"mobilephone\": \"{{mobilephone}}\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/contacts({{gsourceCategoryid111}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/contacts({{gsourceMethodid111}})\",\r\n   \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student Alert",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    console.log('Alertid is: ' + alertid);",
+									"",
+									"    pm.globals.set('galertid', alertid);",
+									"    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_instructorid@odata.bind\": \"/contacts({{ginstructor}})\",\n    \"cmc_ReviewedBy@odata.bind\": \"/systemusers({{greviewer}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"{{alertreason}}\",\n    \"cmc_alertreasondetails\": \"{{alertreasondetails}}\",\n    \"cmc_alertsource\": \"{{alertsource}}\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"{{description}}-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"{{relationshiptostudent}}\",\n    \"cmc_reviewedon\": \"{{reviewedon}}\",\n    \"cmc_reviewstate\": \"{{reviewstate}}\",\n    \"statecode\": {{statecode}},\n    \"statuscode\": {{statuscode}},\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upating Alert to Cancelled state",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Update Case Alert\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);    ",
+									"    status = jsonData.statuscode;",
+									"    state = jsonData.statecode;",
+									"    if (status === 121660001 && state === 1) {",
+									"        console.log(\"Alert status is Cancelled and In-Active\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expceting Error\");",
+									"    }",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"statecode\": {{statecode1}},\n    \"statuscode\": {{statuscode1}}\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Creating Alert 2",
+			"item": [
+				{
+					"name": "Create Student Alert",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    console.log('Alertid is: ' + alertid);",
+									"",
+									"    pm.globals.set('galertid2', alertid);",
+									"    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_instructorid@odata.bind\": \"/contacts({{ginstructor}})\",\n    \"cmc_ReviewedBy@odata.bind\": \"/systemusers({{greviewer}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"{{alertreason}}\",\n    \"cmc_alertreasondetails\": \"{{alertreasondetails}}\",\n    \"cmc_alertsource\": \"{{alertsource}}\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"{{description}}-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"{{relationshiptostudent}}\",\n    \"cmc_reviewedon\": \"{{reviewedon}}\",\n    \"cmc_reviewstate\": \"{{reviewstate}}\",\n    \"statecode\": {{statecode}},\n    \"statuscode\": {{statuscode}},\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upating Alert to Resolved state",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Update Case Alert\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);    ",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"statecode\": {{statecode1}},\n    \"statuscode\": {{statuscode2}}\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid2}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid2}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Creating Alert 3",
+			"item": [
+				{
+					"name": "Create Student Alert",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    console.log('Alertid is: ' + alertid);",
+									"",
+									"    pm.globals.set('galertid3', alertid);",
+									"    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_instructorid@odata.bind\": \"/contacts({{ginstructor}})\",\n    \"cmc_ReviewedBy@odata.bind\": \"/systemusers({{greviewer}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"{{alertreason}}\",\n    \"cmc_alertreasondetails\": \"{{alertreasondetails}}\",\n    \"cmc_alertsource\": \"{{alertsource}}\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"{{description}}-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"{{relationshiptostudent}}\",\n    \"cmc_reviewedon\": \"{{reviewedon}}\",\n    \"cmc_reviewstate\": \"{{reviewstate}}\",\n    \"statecode\": {{statecode}},\n    \"statuscode\": {{statuscode}},\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Creating Alert 4",
+			"item": [
+				{
+					"name": "Create Student Alert",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Student Alert Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    console.log('Alertid is: ' + alertid);",
+									"",
+									"    pm.globals.set('galertid4', alertid);",
+									"    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_Course@odata.bind\": \"/mshied_courses({{gcourseid}})\",\n    \"cmc_CourseSection@odata.bind\": \"/mshied_coursesections({{gcoursesectionid}})\",\n    \"cmc_instructorid@odata.bind\": \"/contacts({{ginstructor}})\",\n    \"cmc_ReviewedBy@odata.bind\": \"/systemusers({{greviewer}})\",\n    \"cmc_Student@odata.bind\": \"/contacts({{gcontactid1}})\",\n    \"cmc_Submitter@odata.bind\": \"/contacts({{gcontactid2}})\",\n    \"cmc_alertreason\": \"{{alertreason}}\",\n    \"cmc_alertreasondetails\": \"{{alertreasondetails}}\",\n    \"cmc_alertsource\": \"{{alertsource}}\",\n    \"cmc_anonymous\": false,\n    \"cmc_description\": \"{{description}}-{{$randomInt}}\",\n    \"cmc_informstudent\": false,\n    \"cmc_newcasefromalert\": false,\n    \"cmc_relationshiptostudent\": \"{{relationshiptostudent}}\",\n    \"cmc_reviewedon\": \"{{reviewedon}}\",\n    \"cmc_reviewstate\": \"{{reviewstate}}\",\n    \"statecode\": {{statecode}},\n    \"statuscode\": {{statuscode}},\n    \"createdby@odata.bind\": \"/systemusers({{guserid4}})\",\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid4}})\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upating Create Case FIeld",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var casealert;",
+									"",
+									"pm.test(\"Update Case Alert\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    casealert = jsonData.cmc_newcasefromalert;",
+									" console.log(\"New  Aler case Alert vaue: \",casealert);",
+									"  ",
+									"});",
+									" setTimeout(function () { }, 70000);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_newcasefromalert\": true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid4}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid4}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verify Autopopulated Fields",
+			"item": [
+				{
+					"name": "Verify Student Alert Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"",
+									"pm.test(\"Verify Alert Name\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    console.log('Alertid is: ' + alertid);",
+									"    alertname = jsonData.cmc_name;",
+									"    console.log('Alertname is: ' + alertname);",
+									"",
+									"    var fullname = pm.globals.get('gfullname1');",
+									"",
+									"    var alertreasonname = pm.globals.get('galertreasonname');",
+									"",
+									"    var expectedname = fullname + \" \" + \"-\" + \" \" + alertreasonname;",
+									"    console.log(\"fullname:- \", expectedname);",
+									"",
+									"    pm.test(\"Validate Student Alert Name\", function () {",
+									"        pm.expect(alertname.trim).to.equal(expectedname.trim);",
+									"",
+									"    });",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid4}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var ownerid;",
+									"var alertid;",
+									"",
+									"pm.test(\"Updating Owner Name\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    ownerid = jsonData._ownerid_value;",
+									"    console.log('Ownerid is: ' + ownerid);",
+									"    var staffid = pm.globals.get('gstaff');",
+									"    console.log('staffid is: ' + staffid);",
+									"    pm.test(\"Validate Owner Value of student Alert Record\", function()",
+									"    {",
+									"        pm.expect(ownerid).to.equal(staffid);",
+									"    });",
+									"    if (ownerid === staffid) {",
+									"        console.log(\"Owner Updated\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"FLow Error\");",
+									"    }",
+									"",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid4}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Autopupalted field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname; var alertid; var stfname; var stlname; var stphone; var stmail; var subfname;",
+									"var sublname;",
+									"var subphone;",
+									"var submail;",
+									"",
+									"pm.test(\"Verify Alert Name\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    alertid = jsonData.cmc_alertid;",
+									"    console.log('Alertid is: ' + alertid);",
+									"    alertname = jsonData.cmc_name;",
+									"    console.log('Alertname is: ' + alertname);",
+									"    stfname = jsonData.cmc_studentfirstname;",
+									"    stlname = jsonData.cmc_studentlastname;",
+									"    stphone = jsonData.cmc_studentphonenumber;",
+									"    subfname = jsonData.cmc_submitterfirstname;",
+									"    sublname = jsonData.cmc_submitterlastname;",
+									"    subphone = jsonData.cmc_submitterphonenumber;",
+									"    stmail = jsonData.cmc_studentemail;",
+									"    submail = jsonData.cmc_submitteremail;",
+									"",
+									"    // getting the Student and Submiiter field",
+									"    var fname1 = pm.globals.get('gfname1');",
+									"    var lname1 = pm.globals.get('glname1');",
+									"    var mail1 = pm.globals.get('gmail1');",
+									"    var mobile1 = pm.globals.get('gmobile1');",
+									"    var fname2 = pm.globals.get('gfname2');",
+									"    var lname2 = pm.globals.get('glname2');",
+									"    var mail2 = pm.globals.get('gmail2');",
+									"    var mobile2 = pm.globals.get('gmobile1');",
+									"    ",
+									"    pm.test(\"Validate First Name\", function()",
+									"    {",
+									"        pm.expect(stfname).to.equal(fname1);",
+									"    });",
+									"    pm.test(\"Validate Last Name\", function()",
+									"    {",
+									"        pm.expect(stlname).to.equal(lname1);",
+									"    });",
+									"    pm.test(\"Validate Student mail\", function()",
+									"    {",
+									"        pm.expect(stmail).to.equal(mail1);",
+									"    });",
+									"    pm.test(\"Validate Student Phone\", function()",
+									"    {",
+									"        pm.expect(stphone).to.equal(mobile1);",
+									"    });",
+									"    pm.test(\"Validate Submitter First Name\", function()",
+									"    {",
+									"        pm.expect(subfname).to.equal(fname2);",
+									"    });",
+									"    pm.test(\"ValidateSubmitter last Name\", function()",
+									"    {",
+									"        pm.expect(sublname).to.equal(lname2);",
+									"    });",
+									"    pm.test(\"Validate Submitter Mail\", function()",
+									"    {",
+									"        pm.expect(submail).to.equal(mail2);",
+									"    });",
+									"     pm.test(\"Validate Submitter Phone\", function()",
+									"    {",
+									"        pm.expect(subphone).to.equal(mobile2);",
+									"    });",
+									"",
+									"    if (stfname === fname1 && stlname === lname1 && stmail === mail1 && stphone === mobile1 && subfname === fname2 && sublname === lname2 && submail === mail2 && subphone === mobile2) {",
+									"        console.log(\"Fields Autopupalted Successfully\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expecting Some Error\");",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid4}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid4}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Getting Case",
+			"item": [
+				{
+					"name": "Verify Case should Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var caseid;",
+									"pm.test(\"Case Association to Alert\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    caseid = jsonData._cmc_case_value;",
+									"    if (caseid != null) {",
+									"        console.log(\"Case Linked Successfully\");",
+									"        console.log(\"Caseid Created: \" + caseid);",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Flow is Turn Off\");",
+									"        console.log(\"Caseid Not Created\");",
+									"    }",
+									"    pm.globals.set('gcaseid', caseid);",
+									"      setTimeout(function () { }, 70000);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid4}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verifying Case Value",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var casealert;",
+									"var studentid;",
+									"var ticketnumber;",
+									"var caseoforigin;",
+									"var titlename;",
+									"",
+									"pm.test(\"Verifying Case Value\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    titlename = jsonData.title;",
+									"    ticketnumber = jsonData.ticketnumber;",
+									"    studentid = jsonData._customerid_value;",
+									"    console.log(\"studentid \", studentid);",
+									"    caseoforigin = jsonData.caseorigincode;",
+									"    casealert = jsonData._cmc_alert_value;",
+									"",
+									"    var contactid = pm.globals.get('gcontactid1');",
+									"    console.log(\"contactid \", contactid);",
+									"    var studentalert = pm.globals.get('galertid4');",
+									"",
+									"    pm.test(\"Validate StudentID\", function () {",
+									"        pm.expect(studentid).to.equal(contactid);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Case Alert Value\", function () {",
+									"        pm.expect(casealert).to.equal(studentalert);",
+									"    });",
+									"",
+									"    pm.test(\"Validate CaseOfOrigin Value\", function () {",
+									"        pm.expect(caseoforigin).to.equal(100000000);",
+									"    });",
+									"",
+									"    if (titlename != null && ticketnumber != null && studentid === contactid && casealert === studentalert && caseoforigin === 100000000) {",
+									"        console.log(\"Fields Updated\");",
+									"        console.log(\"Case Title: \", titlename);",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expceting Error\");",
+									"    }",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}incidents({{gcaseid}})",
+							"host": [
+								"{{Eresource_URL}}incidents({{gcaseid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate Alert1 to Case",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var casealert;",
+									"var studentid;",
+									"var ticketnumber;",
+									"var caseoforigin;",
+									"var titlename;",
+									"",
+									"pm.test(\"Verifying Case Value\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    ",
+									"    caseoforigin = jsonData.caseorigincode;",
+									"    casealert = jsonData._cmc_alert_value;",
+									"",
+									"    var contactid = pm.globals.get('gcontactid1');",
+									"    console.log(\"contactid \", contactid);",
+									"    var studentalert = pm.globals.get('galertid4');",
+									"",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.context\":\"{{Eresource_URL}}$metadata#$ref\",\r\n    \"@odata.id\":\"cmc_alerts({{galertid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}incidents({{gcaseid}})/cmc_Alert_Case_Incident/$ref",
+							"host": [
+								"{{Eresource_URL}}incidents({{gcaseid}})"
+							],
+							"path": [
+								"cmc_Alert_Case_Incident",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate Alert2 to Case",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var casealert;",
+									"var studentid;",
+									"var ticketnumber;",
+									"var caseoforigin;",
+									"var titlename;",
+									"",
+									"pm.test(\"Verifying Case Value\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    caseoforigin = jsonData.caseorigincode;",
+									"    casealert = jsonData._cmc_alert_value;",
+									"",
+									"    var contactid = pm.globals.get('gcontactid1');",
+									"    console.log(\"contactid \", contactid);",
+									"    var studentalert = pm.globals.get('galertid4');",
+									"",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.context\":\"{{Eresource_URL}}$metadata#$ref\",\r\n    \"@odata.id\":\"cmc_alerts({{galertid2}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}incidents({{gcaseid}})/cmc_Alert_Case_Incident/$ref",
+							"host": [
+								"{{Eresource_URL}}incidents({{gcaseid}})"
+							],
+							"path": [
+								"cmc_Alert_Case_Incident",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate Alert3 to Case",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var casealert;",
+									"var studentid;",
+									"var ticketnumber;",
+									"var caseoforigin;",
+									"var titlename;",
+									"",
+									"pm.test(\"Verifying Case Value\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    caseoforigin = jsonData.caseorigincode;",
+									"    casealert = jsonData._cmc_alert_value;",
+									"",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.context\":\"{{Eresource_URL}}$metadata#$ref\",\r\n    \"@odata.id\":\"cmc_alerts({{galertid3}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}incidents({{gcaseid}})/cmc_Alert_Case_Incident/$ref",
+							"host": [
+								"{{Eresource_URL}}incidents({{gcaseid}})"
+							],
+							"path": [
+								"cmc_Alert_Case_Incident",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resolving Case",
+			"item": [
+				{
+					"name": "Resloving Case",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resolving Case\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"  ",
+									"});",
+									" setTimeout(function () { }, 70000);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"BillableTime\": \"{{billabletime}}\",\n    \"IncidentId\": {\n        \"incidentid\": \"{{gcaseid}}\",\n        \"@odata.type\": \"Microsoft.Dynamics.CRM.incident\"\n    },\n    \"Remarks\": \"{{Remarks}}-{{$randomInt}}\",\n    \"Resolution\": \"{{Resolution}}-{{$randomInt}}\",\n    \"Status\": {{Status}}\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}ResolveIncident?tag=abortbpf",
+							"host": [
+								"{{Eresource_URL}}ResolveIncident"
+							],
+							"query": [
+								{
+									"key": "tag",
+									"value": "abortbpf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Case Record should deactivate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var state;",
+									"var status; ",
+									"var resolutiondate;",
+									"",
+									"pm.test(\"Verifying Case Value\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    status = jsonData.statuscode;",
+									"    state = jsonData.statecode;",
+									"    resolutiondate = jsonData.modifiedon;",
+									"    if (status === 5 && state === 1) {",
+									"        console.log(\"Case Record Deactivated\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expceting Error\");",
+									"    }",
+									"});",
+									"pm.globals.set('gresolutiondate', resolutiondate);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}incidents({{gcaseid}})",
+							"host": [
+								"{{Eresource_URL}}incidents({{gcaseid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Student Alert 3 Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"var resolutiondate;",
+									"",
+									"pm.test(\"Verify Alert Status\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    status = jsonData.statuscode;",
+									"    state = jsonData.statecode;",
+									"    resolutiondate = jsonData.cmc_resolutiondate;",
+									"    if (status === 121660002 && state === 1) {",
+									"        console.log(\"Alert status is Resolved and In-Active\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expceting Error\");",
+									"    }",
+									"",
+									"    var gresolutiondate = pm.globals.get('gresolutiondate');",
+									"    console.log(\"gresolutiondate: \", gresolutiondate);",
+									"",
+									"    if(resolutiondate == gresolutiondate){",
+									"        console.log(\"Resolution date is same.\");",
+									"    }",
+									"    else{",
+									"        console.log(\"Resolution dates are same but time is not same.\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid3}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid3}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Student Alert 4 Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"var resolutiondate;",
+									"",
+									"pm.test(\"Verify Alert Status\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    status = jsonData.statuscode;",
+									"    state = jsonData.statecode;",
+									"    resolutiondate = jsonData.cmc_resolutiondate;",
+									"    if (status === 121660002 && state === 1) {",
+									"        console.log(\"Alert status is Resolved and In-Active\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expceting Error\");",
+									"    }",
+									"",
+									"    var gresolutiondate = pm.globals.get('gresolutiondate');",
+									"    console.log(\"gresolutiondate: \", gresolutiondate);",
+									"",
+									"    if(resolutiondate == gresolutiondate){",
+									"        console.log(\"Resolution date is same.\");",
+									"    }",
+									"    else{",
+									"        console.log(\"Resolution dates are same but time is not same.\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid4}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Student Alert 1 Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"var resolutiondate;",
+									"",
+									"pm.test(\"Verify Alert Status\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    status = jsonData.statuscode;",
+									"    state = jsonData.statecode;",
+									"    resolutiondate = jsonData.cmc_resolutiondate;",
+									"    if (status === 121660001 && state === 1) {",
+									"        console.log(\"Alert status is Cancelled and In-Active\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expceting Error\");",
+									"    }",
+									"    var gresolutiondate = pm.globals.get('gresolutiondate');",
+									"    console.log(\"gresolutiondate: \", gresolutiondate);",
+									"    if(resolutiondate != gresolutiondate){",
+									"        console.log(\"Alert record is not modified.\");",
+									"    }",
+									"    else{",
+									"        console.log(\"Alert record is modified.\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Student Alert 2 Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var alertname;",
+									"var alertid;",
+									"var resolutiondate;",
+									"",
+									"pm.test(\"Verify Alert Status\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    status = jsonData.statuscode;",
+									"    state = jsonData.statecode;",
+									"    resolutiondate = jsonData.cmc_resolutiondate;",
+									"    ",
+									"    if (status === 121660002 && state === 1) {",
+									"        console.log(\"Alert status is Resolved and In-Active\");",
+									"    }",
+									"    else {",
+									"        pm.expect.fail(\"Expceting Error\");",
+									"    }",
+									"    var gresolutiondate = pm.globals.get('gresolutiondate');",
+									"    console.log(\"gresolutiondate: \", gresolutiondate);",
+									"    if(resolutiondate != gresolutiondate){",
+									"        console.log(\"Alert record is not modified.\");",
+									"    }",
+									"    else{",
+									"        console.log(\"Alert record is modified.\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_alerts({{galertid2}})",
+							"host": [
+								"{{Eresource_URL}}cmc_alerts({{galertid2}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

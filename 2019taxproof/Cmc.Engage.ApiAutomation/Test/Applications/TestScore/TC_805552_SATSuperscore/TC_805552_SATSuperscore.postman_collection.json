@@ -1,0 +1,1801 @@
+{
+	"info": {
+		"_postman_id": "2cef5d5a-9c91-48f3-9d85-88f2eaddbf82",
+		"name": "TC_805552_SATSuperscore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona - StudentAdvisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('gownerid',userid);",
+									"console.log('Systemuser:'+userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var fullname = jsonData.fullname;",
+									"    console.log('Contact:' +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('gcontactid',contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstname\": \"{{$randomFirstName}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{$randomLastName}}{{$randomInt}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\":\"494280003,494280004\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n\t\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/v9.0/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"v9.0",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create SAT Testscore and validate superscore and Bestscore",
+			"item": [
+				{
+					"name": "Get SAT Test Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satid;",
+									"var Testtypename;",
+									"pm.test(\"get SAT id\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"  ",
+									"    console.log('TesttypeID:'+satid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('gsatid',satid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'SAT'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq 'SAT'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT record 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"var Autoname;",
+									"var math;",
+									"var evidencebasedreadingandwritingsection;",
+									"",
+									"pm.test(\"SAT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    Autoname= jsonData.mshied_name;",
+									"    console.log('Workflow autoname: '+Autoname);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"    math = jsonData.mshied_satmathsection;",
+									"    evidencebasedreadingandwritingsection = jsonData.mshied_satevidencebasedreadingandwritingsection;",
+									"    ",
+									"    pm.test(\"Validate Evidence-based Reading and Writing section\", function()",
+									"    {",
+									"        pm.expect(evidencebasedreadingandwritingsection).to.equal(650);",
+									"    });",
+									"    pm.test(\"Validate Math section\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(700);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Total Score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(1350);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(Autoname).to.equal(\"SAT\");",
+									"    });",
+									" ",
+									"});",
+									"pm.globals.set('gSATtestscore1',SATtestscoreid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 650,\n    \"mshied_satmathsection\": 700,\n    \"mshied_sattotalscore\": 1350,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT record 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"var Autoname;",
+									"var math;",
+									"var evidencebasedreadingandwritingsection;",
+									"",
+									"pm.test(\"SAT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    Autoname= jsonData.mshied_name;",
+									"    console.log('Workflow autoname: '+Autoname);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"    math = jsonData.mshied_satmathsection;",
+									"    evidencebasedreadingandwritingsection = jsonData.mshied_satevidencebasedreadingandwritingsection;",
+									"    ",
+									"    pm.test(\"Validate Evidence-based Reading and Writing section\", function()",
+									"    {",
+									"        pm.expect(evidencebasedreadingandwritingsection).to.equal(730);",
+									"    });",
+									"    pm.test(\"Validate Math section\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(540);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Total Score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(1270);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(Autoname).to.equal(\"SAT\");",
+									"    });",
+									" ",
+									"});",
+									"pm.globals.set('gSATtestscore2',SATtestscoreid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 730,\n    \"mshied_satmathsection\": 540,\n    \"mshied_sattotalscore\": 1270,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT record 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"var Autoname;",
+									"var math;",
+									"var evidencebasedreadingandwritingsection;",
+									"",
+									"pm.test(\"SAT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    Autoname= jsonData.mshied_name;",
+									"    console.log('Workflow autoname: '+Autoname);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"    math = jsonData.mshied_satmathsection;",
+									"    evidencebasedreadingandwritingsection = jsonData.mshied_satevidencebasedreadingandwritingsection;",
+									"    ",
+									"    pm.test(\"Validate Evidence-based Reading and Writing section\", function()",
+									"    {",
+									"        pm.expect(evidencebasedreadingandwritingsection).to.equal(500);",
+									"    });",
+									"    pm.test(\"Validate Math section\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(500);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Total Score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(1000);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(Autoname).to.equal(\"SAT\");",
+									"    });",
+									" ",
+									"});",
+									"pm.globals.set('gSATtestscore3',SATtestscoreid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 500,\n    \"mshied_satmathsection\": 500,\n    \"mshied_sattotalscore\": 1000,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SAT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satscore;",
+									"var satbest;",
+									"pm.test(\"SAT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satscore = jsonData.cmc_satsuperscore;",
+									"    satbest = jsonData.cmc_satbest;",
+									"",
+									"    console.log('SATSuperScore:'+satscore);",
+									"    console.log('SATBest:'+satbest);",
+									"",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(satscore).to.equal(1430);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(satbest).to.equal(1350);",
+									"    });",
+									"    ",
+									"});  ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log('Request 3 pre-request script');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreSAT 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"",
+									"pm.test(\"SAT TestScore Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"  ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_satevidencebasedreadingandwritingsection\": 250,\n    \"cmc_includeinscorecalculations\":false,\n    \"mshied_satmathsection\": 780,\n    \"mshied_sattotalscore\":822\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gSATtestscore1}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gSATtestscore1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreSAT 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"",
+									"pm.test(\"SAT TestScore Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"  ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_satevidencebasedreadingandwritingsection\": 250,\n    \"cmc_includeinscorecalculations\":false,\n    \"mshied_satmathsection\": 780,\n    \"mshied_sattotalscore\":822\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gSATtestscore2}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gSATtestscore2}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreSAT 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"",
+									"pm.test(\"SAT TestScore Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"  ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_satevidencebasedreadingandwritingsection\": 250,\n    \"cmc_includeinscorecalculations\":false,\n    \"mshied_satmathsection\": 780,\n    \"mshied_sattotalscore\":822\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gSATtestscore3}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gSATtestscore3}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Updated SAT Super score & Best score from contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satscore;",
+									"var satbest;",
+									"pm.test(\"SAT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satscore = jsonData.cmc_satsuperscore;",
+									"    satbest = jsonData.cmc_satbest;",
+									"",
+									"    console.log('SATSuperScore:'+satscore);",
+									"    console.log('SATBest:'+satbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(satscore).to.equal(0);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(satbest).to.equal(0);",
+									"    });",
+									"    ",
+									"});",
+									"    "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log('Request 3 pre-request script');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT record 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"var Autoname;",
+									"var math;",
+									"var evidencebasedreadingandwritingsection;",
+									"",
+									"pm.test(\"SAT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    Autoname= jsonData.mshied_name;",
+									"    console.log('Workflow autoname: '+Autoname);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"    math = jsonData.mshied_satmathsection;",
+									"    evidencebasedreadingandwritingsection = jsonData.mshied_satevidencebasedreadingandwritingsection;",
+									"    ",
+									"    pm.test(\"Validate Evidence-based Reading and Writing section\", function()",
+									"    {",
+									"        pm.expect(evidencebasedreadingandwritingsection).to.equal(500);",
+									"    });",
+									"    pm.test(\"Validate Math section\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(400);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Total Score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(1000);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(Autoname).to.equal(\"SAT\");",
+									"    });",
+									" ",
+									"});",
+									"pm.globals.set('gSATtestscore4',SATtestscoreid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(3, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 500,\n    \"mshied_satmathsection\": 400,\n    \"mshied_sattotalscore\": 1000,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280003,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Latest SAT Super score & Best score for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satscore;",
+									"var satbest;",
+									"pm.test(\"SAT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satscore = jsonData.cmc_satsuperscore;",
+									"    satbest = jsonData.cmc_satbest;",
+									"",
+									"    console.log('SATSuperScore:'+satscore);",
+									"    console.log('SATBest:'+satbest);",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(satscore).to.equal(900);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(satbest).to.equal(1000);",
+									"    });",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT record 5- self reported",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"var Autoname;",
+									"var math;",
+									"var evidencebasedreadingandwritingsection;",
+									"",
+									"pm.test(\"SAT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    Autoname= jsonData.mshied_name;",
+									"    console.log('Workflow autoname: '+Autoname);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"    math = jsonData.mshied_satmathsection;",
+									"    evidencebasedreadingandwritingsection = jsonData.mshied_satevidencebasedreadingandwritingsection;",
+									"    ",
+									"    pm.test(\"Validate Evidence-based Reading and Writing section\", function()",
+									"    {",
+									"        pm.expect(evidencebasedreadingandwritingsection).to.equal(410);",
+									"    });",
+									"    pm.test(\"Validate Math section\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(310);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Total Score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(1400);",
+									"    });",
+									"",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(Autoname).to.equal(\"SAT\");",
+									"    });",
+									" ",
+									"});",
+									"pm.globals.set('gSATtestscore5',SATtestscoreid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.environment.set(\"timestamp\", moment().add(4, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 410,\n    \"mshied_satmathsection\": 310,\n    \"mshied_sattotalscore\": 1400,\n    \"mshied_testdate\": \"{{timestamp}}\",\n    \"mshied_testlocation\": \"Bangalore{{$randomInt}}\",\n    \"mshied_testsource\": 494280004,\n    \"cmc_includeinscorecalculations\":true\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get latest SAT Super score & Best score for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satscore;",
+									"var satbest;",
+									"pm.test(\"SAT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satscore = jsonData.cmc_satsuperscore;",
+									"    satbest = jsonData.cmc_satbest;",
+									"",
+									"    console.log('SATSuperScore:'+satscore);",
+									"    console.log('SATBest:'+satbest);   ",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(satscore).to.equal(900);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(satbest).to.equal(1400);",
+									"    });",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Testscore value from TestScoreGrid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscorevalue;\r",
+									"var testscoreid;\r",
+									"var gtestscoreID;\r",
+									"\r",
+									"pm.test(\"Test Score Concatenate workflow - Test score sub-grid getting from contact\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    var length=jsonData.value.length;\r",
+									"    if(length === 5)\r",
+									"    {\r",
+									"    for(var i=0; i<length;i++)\r",
+									"    {\r",
+									"        var testscorevalue= jsonData.value[i].cmc_testscorevalue;\r",
+									"        console.log('Testscorevalue through workflow: '+ testscorevalue);\r",
+									"        \r",
+									"    }\r",
+									"  }\r",
+									"    \r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Total Score - \");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Math Section -\");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"SAT Essay-Reading - \");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"SAT Essay-Analysis - \");\r",
+									"});\r",
+									" pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"SAT Essay-Writing - \");\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Evidence-Based Reading and Writing Section - \");\r",
+									"});\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})/mshied_contact_testscore_StudentID",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							],
+							"path": [
+								"mshied_contact_testscore_StudentID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate TestScoreSAT record 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscore;",
+									"pm.test(\"SAT test score deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    console.log('SAT test score deactivated');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"statecode\" : 1\n\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gSATtestscore4}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gSATtestscore4}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate TestScoreSAT record 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscore;",
+									"pm.test(\"SAT test score deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    console.log('SAT test score deactivated');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"statecode\" : 1\n\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gSATtestscore5}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gSATtestscore5}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get latest SAT Super score & Best score for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satscore;",
+									"var satbest;",
+									"pm.test(\"SAT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satscore = jsonData.cmc_satsuperscore;",
+									"    satbest = jsonData.cmc_satbest;",
+									"",
+									"    console.log('SATSuperScore:'+satscore);",
+									"    console.log('SATBest:'+satbest);   ",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(satscore).to.equal(0);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(satbest).to.equal(0);",
+									"    });",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reactivate TestScoreSAT record 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscore;",
+									"pm.test(\"SAT test score reactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    console.log('SAT test score reactivated');",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"statecode\" : 0\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gSATtestscore5}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gSATtestscore5}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get latest SAT Super score & Best score for contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satscore;",
+									"var satbest;",
+									"pm.test(\"SAT Super scores getting from contact\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satscore = jsonData.cmc_satsuperscore;",
+									"    satbest = jsonData.cmc_satbest;",
+									"",
+									"    console.log('SATSuperScore:'+satscore);",
+									"    console.log('SATBest:'+satbest);   ",
+									"    ",
+									"    pm.test(\"Validate Superscore\", function()",
+									"    {",
+									"        pm.expect(satscore).to.equal(720);",
+									"    });",
+									"    pm.test(\"Validate Best score\", function()",
+									"    {",
+									"        pm.expect(satbest).to.equal(1400);",
+									"    });",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

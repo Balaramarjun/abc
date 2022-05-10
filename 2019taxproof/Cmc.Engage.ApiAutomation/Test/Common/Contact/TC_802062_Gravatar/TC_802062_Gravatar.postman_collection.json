@@ -1,0 +1,1074 @@
+{
+	"info": {
+		"_postman_id": "356aeb9d-db88-4862-b0be-4a3e700ef70e",
+		"name": "TC_802062_Gravatar",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete Contacts",
+			"item": [
+				{
+					"name": "Get Contact 1 details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var extraRcord=[];",
+									"pm.test(\"Get Contact 1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var data2 = jsonData.value;    ",
+									"  console.log(data2);",
+									"    for(var i=0;i<data2.length;i++)",
+									"    {",
+									"        if((data2[i].contactid)!=\"\")",
+									"            {",
+									"                extraRcord.add(data2[i].contactid);",
+									"            }",
+									"        else",
+									"            console.log(\"Contact ID : \"+ data2[i].contactid);",
+									"            console.log(\"Contact full Name: \"+data2[i].fullname);",
+									"            ",
+									"    }",
+									"console.log(extraRcord);",
+									"console.log(\"Extra Record : \"+extraRcord.length);",
+									" ",
+									"});      ",
+									"",
+									"pm.globals.set('gcontactid1',extraRcord);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=contains(emailaddress1,'gravatartest01@gmail.com')",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(emailaddress1,'gravatartest01@gmail.com')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Contact 1 if exsist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var gLoops=pm.globals.get(\"gcontactid1\");",
+									"console.log(gLoops.length);",
+									"",
+									"pm.test(\"Delete Contact\",function()",
+									"{",
+									"",
+									"if((pm.response.code===200) || (pm.response.code===201) || (pm.response.code===202) || (pm.response.code===204))",
+									"{",
+									"if (gLoops && gLoops.length>0)",
+									"{",
+									"   ",
+									"   postman.setNextRequest(\"Delete Contact 1 if exsist\");",
+									"}\t",
+									"",
+									"}",
+									"else",
+									"{",
+									"console.log(\"record does not exist in the org\");",
+									"}",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var  extraid =pm.globals.get(\"gcontactid1\");\r",
+									"var currentvalue=extraid.shift();\r",
+									"console.log(currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"g1contactid1\",currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gcontactid1\",extraid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{g1contactid1}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{g1contactid1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contact 2 details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var extraRcord=[];",
+									"pm.test(\"Get Contact 2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var data2 = jsonData.value;    ",
+									"  console.log(data2);",
+									"    for(var i=0;i<data2.length;i++)",
+									"    {",
+									"        if((data2[i].contactid)!=\"\")",
+									"            {",
+									"                extraRcord.add(data2[i].contactid);",
+									"            }",
+									"        else",
+									"            console.log(\"Contact ID : \"+ data2[i].contactid);",
+									"            console.log(\"Contact full Name: \"+data2[i].fullname);",
+									"            ",
+									"    }",
+									"console.log(extraRcord);",
+									"console.log(\"Extra Record : \"+extraRcord.length);",
+									" ",
+									"});      ",
+									"",
+									"pm.globals.set('gcontactid2',extraRcord);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=contains(emailaddress1,'gravatartest02@gmail.com')",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(emailaddress1,'gravatartest02@gmail.com')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Contact 2 if exsist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var gLoops=pm.globals.get(\"gcontactid2\");",
+									"console.log(gLoops.length);",
+									"",
+									"pm.test(\"Delete Contact\",function()",
+									"{",
+									"",
+									"if((pm.response.code===200) || (pm.response.code===201) || (pm.response.code===202) || (pm.response.code===204))",
+									"{",
+									"if (gLoops && gLoops.length>0)",
+									"{",
+									"   ",
+									"   postman.setNextRequest(\"Delete Contact 2 if exsist\");",
+									"}\t",
+									"",
+									"}",
+									"else",
+									"{",
+									"console.log(\"record does not exist in the org\");",
+									"}",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var  extraid =pm.globals.get(\"gcontactid2\");\r",
+									"var currentvalue=extraid.shift();\r",
+									"console.log(currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"g1contactid2\",currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gcontactid2\",extraid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{g1contactid2}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{g1contactid2}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contact 3 details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var extraRcord=[];",
+									"pm.test(\"Get Contact 2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var data2 = jsonData.value;    ",
+									"  console.log(data2);",
+									"    for(var i=0;i<data2.length;i++)",
+									"    {",
+									"        if((data2[i].contactid)!=\"\")",
+									"            {",
+									"                extraRcord.add(data2[i].contactid);",
+									"            }",
+									"        else",
+									"            console.log(\"Contact ID : \"+ data2[i].contactid);",
+									"            console.log(\"Contact full Name: \"+data2[i].fullname);",
+									"            ",
+									"    }",
+									"console.log(extraRcord);",
+									"console.log(\"Extra Record : \"+extraRcord.length);",
+									" ",
+									"});      ",
+									"",
+									"pm.globals.set('gcontactid3',extraRcord);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=contains(emailaddress1,'sysadmin@api.com')",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(emailaddress1,'sysadmin@api.com')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Contact 3 if exsist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var gLoops=pm.globals.get(\"gcontactid3\");",
+									"console.log(gLoops.length);",
+									"",
+									"pm.test(\"Delete Contact\",function()",
+									"{",
+									"",
+									"if((pm.response.code===200) || (pm.response.code===201) || (pm.response.code===202) || (pm.response.code===204))",
+									"{",
+									"if (gLoops && gLoops.length>0)",
+									"{",
+									"   ",
+									"   postman.setNextRequest(\"Delete Contact 3 if exsist\");",
+									"}\t",
+									"",
+									"}",
+									"else",
+									"{",
+									"console.log(\"record does not exist in the org\");",
+									"}",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var  extraid =pm.globals.get(\"gcontactid3\");\r",
+									"var currentvalue=extraid.shift();\r",
+									"console.log(currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"g1contactid3\",currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gcontactid3\",extraid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{g1contactid3}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{g1contactid3}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Contact of type Student",
+			"item": [
+				{
+					"name": "Get SourceCategory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceCategoryid;",
+									"",
+									"pm.test(\"Source category record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceCategoryid = jsonData.value[0].cmc_sourcecategoryid;",
+									"    var sourceCategoryName = jsonData.value[0].cmc_sourcecategoryname;",
+									"    console.log('SourceCategory Name is: ' + sourceCategoryName);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gsourceCategoryid1', sourceCategoryid);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceMethod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceMethodid;",
+									"",
+									"pm.test(\"Source Method record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+									"    var sourceMethodName = jsonData.value[0].cmc_sourcemethodname;",
+									"    console.log('SourceMethod Name is: ' + sourceMethodName);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gsourceMethodid1', sourceMethodid);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact 1 with Gmail ID linked",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName;",
+									"pm.test(\"Contact Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid = jsonData.contactid;",
+									"    contactName = jsonData.fullname;",
+									"    console.log(\"Contact name is: \" + contactName);",
+									"",
+									"    ",
+									"});",
+									"pm.globals.set('gcontactidStudent', contactid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"lastname\": \"Student-1-{{$randomLastName}} {{$randomInt}}\",\r\n\t\"firstname\": \"Gravatar{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n\t\"emailaddress1\": \"gravatartest01@gmail.com\",\r\n    \"statuscode\": 1\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact 2 with Gmail ID linked",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName;",
+									"pm.test(\"Contact Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid = jsonData.contactid;",
+									"    contactName = jsonData.fullname;",
+									"    console.log(\"Contact name is: \" + contactName);",
+									"",
+									"    ",
+									"});",
+									"pm.globals.set('gcontactidStudent2', contactid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"lastname\": \"Student-2-{{$randomLastName}}{{$randomInt}}\",\r\n\t\"firstname\": \"Gravatar{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n\t\"emailaddress1\": \"gravatartest02@gmail.com\",\r\n    \"statuscode\": 1\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact 3 with different Gmail ID linked",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName;",
+									"pm.test(\"Contact Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid = jsonData.contactid;",
+									"    contactName = jsonData.fullname;",
+									"    console.log(\"Contact name is: \" + contactName);",
+									"",
+									"    ",
+									"});",
+									"pm.globals.set('gcontactidStudent3', contactid);",
+									"",
+									"setTimeout(function(){},130000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"lastname\": \"Student-3-{{$randomLastName}}{{$randomInt}}\",\r\n\t\"firstname\": \"Gravatar{{$randomInt}}\",\r\n\t\"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n\t\"emailaddress1\": \"sysadmin@api.com\",\r\n    \"statuscode\": 1\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verify Gravatar for student",
+			"item": [
+				{
+					"name": "Verify Gravatar in Image source in Contact 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName,imagesource;",
+									"pm.test(\"Contact\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid = jsonData.value[0].contactid;",
+									"    contactName = jsonData.value[0].fullname;",
+									"    imagesource = jsonData.value[0].cmc_imagesource;",
+									"    console.log(\"Contact name is: \" + contactName);",
+									"",
+									"    pm.test(\"Verify Image source field\", function()",
+									"    {",
+									"        pm.expect(imagesource).to.equal(175490002);",
+									"    });",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=contains(emailaddress1,'gravatartest01@gmail.com')",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(emailaddress1,'gravatartest01@gmail.com')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Gravatar in Image source in Contact 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName,imagesource;",
+									"pm.test(\"Contact\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid = jsonData.value[0].contactid;",
+									"    contactName = jsonData.value[0].fullname;",
+									"    imagesource = jsonData.value[0].cmc_imagesource;",
+									"    console.log(\"Contact name is: \" + contactName);",
+									"",
+									"    pm.test(\"Verify Image source field\", function()",
+									"    {",
+									"        pm.expect(imagesource).to.equal(175490002);",
+									"    });",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=contains(emailaddress1,'gravatartest02@gmail.com')",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(emailaddress1,'gravatartest02@gmail.com')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Gravatar in Image source in Contact 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName,imagesource;",
+									"pm.test(\"Contact\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contactid = jsonData.value[0].contactid;",
+									"    contactName = jsonData.value[0].fullname;",
+									"    imagesource = jsonData.value[0].cmc_imagesource;",
+									"    console.log(\"Contact name is: \" + contactName);",
+									"",
+									"    pm.test(\"Verify Image source field\", function()",
+									"    {",
+									"        pm.expect(imagesource).to.equal(175490000);",
+									"    });",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=contains(emailaddress1,'sysadmin@api.com')",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(emailaddress1,'sysadmin@api.com')"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

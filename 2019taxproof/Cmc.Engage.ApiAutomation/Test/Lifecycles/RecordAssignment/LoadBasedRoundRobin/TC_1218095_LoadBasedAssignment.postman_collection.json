@@ -1,0 +1,4258 @@
+{
+	"info": {
+		"_postman_id": "6c4fdb54-3206-4fd9-b672-219119ef1c0c",
+		"name": "TC_1218095_LoadBasedAssignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona - DCRM Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"//Genarate global session value",
+									"",
+									"var number = Math.floor(Math.random() * 1000);",
+									"pm.environment.set('globalsessionvalue',number)",
+									"",
+									"console.log(pm.environment.get(\"globalsessionvalue\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);    ",
+									"});",
+									"pm.globals.set('dcrmadminid',userid);",
+									"console.log('Systemuser:'+userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Static User list",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Static User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistid;",
+									"pm.test(\"User List Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistid = jsonData.cmc_userlistid;    ",
+									"});",
+									"pm.globals.set('guserlistid', userlistid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_description\": \"Api created description\",\r\n    \"cmc_listtype\": 175490000,\r\n    \"cmc_name\": \"StaticList API {{$randomInt}}\",\r\n    \"cmc_purpose\": \"Static User List\",\r\n    \"statecode\": 0,\r\n    \"statuscode\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlists",
+							"host": [
+								"{{Eresource_URL}}cmc_userlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User 1 to add in Userlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var user1,username1;",
+									"var DOMUser1=data.DOMUser1;",
+									"pm.test(\"Get User1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    user1 = jsonData.value[0].systemuserid;",
+									"    username1 = jsonData.value[0].yomifullname;",
+									"    console.log('User1ID:',user1 );",
+									"    console.log('User1Name:',username1);",
+									"        ",
+									"});",
+									"pm.globals.set('guser1', user1);",
+									"pm.globals.set('gusername1', username1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User1}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User1}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User2 to add in Userlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var user2,username2;",
+									"var DOMUser2=data.DOMUser2;",
+									"pm.test(\"Get User2\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    user2 = jsonData.value[0].systemuserid;",
+									"    username2 = jsonData.value[0].yomifullname;",
+									"    console.log('User2ID:',user2 );",
+									"    console.log('User2Name:',username2 );",
+									"});",
+									"pm.globals.set('guser2', user2);",
+									"pm.globals.set('gusername2', username2);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User2}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User2}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User3 to add in Userlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var user3,username3;",
+									"var DOMUser3=data.DOMUser3;",
+									"pm.test(\"Get User3\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    user3 = jsonData.value[0].systemuserid;",
+									"    username3 = jsonData.value[0].yomifullname;",
+									"    console.log('User3ID:',user3 );",
+									"    console.log('User3Name:',username3);",
+									"});",
+									"pm.globals.set('guser3', user3);",
+									"pm.globals.set('gusername3', username3);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{User3}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{User3}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creation of Userlist member1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistmemberid1;",
+									"pm.test(\"User1 Added to UserList \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistmemberid1 = jsonData.cmc_userlistmemberid;    ",
+									"});",
+									" ",
+									"pm.globals.set('guserlistmemberid1', userlistmemberid1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_userid@OData.Community.Display.V1.FormattedValue\": \"{{gusername1}}\",\r\n    \"cmc_userid@odata.bind\": \"/systemusers({{guser1}})\",\r\n    \"cmc_UserMember@OData.Community.Display.V1.FormattedValue\": \"{{guserlistname}}\",\r\n    \"cmc_UserMember@odata.bind\": \"/cmc_userlists({{guserlistid}})\",    \r\n    \"cmc_roundrobinweight\": 1\r\n    \r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlistmembers",
+							"host": [
+								"{{Eresource_URL}}cmc_userlistmembers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creation of Userlist member2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistmemberid2;",
+									"pm.test(\"User1 Added to UserList \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistmemberid2 = jsonData.cmc_userlistmemberid;    ",
+									"});",
+									" ",
+									"pm.globals.set('guserlistmemberid2', userlistmemberid2);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_userid@OData.Community.Display.V1.FormattedValue\": \"{{gusername2}}\",\r\n    \"cmc_userid@odata.bind\": \"/systemusers({{guser2}})\",\r\n    \"cmc_UserMember@OData.Community.Display.V1.FormattedValue\": \"{{guserlistname}}\",\r\n    \"cmc_UserMember@odata.bind\": \"/cmc_userlists({{guserlistid}})\",    \r\n    \"cmc_roundrobinweight\": 2    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlistmembers",
+							"host": [
+								"{{Eresource_URL}}cmc_userlistmembers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creation of Userlist member3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userlistmemberid3;",
+									"pm.test(\"User3 Added to UserList \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userlistmemberid3 = jsonData.cmc_userlistmemberid;",
+									"});",
+									" ",
+									"pm.globals.set('guserlistmemberid3', userlistmemberid3);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_userid@OData.Community.Display.V1.FormattedValue\": \"{{gusername3}}\",\r\n    \"cmc_userid@odata.bind\": \"/systemusers({{guser3}})\",\r\n    \"cmc_UserMember@OData.Community.Display.V1.FormattedValue\": \"{{guserlistname}}\",\r\n    \"cmc_UserMember@odata.bind\": \"/cmc_userlists({{guserlistid}})\",    \r\n    \"cmc_roundrobinweight\": 3    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_userlistmembers",
+							"host": [
+								"{{Eresource_URL}}cmc_userlistmembers"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get Fallback User",
+			"item": [
+				{
+					"name": "Get FallBack User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Fallbackuser,fallBackusername;",
+									"var Fallbackuser=data.Fallbackuser",
+									"pm.test(\"Fallbackuser\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    Fallbackuser = jsonData.value[0].systemuserid;",
+									"    fallBackusername=jsonData.value[0].yomifullname;    ",
+									"});",
+									"pm.globals.set('gFallbackuser',Fallbackuser);",
+									"pm.globals.set('gfallBackusername',fallBackusername);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$select=systemuserid,yomifullname&$filter=internalemailaddress eq '{{Fallbackuser}}'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "systemuserid,yomifullname"
+								},
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq '{{Fallbackuser}}'"
+								}
+							]
+						},
+						"description": "Get FallAbck User"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Contacts for load based",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround1',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact2;",
+									"",
+									"pm.test(\"Contact2 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact2 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround2',contact2);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_age\": 31,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact3;",
+									"",
+									"pm.test(\"Contact3 Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    contact3 = jsonData.contactid;",
+									"});",
+									"pm.globals.set('gcontactround3', contact3);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_age\": 29,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"20\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact4 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround4',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround5',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround6',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact7",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact7 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround7',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact8",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact8 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround8',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact9",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact9 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround9',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact10",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround10',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact11",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround11',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround12',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact13",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround13',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact14",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround14',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact15",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround15',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact16",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround16',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact17",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround17',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact18",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround18',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact19",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround19',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact20",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround20',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact21",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround21',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact22",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround22',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact23",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround23',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact24",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround24',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact25",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround25',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact26",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround26',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact27",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround27',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact28",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround28',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact29",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround29',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact30",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact1;",
+									"",
+									"pm.test(\"Contact1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact1 = jsonData.contactid;    ",
+									"});",
+									"pm.globals.set('gcontactround30',contact1);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"LoadbasedRoundRobin{{globalsessionvalue}}\",\r\n\"lastname\": \"DOM{{$randomLastName}}\",\r\n\"middlename\":\"mid763\",\r\n\"mshied_maidenname\":\"maid752\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{$randomInt}}s@campusmgmt.com\",\r\n\"gendercode\":\"1\",\r\n\"anniversary\":\"2018-10-17\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"2\",\r\n\"cmc_age\": 31,\r\n\"nickname\":\"Nickname518\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"1985-04-01\",\r\n\"cmc_recentsat\":\"7\",\r\n\"cmc_recentact\":\"420\",\r\n\"mshied_contacttype\":\"494280011\",\r\n\"mshied_race\":494280001,\r\n\"mshied_ethnicgroup\":175490001,\r\n\"mshied_miltarystatus\":\"494280004\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife848\",\r\n\"shippingmethodcode\":\"1\",\r\n\"preferredcontactmethodcode\": \"1\",\r\n\"mshied_nationality\":\"175490001\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"{{$randomInt}}{{$randomInt}}8{{$randomInt}}\",\r\n\"mobilephone\":\"{{$randomInt}}{{$randomInt}}2{{$randomInt}}\",\r\n\"telephone1\":\"{{$randomInt}}4{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_phone2extension\":\"{{$randomInt}}34{{$randomInt}}69\",\r\n\"websiteurl\":\"www.dcrm259.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						},
+						"description": "This Contacttype should be Student and Area of Interest should assosiated\r\n\r\n\r\nThis contact is assosicated with Assignment Rule1"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create Assignment group",
+			"item": [
+				{
+					"name": "Create Assignmentgroups",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var assignmentgroupid,assigntofield;",
+									"pm.test(\" Create Assignmentgroup\", function() ",
+									"{    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    assignmentgroupid = jsonData.cmc_assignmentgroupid; ",
+									"    assigntofield = jsonData.cmc_assigntofield;",
+									"});",
+									"",
+									"pm.globals.set('gassignmentgroupid',assignmentgroupid);",
+									"pm.globals.set('gassigntofield',assigntofield);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_fetchxml\":\"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"contact\\\"><attribute name=\\\"fullname\\\"/><attribute name=\\\"telephone1\\\"/><attribute name=\\\"contactid\\\"/><order attribute=\\\"fullname\\\" descending=\\\"false\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"firstname\\\" operator=\\\"like\\\" value=\\\"%LoadbasedRoundRobin%\\\"/><condition attribute=\\\"createdon\\\" operator=\\\"today\\\"/></filter></entity></fetch>\",\r\n   \"cmc_baseentity\":\"contact\",\r\n   \"cmc_FallBackUserId@odata.bind\":\"/systemusers({{gFallbackuser}})\",\r\n   \"cmc_assigntofield\":\"ownerid\",\r\n   \"cmc_name\":\"Loadbasedassignment{{$randomInt}}\",\r\n   \"statecode\":0,\r\n   \"statuscode\": 175490000,\r\n   \"cmc_baseentityname\": \"Contact\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Assignment Rule",
+			"item": [
+				{
+					"name": "Create Assignmentrule: Age > 30",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var usertoassignid_value,assignmentruleid,assignmentgroupid_value, userloadfetchxml;",
+									"",
+									"pm.test(\"Assignment Rule 1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"    assignmentruleid = jsonData.cmc_assignmentruleid;",
+									"    assignmentgroupid_value = jsonData._cmc_assignmentgroupid_value;      ",
+									"    console.log(\" assignmentruleid:\" +assignmentruleid)",
+									"    userloadfetchxml = jsonData.cmc_userloadfetchxml;   ",
+									"});",
+									"",
+									"pm.globals.set('gassignmentruleid1',assignmentruleid);",
+									"pm.globals.set('guserloadfetchxml',userloadfetchxml);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_fetchxml\": \"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"contact\\\"><attribute name=\\\"contactid\\\"/><attribute name=\\\"createdon\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"cmc_recentact\\\" operator=\\\"gt\\\" value=\\\"400\\\"/><condition attribute=\\\"cmc_domstatus\\\" operator=\\\"eq\\\" value=\\\"175490000\\\"/></filter></entity></fetch>\",\r\n    \"cmc_userloadfetchxml\": \"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"false\\\"><entity name=\\\"contact\\\"><attribute name=\\\"contactid\\\"/><attribute name=\\\"createdon\\\"/><order attribute=\\\"createdon\\\" descending=\\\"false\\\"/><filter type=\\\"and\\\"><condition attribute=\\\"firstname\\\" operator=\\\"like\\\" value=\\\"LoadbasedRoundRobin{{globalsessionvalue}}%\\\"/></filter></entity></fetch>\",\r\n    \"cmc_executionorder\": 1,\r\n    \"cmc_assignmenttype\": 175490003,\r\n    \"cmc_name\": \"Loadbasedassignment{{$randomInt}}\",\r\n    \"cmc_userlistid@odata.bind\": \"/cmc_userlists({{guserlistid}})\",    \r\n    \"cmc_baseentity\": \"contact\",\r\n    \"cmc_AssignmentGroupId@odata.bind\": \"/cmc_assignmentgroups({{gassignmentgroupid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentrules",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentrules"
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch load of User1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var load1;",
+									"",
+									"pm.test(\"Fetching load\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"    load1 = jsonData.value.length;",
+									"    console.log(load1);   ",
+									"});",
+									"",
+									"pm.globals.set('gloaduser1',load1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=_ownerid_value eq '{{guser1}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_ownerid_value eq '{{guser1}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'"
+								}
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch load of User2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var load1;",
+									"",
+									"pm.test(\"Fetching load\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"    load1 = jsonData.value.length;",
+									"    console.log(load1);   ",
+									"});",
+									"",
+									"pm.globals.set('gloaduser2',load1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=_ownerid_value eq '{{guser2}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_ownerid_value eq '{{guser2}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'"
+								}
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch load of User3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var load3;",
+									"",
+									"pm.test(\"Fetching load\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"    load3 = jsonData.value.length;",
+									"    console.log(load3);   ",
+									"});",
+									"pm.globals.set('gloaduser3',load3);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=_ownerid_value eq '{{guser3}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_ownerid_value eq '{{guser3}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'"
+								}
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Update Assignmentgroups Status to Live",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\" Update  Assignmentgroup Status to Live\", function() ",
+									"{    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});",
+									"",
+									"setTimeout(function(){}, 150000); "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"statuscode\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Validation-Record Status and Uservalidation",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch load of User1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var load1;",
+									"",
+									"pm.test(\"Fetching load\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"    load1 = jsonData.value.length;",
+									"    console.log(load1);   ",
+									"});",
+									"",
+									"pm.globals.set('gloaduser11',load1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=_ownerid_value eq '{{guser1}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_ownerid_value eq '{{guser1}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'"
+								}
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch load of User2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var load1;",
+									"",
+									"pm.test(\"Fetching load\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"    load1 = jsonData.value.length;",
+									"    console.log(load1);   ",
+									"});",
+									"",
+									"pm.globals.set('gloaduser12',load1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=_ownerid_value eq '{{guser2}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_ownerid_value eq '{{guser2}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'"
+								}
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch load of User3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var load1;",
+									"",
+									"pm.test(\"Fetching load\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"    load1 = jsonData.value.length;",
+									"    console.log(load1);   ",
+									"});",
+									"",
+									"pm.globals.set('gloaduser13',load1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts?$filter=_ownerid_value eq '{{guser3}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_ownerid_value eq '{{guser3}}' and firstname eq 'LoadbasedRoundRobin{{globalsessionvalue}}'"
+								}
+							]
+						},
+						"description": "Contacttype=Student and\r\nArea of Interest Name should starts with \"BIO\""
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyCurrentStatus for Contact1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Assgineduser;",
+									"pm.test(\"GetDOM Status for Contact1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var domstatus =jsonData.cmc_domstatus;",
+									"    console.log('cmc_domstatus:'+domstatus);",
+									"    ",
+									"    Assgineduser = jsonData._ownerid_value;",
+									"    console.log('Assgineduser:' +Assgineduser);",
+									"    ",
+									"    var roundrobinuser = pm.globals.get(\"guser1\");",
+									"    console.log('Assinged user:'+roundrobinuser);",
+									"    ",
+									"    if (domstatus==175490000)",
+									"    {",
+									"        console.log(domstatus+\"is Pending Assignment\");",
+									"        pm.expect.fail(1,2,\"Please Run 'Assignment - Entity Auto Assignment' flow'\")",
+									"    }",
+									"    else if (domstatus==175490001)",
+									"    {",
+									"        console.log(domstatus+\"is Assignment Complete\");",
+									"        ",
+									"        pm.test(\"Validate DOM status\", function()",
+									"        {",
+									"            pm.expect(domstatus).to.equal(175490001);",
+									"        });        ",
+									"        ",
+									"    }",
+									"    else if (domstatus==175490002)",
+									"    {",
+									"        console.log(domestatus+\"is Locked Assignment\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Some Error Occured\");",
+									"    }",
+									" ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/v9.1/contacts({{gcontactround1}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"v9.1",
+								"contacts({{gcontactround1}})"
+							]
+						},
+						"description": "Verify DOM Status and Assigned User validation"
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyCurrentStatus for Contact2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Assgineduser;",
+									"pm.test(\"GetDOM Status for Contact2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var domstatus =jsonData.cmc_domstatus;",
+									"    console.log('cmc_domstatus:'+domstatus);",
+									"    ",
+									"    Assgineduser = jsonData._ownerid_value;",
+									"    console.log('Assgineduser:' +Assgineduser);",
+									"    ",
+									"    var roundrobinuser2 = pm.globals.get(\"guser2\");",
+									"    console.log('Assinged user:'+roundrobinuser2);",
+									"    ",
+									"    if (domstatus==175490000)",
+									"    {",
+									"        console.log(domstatus+\"is Pending Assignment\");",
+									"        pm.expect.fail(1,2,\"Please Run 'Assignment - Entity Auto Assignment' flow'\")",
+									"    }",
+									"    else if (domstatus==175490001)",
+									"    {",
+									"        console.log(domstatus+\"is Assignment Complete\");",
+									"        ",
+									"        pm.test(\"Validate DOM status\", function()",
+									"        {",
+									"            pm.expect(domstatus).to.equal(175490001);",
+									"        });",
+									"        ",
+									"    }",
+									"    else if (domstatus==175490002)",
+									"    {",
+									"        console.log(domestatus+\"is Locked Assignment\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Some Error Occured\");",
+									"    }",
+									" ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/v9.1/contacts({{gcontactround2}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"v9.1",
+								"contacts({{gcontactround2}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyCurrentStatus for Contact3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Assgineduser;",
+									"pm.test(\"GetDOM Status for Contact3\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var domstatus =jsonData.cmc_domstatus;",
+									"    console.log('cmc_domstatus:'+domstatus);",
+									"    ",
+									"    Assgineduser = jsonData._ownerid_value;",
+									"    console.log('Assgineduser:' +Assgineduser);",
+									"    ",
+									"    var roundrobinuserfallback = pm.globals.get(\"gFallbackuser\");",
+									"    console.log('Assinged user:'+roundrobinuserfallback);",
+									"    ",
+									"    if (domstatus==175490000)",
+									"    {",
+									"        console.log(domstatus+\"is Pending Assignment\");",
+									"        //pm.expect.fail(1,2,\"Please Run 'Assignment - Entity Auto Assignment' flow'\")",
+									"    }",
+									"    else if (domstatus==175490001)",
+									"    {",
+									"        console.log(domstatus+\"is Assignment Complete\");",
+									"        ",
+									"        pm.test(\"Validate DOM status\", function()",
+									"        {",
+									"            pm.expect(domstatus).to.equal(175490001);",
+									"        });",
+									"        ",
+									"    }",
+									"    else if (domstatus==175490002)",
+									"    {",
+									"        console.log(domestatus+\"is Locked Assignment\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Some Error Occured\");",
+									"    }",
+									" ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource}}api/data/v9.1/contacts({{gcontactround3}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"v9.1",
+								"contacts({{gcontactround3}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Assignment Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Assignment Group Deactivated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n   \"statuscode\":2,\r\n   \"statecode\":1\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/{{Eversion}}/cmc_assignmentgroups({{gassignmentgroupid}})",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"{{Eversion}}",
+								"cmc_assignmentgroups({{gassignmentgroupid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,382 @@
+{
+	"info": {
+		"_postman_id": "8df50b76-4e76-4687-93c8-4c4210defd30",
+		"name": "TC_750211_StudentGroupAutoExpire",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verify StudentGroup AutoExpire for current date",
+			"item": [
+				{
+					"name": "Create Static Student Group with current date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var listid;",
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    listid = jsonData.listid;",
+									"    var mlname =jsonData.listname; ",
+									"    console.log('Marketing List name:' +mlname);",
+									"    var stateid = jsonData.statecode;",
+									"    console.log('Statecode:'+stateid);",
+									" ",
+									"    pm.test(\"Student group is activated\", function()",
+									"        {",
+									"            pm.expect(stateid).to.equal(0);",
+									"        });",
+									"});",
+									"pm.globals.set('glistid', listid);",
+									"",
+									"setTimeout(function(){}, 130000); ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"currentDate\", moment().format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"futureDate\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_expirationdate\": \"{{currentDate}}\",\r\n    \"createdfromcode\": 2,\r\n    \"listname\": \"Check autoexpire {{$randomInt}}{{$randomInt}}\",\r\n    \"lockstatus\": false,\r\n    \"type\": false\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}lists",
+							"host": [
+								"{{Eresource_URL}}lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Student Group is Deactivated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var listid = jsonData.listid;",
+									"    var mlname =jsonData.listname; ",
+									"    console.log('Marketing List name:' +mlname);",
+									"    var stateid = jsonData.statecode;",
+									"    console.log('Statecode:'+stateid);",
+									" ",
+									"    pm.test(\"Student group is deactivated\", function()",
+									"        {",
+									"            pm.expect(stateid).to.equal(1);",
+									"        });",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"currentDate\", moment().format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"futureDate\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}lists({{glistid}})",
+							"host": [
+								"{{Eresource_URL}}lists({{glistid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verify StudentGroup AutoExpire for Future date",
+			"item": [
+				{
+					"name": "Create Static Student Group with future date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var listid;",
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    listid = jsonData.listid;",
+									"    var mlname =jsonData.listname; ",
+									"    console.log('Marketing List name:' +mlname);",
+									"    var stateid = jsonData.statecode;",
+									"    console.log('Statecode:'+stateid);",
+									" ",
+									"    pm.test(\"Student group is activated\", function()",
+									"        {",
+									"            pm.expect(stateid).to.equal(0);",
+									"        });",
+									"});",
+									"pm.globals.set('glistid1', listid);",
+									"",
+									"setTimeout(function(){}, 130000); ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"currentDate\", moment().format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"futureDate\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_expirationdate\": \"{{futureDate}}\",\r\n    \"createdfromcode\": 2,\r\n    \"listname\": \"Check autoexpire {{$randomInt}}{{$randomInt}}\",\r\n    \"lockstatus\": false,\r\n    \"type\": false\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}lists",
+							"host": [
+								"{{Eresource_URL}}lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Student Group is not Deactivated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var listid = jsonData.listid;",
+									"    var mlname =jsonData.listname; ",
+									"    console.log('Marketing List name:' +mlname);",
+									"    var stateid = jsonData.statecode;",
+									"    console.log('Statecode:'+stateid);",
+									" ",
+									"    pm.test(\"Student group is not deactivated for future date\", function()",
+									"        {",
+									"            pm.expect(stateid).to.equal(0);",
+									"        });",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"currentDate\", moment().format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"futureDate\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}lists({{glistid1}})",
+							"host": [
+								"{{Eresource_URL}}lists({{glistid1}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

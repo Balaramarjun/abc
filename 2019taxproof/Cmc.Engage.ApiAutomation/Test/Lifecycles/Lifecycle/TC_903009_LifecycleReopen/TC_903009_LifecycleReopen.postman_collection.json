@@ -1,0 +1,3542 @@
+{
+	"info": {
+		"_postman_id": "c25dfd0e-0d11-45d0-a43a-f3369ef80e89",
+		"name": "TC_903009_LifecycleReopen",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Prerquisite Assign Role",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid, fullname;",
+									"pm.test(\"GetUserID\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname = jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" + fullname);",
+									"",
+									"});",
+									"pm.globals.set('guserid2', userid);",
+									"console.log('Systemuser:' + userid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Lifecycle",
+			"item": [
+				{
+					"name": "Create Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"",
+									"pm.test(\"Academicperiodid Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									" ",
+									"});",
+									"",
+									"",
+									"var academicperiodname = data.cmc_academicperiodname;",
+									"var startDate = data.cmc_startdate;",
+									"var endDate = data.cmc_enddate;",
+									"var Code = data.cmc_code;",
+									"var ownerid1 = data.ownerid;",
+									"pm.globals.set('gacademicperiodid',academicperiodid);",
+									"//console.log('{{gAcademic}}');",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"mshied_name\":\"{{cmc_academicperiodname}}{{$randomInt}}\",\r\n\"mshied_startdate\":\"{{timestamp}}\",\r\n\"mshied_enddate\":\"{{timestampEndDate}}\",\r\n\"mshied_code\":\"{{$randomInt}}{{cmc_code}}LK{{$randomInt}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n \r\n}\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_academicperiods",
+							"host": [
+								"{{Eresource_URL}}mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var account_id; ",
+									"var Accname;",
+									"pm.test(\"Account Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   // pm.globals.set('gaccountId', jsonData.accountid);",
+									"    account_id = jsonData.accountid;",
+									"    Accname = jsonData.name;",
+									"    console.log(Accname);",
+									"    ",
+									"});",
+									"",
+									"",
+									"var accname = data.name;",
+									"var accounttype = data.mshied_accounttype;",
+									"",
+									"",
+									"",
+									"pm.globals.set('gaccountId',account_id);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"name\":\"{{name}}{{$randomInt}}\",\r\n \"mshied_accounttype\":\"{{mshied_accounttype}}\",\r\n \"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n \"preferredcontactmethodcode\":1\r\n    \r\n} \r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}accounts",
+							"host": [
+								"{{Eresource_URL}}accounts"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"var programname;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid;",
+									"    programname = jsonData.mshied_name;",
+									"    console.log(\"Program ID: \" + programid);",
+									"    console.log(\"Program Name: \" + programname);",
+									"});",
+									"pm.globals.set('gProgram1', programid);",
+									"pm.globals.set('gProgramName1', programname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}Prg{{$randomInt}}1{{$randomInt}}\",\n    \"mshied_name\": \"code{{$randomInt}}\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Source Method",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourcemethodid;",
+									"pm.test(\"Create sourcemethod\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    sourcemethodid = jsonData.cmc_sourcemethodid;",
+									"    console.log(\"sourcemethodid : \" + sourcemethodid);",
+									"});",
+									"pm.globals.set('gsourcemethodid', sourcemethodid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"cmc_sourcemethodname\": \"{{$randomInt}}-TestSoucreMethod{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Source Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourcecategoryid;",
+									"pm.test(\"Create Sourcecategory\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    sourcecategoryid = jsonData.cmc_sourcecategoryid;",
+									"    console.log(\"sourcecategoryid : \" + sourcecategoryid);",
+									"});",
+									"pm.globals.set('gsourcecategoryid', sourcecategoryid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_sourcecategoryname\": \"{{$randomInt}}-TestSoucreCategor-y{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programlevelid;",
+									"pm.test(\"Create Sourcecategory\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programlevelid = jsonData.mshied_programlevelid;",
+									"    console.log(\"programlevelid : \" + programlevelid);",
+									"});",
+									"pm.globals.set('gprogramlevelid', programlevelid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-PrgLevel-{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_programlevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Education Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var educationlevelid;",
+									"pm.test(\"Create educationlevelid\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    educationlevelid = jsonData.mshied_educationlevelid;",
+									"    console.log(\"educationlevelid : \" + educationlevelid);",
+									"});",
+									"pm.globals.set('geducationlevelid', educationlevelid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-C{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-EduLevel-{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_educationlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_educationlevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Role/Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var titleid;",
+									"pm.test(\"Create title\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    titleid = jsonData.cmc_titleid;",
+									"    console.log(\"titleid : \" + titleid);",
+									"});",
+									"pm.globals.set('gtitleid', titleid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"cmc_titlename\": \"{{$randomInt}}-Test-Title-{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_titles",
+							"host": [
+								"{{Eresource_URL}}cmc_titles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var studentstatusid;",
+									"pm.test(\"Create Sourcecategory\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    studentstatusid = jsonData.mshied_studentstatusid;",
+									"    console.log(\"studentstatusid : \" + studentstatusid);",
+									"});",
+									"pm.globals.set('gstudentstatusid', studentstatusid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-C{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-StudentStatus-{{$randomInt}}\"\n}\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_studentstatuses",
+							"host": [
+								"{{Eresource_URL}}mshied_studentstatuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"var Name;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    Name = jsonData.firstname;",
+									"});",
+									" ",
+									"  ",
+									"  var addressnamecontact = data.cmc_addressname2;",
+									"  var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"  var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"  var CurrentProgramLevelId =data.mshied_CurrentProgramLevelId;",
+									"  var CurrentProgramId =data.mshied_CurrentProgramId;",
+									"  var titleid =data.cmc_titleid;",
+									"  var srcpogramlevelid =data.cmc_srcpogramlevelid;",
+									"  var srcprogramid =data.cmc_srcprogramid;",
+									"  var educationlevelid =data.cmc_educationlevelid;",
+									"  var StudentStatusId =data.mshied_StudentStatusId;",
+									"  var mshied_contacttype =data.mshied_contacttype;",
+									"  var emailaddress1 =data.emailaddress1;",
+									"  var cmc_dateofbirth =data.cmc_dateofbirth;",
+									"  var cmc_sourcedate =data.cmc_sourcedate;",
+									"  var recentsat =data.cmc_recentsat;",
+									"  var recentact =data.cmc_recentact;",
+									"  var gendercode =data.gendercode;",
+									"  var shippingmethodcode =data.shippingmethodcode;",
+									"  var firstname = data.firstname;",
+									"  var lastname = data.lastname;",
+									"  var anniversary = data.anniversary;",
+									"  var lastonholdtime = data.lastonholdtime;",
+									"  var numberofchildren = data.numberofchildren;",
+									"  var familystatuscode = data.familystatuscode;",
+									"  var race = data.mshied_race;",
+									"  var miltarystatus = data.mshied_miltarystatus;",
+									"  var ethnicgroup = data.mshied_ethnicgroup;",
+									"  var nationality = data.mshied_nationality;",
+									"  ",
+									"  //Address variables",
+									"  var Zip = data.cmc_zip;",
+									"  var City = data.cmc_city;",
+									"  var addresstype1 = data.cmc_addresstypeid;",
+									"pm.globals.set('gcontactid',contact_id);",
+									"console.log(Name);",
+									"console.log('Contactid:'+contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"{{firstname}}{{$randomInt}}\",\r\n\"lastname\": \"{{lastname}}\",\r\n\"middlename\":\"mid{{$randomInt}}\",\r\n\"mshied_maidenname\":\"maid{{$randomInt}}\",\r\n\"mshied_legacy\":\"true\",\r\n\"emailaddress1\":\"{{$randomInt}}{{emailaddress1}}\",\r\n\"gendercode\":\"{{gendercode}}\",\r\n\"anniversary\":\"{{anniversary}}\",\r\n\"lastonholdtime\":\"{{currentdate}}\",\r\n\"numberofchildren\":\"{{numberofchildren}}\",\r\n\"nickname\":\"Nickname{{$randomInt}}\",\r\n\"familystatuscode\":2,\r\n\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\"birthdate\":\"{{cmc_dateofbirth}}\",\r\n\"cmc_recentsat\":\"{{cmc_recentsat}}\",\r\n\"cmc_recentact\":\"{{cmc_recentact}}\",\r\n\"mshied_contacttype\":\"{{mshied_contacttype}}\",\r\n\"mshied_race\":{{mshied_race}},\r\n\"mshied_ethnicgroup\":{{mshied_ethnicgroup}},\r\n\"mshied_miltarystatus\":\"{{mshied_miltarystatus}}\",\r\n\"mshied_hipaaindicator\":false,\r\n\"creditonhold\":\"true\",\r\n\"leadsourcecode\":1,\r\n\"territorycode\":1,\r\n\"spousesname\":\"wife{{$randomInt}}\",\r\n\"shippingmethodcode\":\"{{shippingmethodcode}}\",\r\n\"preferredcontactmethodcode\": \"{{preferredcontactmethodcode}}\",\r\n\"mshied_nationality\":\"{{mshied_nationality}}\",\r\n\"cmc_sourcecategoryid@odata.bind\":\"/contacts({{gsourcecategoryid}})\",\r\n\"cmc_sourcemethodid@odata.bind\":\"/contacts({{gsourcemethodid}})\",\r\n\"cmc_titleid@odata.bind\": \"/contacts({{gtitleid}})\",\r\n\"cmc_srcpogramlevelid@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\"cmc_srcprogramid@odata.bind\": \"/contacts({{gProgram1}})\",\r\n\"cmc_educationlevelid@odata.bind\": \"/contacts({{geducationlevelid}})\",\r\n\"mshied_CurrentProgramLevelId@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\"mshied_CurrentProgramId@odata.bind\": \"/contacts({{gProgram1}})\",\r\n\"mshied_StudentStatusId@odata.bind\": \"/contacts({{gstudentstatusid}})\",\r\n\"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\",\r\n\"donotemail\":true,\r\n\"followemail\":true,\r\n\"cmc_donotsmstext\":true,\r\n\"donotbulkemail\":true,\r\n\"donotpostalmail\":true,\r\n\"donotphone\":true,\r\n\"donotfax\":true,\r\n\"cmc_autoupdatepicture\":true,\r\n\"fax\":\"78865{{$randomInt}}30\",\r\n\"mobilephone\":\"78965{{$randomInt}}30\",\r\n\"telephone1\":\"8569{{$randomInt}}230\",\r\n\"cmc_phone2extension\":\"8083{{$randomInt}}569\",\r\n\"websiteurl\":\"www.dcrm{{$randomInt}}.com\"\r\n     \r\n }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create LifeCycle",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"var contactid ;",
+									"var accountid;",
+									"var lifecyclename;",
+									"",
+									"",
+									"pm.test(\"LifeCycle Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecycleid  = jsonData.opportunityid ;",
+									"  contactid = jsonData._cmc_campusid_value;",
+									"  accountid = jsonData._cmc_contactid_value;",
+									"  lifecyclename = jsonData.name;",
+									" // cmc_campusid_value",
+									"  //cmc_contactid_value",
+									"  ",
+									"  console.log('LifeCyleID:' +lifecycleid);",
+									"  console.log('ContactID:' +contactid);",
+									"  console.log('AccountID:' +accountid);",
+									"  console.log('LifeCyleName:' +lifecyclename);",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('glifecycleid',lifecycleid);",
+									"pm.globals.set('glifecyclename',lifecyclename);",
+									"",
+									"var cmc_lifecycletypeid=data.cmc_lifecycletype;",
+									"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"var cmc_programid1 =data.cmc_programid;",
+									"var cmc_programlevelid1 =data.cmc_programlevelid;",
+									"var cmc_sourceprogram =data.cmc_sourceprogramid;",
+									"var cmc_sourceexpectedstart =data.cmc_sourceexpectedstartid;",
+									"var cmc_expectedstartdate =data.cmc_expectedstartdateid;",
+									"var cmc_sourceprogramlevelid =data.cmc_sourceprogramlevelid;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_lifecycletype\": \"{{cmc_lifecycletype}}\",\r\n    \"cmc_lifecyclestatus\": 175490009,\r\n    \"cmc_campusid@odata.bind\": \"/accounts({{gaccountId}})\",\r\n    \"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"cmc_prgmid@odata.bind\": \"/opportunities({{gProgram1}})\",\r\n    \"cmc_prgmlevelid@odata.bind\": \"/opportunities({{gprogramlevelid}})\",\r\n    \"cmc_expstartdateid@odata.bind\": \"/opportunities({{gacademicperiodid}})\",\r\n    \"cmc_sourcecategoryid@odata.bind\": \"/opportunities({{gsourcecategoryid}})\",\r\n    \"cmc_sourcemethodid@odata.bind\": \"/opportunities({{gsourcemethodid}})\",\r\n    \"cmc_srcprgmlevelid@odata.bind\": \"/opportunities({{gprogramlevelid}})\",\r\n    \"cmc_sourcereferringcontactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n    \"cmc_sourceprgmid@odata.bind\": \"/opportunities({{gProgram1}})\",\r\n    \"statecode\": \"2\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities",
+							"host": [
+								"{{Eresource_URL}}opportunities"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create BPF",
+			"item": [
+				{
+					"name": "Create BPF for Lifecycle",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"var bpfID;",
+									"",
+									"",
+									"pm.test(\"LifeCycle Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecycleid  = jsonData._bpf_opportunityid_value ;",
+									"  ",
+									"  bpfID = jsonData.businessprocessflowinstanceid;",
+									"",
+									"  ",
+									"  console.log('LifeCyleID:' +lifecycleid);",
+									"  console.log('gbpfID:' +bpfID);",
+									" ",
+									"  ",
+									"});",
+									"",
+									"pm.globals.set('gbpfID',bpfID);",
+									"",
+									"",
+									"// \"cmc_sourceexpectedstartid@odata.bind\":\"/opportunities({{cmc_sourceexpectedstartid}})\",",
+									"// \"cmc_sourceprogramid@odata.bind\":\"/opportunities({{cmc_sourceprogramid}})\",",
+									"var cmc_lifecycletypeid=data.cmc_lifecycletype;",
+									"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"var cmc_programid1 =data.cmc_programid;",
+									"var cmc_programlevelid1 =data.cmc_programlevelid;",
+									"var cmc_sourceprogram =data.cmc_sourceprogramid;",
+									"var cmc_sourceexpectedstart =data.cmc_sourceexpectedstartid;",
+									"var cmc_expectedstartdate =data.cmc_expectedstartdateid;",
+									"var cmc_sourceprogramlevelid =data.cmc_sourceprogramlevelid;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bpf_opportunityid@odata.bind\": \"/opportunities({{glifecycleid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs",
+							"host": [
+								"{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get BPF Stages",
+			"item": [
+				{
+					"name": "Getting WorkflowID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var workflowid ;",
+									"pm.test(\"LifeCycle Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    workflowid  = jsonData.value[0].workflowid ;",
+									"    console.log('workflowid:' +workflowid);",
+									"});",
+									"",
+									"pm.globals.set('gworkflowid',workflowid);",
+									"var cmc_lifecycletypeid=data.cmc_lifecycletype;",
+									"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+									"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+									"var cmc_programid1 =data.cmc_programid;",
+									"var cmc_programlevelid1 =data.cmc_programlevelid;",
+									"var cmc_sourceprogram =data.cmc_sourceprogramid;",
+									"var cmc_sourceexpectedstart =data.cmc_sourceexpectedstartid;",
+									"var cmc_expectedstartdate =data.cmc_expectedstartdateid;",
+									"var cmc_sourceprogramlevelid =data.cmc_sourceprogramlevelid;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\t\r\n\"bpf_opportunityid@odata.bind\":\"/opportunities({{glifecycleid}})\"\r\n \r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}workflows?$select=workflowid&$filter=name eq 'Lifecycle (Engage)'",
+							"host": [
+								"{{Eresource_URL}}workflows"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "workflowid"
+								},
+								{
+									"key": "$filter",
+									"value": "name eq 'Lifecycle (Engage)'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting Prospect Stage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var processid ;",
+									"var stagename ;",
+									"var prospectstageid;",
+									"var bpfID;",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    processid  = jsonData.value[0]._processid_value ;",
+									"    stagename=jsonData.value[0].stagename ;",
+									"    pm.globals.get(\"variable_key\");",
+									"    prospectstageid= jsonData.value[0].processstageid;  ",
+									"    console.log(\"stagename :\" +stagename);",
+									"    console.log(\"processstageid :\" +prospectstageid);",
+									"    ",
+									"    pm.globals.set('gprospectstageid', prospectstageid);",
+									"    pm.globals.set('gprocessid', processid);",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}processstages?$select=*&$filter=_processid_value eq '9af1385d-4fa5-4ca7-8e2e-949770a0c9cc' and  stagename eq 'Prospect'",
+							"host": [
+								"{{Eresource_URL}}processstages"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_processid_value eq '9af1385d-4fa5-4ca7-8e2e-949770a0c9cc' and  stagename eq 'Prospect'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting App In Progress Stage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var processid ;",
+									"var stagename ;",
+									"var appinProgressstageid;",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    processid  = jsonData.value[0]._processid_value ;",
+									"    stagename=jsonData.value[0].stagename ;",
+									"    appinProgressstageid= jsonData.value[0].processstageid;  ",
+									"    console.log(\"stagename :\" +stagename);",
+									"    console.log(\"appinProgressstageid :\" +appinProgressstageid);",
+									"",
+									"    pm.globals.set('gappinProgressstageid', appinProgressstageid);",
+									"    pm.globals.set('gprocessid', processid);",
+									"",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}processstages?$select=*&$filter=_processid_value eq '{{gworkflowid}}'  and  stagename eq 'App In Progress'",
+							"host": [
+								"{{Eresource_URL}}processstages"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_processid_value eq '{{gworkflowid}}'  and  stagename eq 'App In Progress'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting App Complete Stage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var processid ;",
+									"var stagename ;",
+									"var appcompleteid;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  processid  = jsonData.value[0]._processid_value ;",
+									"  ",
+									"  stagename=jsonData.value[0].stagename ;",
+									"  ",
+									"  appcompleteid= jsonData.value[0].processstageid;  ",
+									"",
+									"",
+									"  ",
+									"  console.log(\"stagename :\" +stagename);",
+									"  console.log(\"gappcompleteid :\" +appcompleteid);",
+									"",
+									" ",
+									"  ",
+									"pm.globals.set('gappcompleteid', appcompleteid);",
+									"",
+									"pm.globals.set('gprocessid', processid);",
+									"",
+									"",
+									" ",
+									" ",
+									"  ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}processstages?$select=*&$filter=_processid_value eq '{{gworkflowid}}'  and  stagename eq 'App Complete'",
+							"host": [
+								"{{Eresource_URL}}processstages"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_processid_value eq '{{gworkflowid}}'  and  stagename eq 'App Complete'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting Admit Stage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var processid ;",
+									"var stagename ;",
+									"var admitid;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    processid  = jsonData.value[0]._processid_value ;",
+									"    stagename=jsonData.value[0].stagename ;",
+									"    admitid= jsonData.value[0].processstageid;  ",
+									"    ",
+									"    console.log(\"stagename :\" +stagename);",
+									"    console.log(\"admitid :\" +admitid);",
+									"    ",
+									"pm.globals.set('gadmitid', admitid);",
+									"",
+									"pm.globals.set('gprocessid', processid);",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}processstages?$select=*&$filter=_processid_value eq '{{gworkflowid}}'  and  stagename eq 'Admit'",
+							"host": [
+								"{{Eresource_URL}}processstages"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_processid_value eq '{{gworkflowid}}'  and  stagename eq 'Admit'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting Deposit Stage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var processid ;",
+									"var stagename ;",
+									"var depositid;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  processid  = jsonData.value[0]._processid_value ;",
+									"  ",
+									"  stagename=jsonData.value[0].stagename ;",
+									"  ",
+									"  depositid= jsonData.value[0].processstageid;  ",
+									"",
+									"",
+									"  ",
+									"  console.log(\"stagename :\" +stagename);",
+									"  console.log(\"depositid :\" +depositid);",
+									"",
+									" ",
+									"  ",
+									"pm.globals.set('gdepositid', depositid);",
+									"",
+									"pm.globals.set('gprocessid', processid);",
+									"",
+									"",
+									" ",
+									" ",
+									"  ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}processstages?$select=*&$filter=_processid_value eq '{{gworkflowid}}'  and  stagename eq 'Deposit'",
+							"host": [
+								"{{Eresource_URL}}processstages"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_processid_value eq '{{gworkflowid}}'  and  stagename eq 'Deposit'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Getting Matriculate Stage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var processid ;",
+									"var stagename ;",
+									"var matriculateid;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  processid  = jsonData.value[0]._processid_value ;",
+									"  ",
+									"  stagename=jsonData.value[0].stagename ;",
+									"  ",
+									"  matriculateid= jsonData.value[0].processstageid;  ",
+									"",
+									"",
+									"  ",
+									"  console.log(\"stagename :\" +stagename);",
+									"  console.log(\"matriculateid :\" +matriculateid);",
+									"",
+									" ",
+									"  ",
+									"pm.globals.set('gmatriculateid', matriculateid);",
+									"",
+									"pm.globals.set('gprocessid', processid);",
+									"",
+									"",
+									" ",
+									" ",
+									"  ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}processstages?$select=*&$filter=_processid_value eq '{{gworkflowid}}'  and  stagename eq 'Matriculate'",
+							"host": [
+								"{{Eresource_URL}}processstages"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_processid_value eq '{{gworkflowid}}'  and  stagename eq 'Matriculate'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Moving Next Stages PBF and Verifying Stage History",
+			"item": [
+				{
+					"name": "Update LifeCycle Status Not Eligible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var contactid ;",
+									"var accountid;",
+									"var lifecyclename;",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    lifecyclestatus  = jsonData.cmc_lifecyclestatus ; ",
+									"    statecode  = jsonData.statecode ; ",
+									" ",
+									"  ",
+									"  if(lifecyclestatus===175490000 && statecode===2)",
+									"  {",
+									"      console.log('Lifecycyle status Set to NotEligible');",
+									"      console.log(\"Lifecycyle state LOST\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"});",
+									"setTimeout(function(){}, 30000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_lifecyclestatus\": 175490000\r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reopen Lifecycle first",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"",
+									"var statecode;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle Update\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									" var lifecyclestatus  = jsonData.cmc_lifecyclestatus ;    ",
+									"  statecode  = jsonData.statecode ;",
+									"  ",
+									"   console.log(\"--- Reopining Lifecycle ---  \");",
+									"  console.log(\"Lifecycle status : \"+lifecyclestatus);",
+									" ",
+									"if(statecode=== 0 &&  pm.expect(lifecyclestatus).to.eql(undefined))",
+									"{",
+									"    console.log(\"Lifecycle state : OPEN\");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\"statecode\": 0,\n\"statuscode\": -1\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update LifeCycle Status Expresses Interest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var statecode;",
+									"",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ; ",
+									"  statecode  = jsonData.statecode ; ",
+									" ",
+									"  ",
+									"  if(lifecyclestatus===175490004 && statecode===0)",
+									"  {",
+									"      console.log('Lifecycyle status Set to Expresses Interest');",
+									"      console.log(\"Lifecycyle state OPEN\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490004\r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update LifeCycle Status Not Interested",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var statecode;",
+									"",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ; ",
+									"  statecode  = jsonData.statecode ; ",
+									"  ",
+									"  if(lifecyclestatus===175490001 && statecode===2)",
+									"  {",
+									"      console.log('Lifecycyle status Set to Not Interested');",
+									"      console.log(\"Lifecycyle state LOST\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490001\r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reopen Lifecycle Second",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"",
+									"var statecode;",
+									"",
+									"pm.test(\"Lifecycle Update\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									" var lifecyclestatus  = jsonData.cmc_lifecyclestatus ;    ",
+									"  statecode  = jsonData.statecode ;",
+									"  ",
+									"   console.log(\"--- Reopining Lifecycle ---  \");",
+									"  console.log(\"Lifecycle status : \"+lifecyclestatus);",
+									" ",
+									" ",
+									"  ",
+									"if(statecode=== 0 &&  pm.expect(lifecyclestatus).to.eql(undefined))",
+									"{",
+									"    console.log(\"Lifecycle state : OPEN\");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\"statecode\": 0,\n\"statuscode\": -1\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next Stage-App In Progress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"var bpfname ;",
+									"var activestageid;",
+									"var traversedpath;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle Update\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  activestageid  = jsonData._activestageid_value ;",
+									"  ",
+									"  traversedpath=jsonData.traversedpath ;",
+									"  ",
+									"var appinprogressid=pm.variables.get('gappinProgressstageid');",
+									"  ",
+									"if(activestageid=== appinprogressid)",
+									"{",
+									"    console.log(\"BPF moved into next stage App In Progress \");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"activestageid@odata.bind\": \"/processstages({{gappinProgressstageid}})\",\n\"traversedpath\": \"{{gprospectstageid}},{{gappinProgressstageid}}\"\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})",
+							"host": [
+								"{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verifying Stage History First",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid_value,lifecyclestagehistoryname,stageentrydateandtime;",
+									"var lifecyclestatus;",
+									"var lifecyclestagehistoryid,overallstatus;",
+									"",
+									"pm.test(\" Updating Stage History\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   applicationid = jsonData.cmc_applicationid; ",
+									"    lifecycleid_value = jsonData.value[0]._cmc_lifecycleid_value; ",
+									"    lifecyclestagehistoryid = jsonData.value[0].cmc_lifecyclestagehistoryid; ",
+									"    lifecyclestagehistoryname = jsonData.value[0].cmc_lifecyclestagehistoryname;",
+									"    stageentrydateandtime = jsonData.value[0].cmc_stageentrydate;",
+									"    lifecyclestatus = jsonData.value[0].cmc_lifecyclestatus;",
+									"    overallstatus=jsonData.value[0].cmc_overallstatus;",
+									"    ",
+									"    if(lifecyclestagehistoryid!==null && lifecycleid_value!==null )",
+									"    {",
+									"        console.log(\"Lifecycle stage history Created for the Lifecycle\");",
+									"        console.log(\"lifecycle stage history name: \"+lifecyclestagehistoryname);",
+									"        console.log(\"lifecycle status: \"+lifecyclestatus);",
+									"        console.log(\"Stage Entry dateandtime:\" +stageentrydateandtime);",
+									"        console.log(\"Overall status:\" +overallstatus);",
+									"    }",
+									"       else",
+									"    {",
+									"     throw new Error(); ",
+									"    }",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_lifecyclestagehistories?$select=*&$filter=_cmc_lifecycleid_value eq '{{glifecycleid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_lifecyclestagehistories"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_cmc_lifecycleid_value eq '{{glifecycleid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update LifeCycle Cancelled",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var statecode;",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ;",
+									"  statecode  = jsonData.statecode ; ",
+									"  ",
+									"  if(lifecyclestatus===175490002 && statecode===2)",
+									"  {",
+									"      console.log('Lifecycyle status Set to Cancelled');",
+									"      console.log(\"Lifecycyle state LOST\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490002\r\n\r\n \r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reopen Lifecycle Third",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid ;",
+									"",
+									"var statecode;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle Update\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									" var lifecyclestatus  = jsonData.cmc_lifecyclestatus ;    ",
+									"  statecode  = jsonData.statecode ;",
+									"  ",
+									"    console.log(\"--- Reopining Lifecycle ---  \");",
+									"  console.log(\"Lifecycle status : \"+lifecyclestatus);",
+									" ",
+									" ",
+									"  ",
+									"if(statecode=== 0 &&  pm.expect(lifecyclestatus).to.eql(undefined))",
+									"{",
+									"    console.log(\"Lifecycle state : OPEN\");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\"statecode\": 0,\n\"statuscode\": -1\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update LifeCycle Status Admit with conditions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var statecode;",
+									"",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ; ",
+									"  statecode  = jsonData.statecode ; ",
+									" ",
+									"  ",
+									"  if(lifecyclestatus===175490008 && statecode===0)",
+									"  {",
+									"      console.log('Lifecycyle status Set to Admit with Conditions');",
+									"      console.log(\"Lifecycyle state OPEN\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490008\r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next Stage-App Complete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var activestageid;",
+									"var appcompleteid;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle Update\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  activestageid  = jsonData._activestageid_value ;",
+									"  ",
+									"  traversedpath=jsonData.traversedpath ;",
+									"  ",
+									"var appcompleteid=pm.variables.get('gappcompleteid');",
+									"  ",
+									"if(activestageid=== appcompleteid)",
+									"{",
+									"    console.log(\"BPF moved into next stage App Complete\");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"  ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"activestageid@odata.bind\": \"/processstages({{gappcompleteid}})\",\n\"traversedpath\": \"{{gprospectstageid}},{{gappinProgressstageid}},{{gappcompleteid}}\"\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})",
+							"host": [
+								"{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verifying Stage History second",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid_value,lifecyclestagehistoryname,stageentrydateandtime;",
+									"var lifecyclestatus;",
+									"var lifecyclestagehistoryid,overallstatus;",
+									"",
+									"pm.test(\" Updating Stage History\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   applicationid = jsonData.cmc_applicationid; ",
+									"    lifecycleid_value = jsonData.value[1]._cmc_lifecycleid_value; ",
+									"    lifecyclestagehistoryid = jsonData.value[1].cmc_lifecyclestagehistoryid; ",
+									"    lifecyclestagehistoryname = jsonData.value[1].cmc_lifecyclestagehistoryname;",
+									"    stageentrydateandtime = jsonData.value[1].cmc_stageentrydate;",
+									"    lifecyclestatus = jsonData.value[1].cmc_lifecyclestatus;",
+									"    overallstatus=jsonData.value[1].cmc_overallstatus;",
+									"    ",
+									"    if(lifecyclestagehistoryid!==null && lifecycleid_value!==null )",
+									"    {",
+									"        console.log(\"Lifecycle stage history Created for the Lifecycle\");",
+									"        console.log(\"lifecycle stage history name: \"+lifecyclestagehistoryname);",
+									"        console.log(\"lifecycle sttus: \"+lifecyclestatus);",
+									"        console.log(\"Stage Entry dateandtime:\" +stageentrydateandtime);",
+									"        console.log(\"Overall status:\" +overallstatus);",
+									"    }",
+									"    else",
+									"    {",
+									"     throw new Error(); ",
+									"    }",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_lifecyclestagehistories?$select=*&$filter=_cmc_lifecycleid_value eq '{{glifecycleid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_lifecyclestagehistories"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_cmc_lifecycleid_value eq '{{glifecycleid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update LifeCycle Ready for Decision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var statecode;",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ;",
+									"  statecode  = jsonData.statecode ; ",
+									"  ",
+									"  if(lifecyclestatus===175490007 && statecode===0)",
+									"  {",
+									"      ",
+									"      console.log('Lifecycyle status Set to Ready for Decision');",
+									"      console.log(\"Lifecycyle state OPEN\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490007\r\n\r\n \r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next Stage-Admit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var activestageid;",
+									"var traversedpath;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle Update\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  activestageid  = jsonData._activestageid_value ;",
+									"  ",
+									"  traversedpath=jsonData.traversedpath ;",
+									"  ",
+									"var admitid=pm.variables.get('gadmitid');",
+									"  ",
+									"if(activestageid=== admitid)",
+									"{",
+									"    console.log(\"BPF moved into next stage Admit \");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"  ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"activestageid@odata.bind\": \"/processstages({{gadmitid}})\",\n\"traversedpath\": \"{{gprospectstageid}},{{gappinProgressstageid}},{{gappcompleteid}},{{gadmitid}}\"\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})",
+							"host": [
+								"{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verifying Stage History Third",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid_value,lifecyclestagehistoryname,stageentrydateandtime;",
+									"var lifecyclestatus;",
+									"var lifecyclestagehistoryid,overallstatus;",
+									"",
+									"pm.test(\" Updating Stage History\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   applicationid = jsonData.cmc_applicationid; ",
+									"    lifecycleid_value = jsonData.value[2]._cmc_lifecycleid_value; ",
+									"    lifecyclestagehistoryid = jsonData.value[2].cmc_lifecyclestagehistoryid; ",
+									"    lifecyclestagehistoryname = jsonData.value[2].cmc_lifecyclestagehistoryname;",
+									"    stageentrydateandtime = jsonData.value[2].cmc_stageentrydate;",
+									"    lifecyclestatus = jsonData.value[2].cmc_lifecyclestatus;",
+									"    overallstatus=jsonData.value[2].cmc_overallstatus;",
+									"    ",
+									"    if(lifecyclestagehistoryid!==null && lifecycleid_value!==null )",
+									"    {",
+									"       // console.log(\"Application record Created\");",
+									"        console.log(\"Lifecycle stage history Created for the Lifecycle\");",
+									"        console.log(\"lifecycle stage history name: \"+lifecyclestagehistoryname);",
+									"        console.log(\"lifecycle status: \"+lifecyclestatus);",
+									"        console.log(\"Stage Entry dateandtime:\" +stageentrydateandtime);",
+									"        console.log(\"Overall status:\" +overallstatus);",
+									"    }",
+									"    else",
+									"    {",
+									"     throw new Error(); ",
+									"    }",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_lifecyclestagehistories?$select=*&$filter=_cmc_lifecycleid_value eq '{{glifecycleid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_lifecyclestagehistories"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_cmc_lifecycleid_value eq '{{glifecycleid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update LifeCycle Status Admitted with conditions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var statecode;",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ;",
+									"  statecode  = jsonData.statecode ;",
+									"  ",
+									"  if(lifecyclestatus===175490008 && statecode===0)",
+									"  {",
+									"      console.log('Lifecycyle status set to Admitted with conditions');",
+									"      console.log(\"Lifecycyle state OPEN\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490008\r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next Stage-Deposit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var activestageid;",
+									"var traversedpath;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  activestageid  = jsonData._activestageid_value ;",
+									"  ",
+									"  traversedpath=jsonData.traversedpath ;",
+									"  ",
+									"var depositid=pm.variables.get('gdepositid');",
+									"  ",
+									"if(activestageid=== depositid)",
+									"{",
+									"    console.log(\"BPF moved into next stage Deposit \");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 15000);",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"activestageid@odata.bind\": \"/processstages({{gdepositid}})\",\n\"traversedpath\": \"{{gprospectstageid}},{{gappinProgressstageid}},{{gappcompleteid}},{{gadmitid}},{{gdepositid}}\"\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})",
+							"host": [
+								"{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verifying Stage History Fourth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid_value,lifecyclestagehistoryname,stageentrydateandtime;",
+									"var lifecyclestatus;",
+									"var lifecyclestagehistoryid,overallstatus;",
+									"",
+									"pm.test(\" Updating Stage History\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   applicationid = jsonData.cmc_applicationid; ",
+									"    lifecycleid_value = jsonData.value[3]._cmc_lifecycleid_value; ",
+									"    lifecyclestagehistoryid = jsonData.value[3].cmc_lifecyclestagehistoryid; ",
+									"    lifecyclestagehistoryname = jsonData.value[3].cmc_lifecyclestagehistoryname;",
+									"    stageentrydateandtime = jsonData.value[3].cmc_stageentrydate;",
+									"    lifecyclestatus = jsonData.value[3].cmc_lifecyclestatus;",
+									"    overallstatus=jsonData.value[3].cmc_overallstatus;",
+									"    ",
+									"    ",
+									"    if(lifecyclestagehistoryid!==null && lifecycleid_value!==null )",
+									"    {",
+									"       // console.log(\"Application record Created\");",
+									"        console.log(\"Lifecycle stage history Created for the Lifecycle\");",
+									"        console.log(\"lifecycle stage history name: \"+lifecyclestagehistoryname);",
+									"        console.log(\"lifecycle status: \"+lifecyclestatus);",
+									"        console.log(\"Stage Entry dateandtime:\" +stageentrydateandtime);",
+									"        console.log(\"Overall status:\" +overallstatus);",
+									"    }",
+									"    else",
+									"    {",
+									"     throw new Error(); ",
+									"    }",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_lifecyclestagehistories?$select=*&$filter=_cmc_lifecycleid_value eq '{{glifecycleid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_lifecyclestagehistories"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_cmc_lifecycleid_value eq '{{glifecycleid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update LifeCycle Status Deposit Pending",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var contactid ;",
+									"var accountid;",
+									"var lifecyclename;",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ;",
+									"  statecode  = jsonData.statecode ;",
+									"  ",
+									"  if(lifecyclestatus===175490009 && statecode===0)",
+									"  {",
+									"      console.log('Lifecycyle status set to Deposit Pending');",
+									"          console.log(\"Lifecycyle state OPEN\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490009\r\n}\r\n\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next Stage-Matriculate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var activestageid;",
+									"var traversedpath;",
+									"",
+									"",
+									"",
+									"pm.test(\"Lifecycle is Updated Successfully\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"  activestageid  = jsonData._activestageid_value ;",
+									"  ",
+									"  traversedpath=jsonData.traversedpath ;",
+									"  ",
+									"var matriculateid=pm.variables.get('gmatriculateid');",
+									"  ",
+									"if(activestageid=== matriculateid)",
+									"{",
+									"    console.log(\"BPF moved into next stage Matriculate \");",
+									"}",
+									"else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"  ",
+									"});",
+									"",
+									"",
+									"//setTimeout(function(){}, 15000);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"activestageid@odata.bind\": \"/processstages({{gmatriculateid}})\",\n\"traversedpath\": \"{{gprospectstageid}},{{gappinProgressstageid}},{{gappcompleteid}},{{gadmitid}},{{gdepositid}},{{gmatriculateid}}\"\n\t\n}\n\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})",
+							"host": [
+								"{{Eresource_URL}}cmc_bpf_9af1385d4fa54ca78e2e949770a0c9ccs({{gbpfID}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verifying Stage History Fifth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecycleid_value,lifecyclestagehistoryname,stageentrydateandtime;",
+									"var lifecyclestatus;",
+									"var lifecyclestagehistoryid,overallstatus;",
+									"",
+									"pm.test(\" Updating Stage History\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    lifecycleid_value = jsonData.value[4]._cmc_lifecycleid_value; ",
+									"    lifecyclestagehistoryid = jsonData.value[4].cmc_lifecyclestagehistoryid; ",
+									"    lifecyclestagehistoryname = jsonData.value[4].cmc_lifecyclestagehistoryname;",
+									"    stageentrydateandtime = jsonData.value[4].cmc_stageentrydate;",
+									"    lifecyclestatus=  jsonData.value[4].cmc_lifecyclestatus;",
+									"    overallstatus=jsonData.value[4].cmc_overallstatus;",
+									"    ",
+									"    if(lifecyclestagehistoryid!==null && lifecycleid_value!==null )",
+									"    {",
+									"       // console.log(\"Application record Created\");",
+									"        console.log(\"Lifecycle stage history Created for the Lifecycle\");",
+									"        console.log(\"lifecycle stage history name: \"+lifecyclestagehistoryname);",
+									"        console.log(\"lifecycle status: \"+lifecyclestatus);",
+									"        console.log(\"Overall status:\" +overallstatus);",
+									"        console.log(\"Stage Entry dateandtime:\" +stageentrydateandtime);",
+									"    }",
+									"    else",
+									"    {",
+									"     throw new Error(); ",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_lifecyclestagehistories?$select=*&$filter=_cmc_lifecycleid_value eq '{{glifecycleid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_lifecyclestagehistories"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "*"
+								},
+								{
+									"key": "$filter",
+									"value": "_cmc_lifecycleid_value eq '{{glifecycleid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Expecting LifeCycle Status WON",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var lifecyclestatus ;",
+									"var contactid ;",
+									"var accountid;",
+									"var lifecyclename;",
+									"",
+									"",
+									"pm.test(\"LifeCycle status changed\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  lifecyclestatus  = jsonData.cmc_lifecyclestatus ;",
+									"  statecode  = jsonData.statecode ;",
+									"  ",
+									"  if(lifecyclestatus===175490010 && statecode===1)",
+									"  {",
+									"      console.log('Lifecycyle status set to Matriculate');",
+									"          console.log(\"Lifecycyle state WON\");",
+									"  }",
+									"  else",
+									"{",
+									"     throw new Error(); ",
+									"}",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\"cmc_lifecyclestatus\": 175490010\r\n}\r\n\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}opportunities({{glifecycleid}})",
+							"host": [
+								"{{Eresource_URL}}opportunities({{glifecycleid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

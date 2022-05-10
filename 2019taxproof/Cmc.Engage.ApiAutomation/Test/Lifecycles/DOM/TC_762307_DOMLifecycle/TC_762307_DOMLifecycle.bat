@@ -1,0 +1,2 @@
+newman run "%TestLocation%\%projectname%\Test\Lifecycles\DOM\TC_762307_DOMLifecycle\TC_762307_DOMLifecycle.postman_collection.json" -d "%TestLocation%\%projectname%\TestData\DOMLifecycle.csv" -r htmlextra --reporters cli,junit,htmlextra --reporter-junit-export Results\TC_762307\junitReport.xml --reporter--reporter-htmlextra-export newmanReport/newmantests.html -e "%TestLocation%\Common\%ApiTestConfig%.postman_environment.json"
+

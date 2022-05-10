@@ -1,0 +1,4563 @@
+{
+	"info": {
+		"_postman_id": "423c41d4-a844-4ad9-81ee-9dd2c1dc149d",
+		"name": "TC_871709_RegistrationStatusUpdates",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona - Application Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('gownerid',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Prerequisit Ceating Record",
+			"item": [
+				{
+					"name": "Create App Req Definition(CARD)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appreqdefid;",
+									"",
+									"pm.test(\"Application Requirment Definition Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appreqdefid = jsonData.cmc_applicationrequirementdefinitionid;",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gappreqdefid',appreqdefid);",
+									" var cmc_applicationrequirementdefinitionname=data.cmc_applicationrequirementdefinitionname;",
+									" var cmc_applicationstatuswhenallrequirementsrecei=data.cmc_applicationstatuswhenallrequirementsrecei;",
+									" ",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinitionname\":\"{{$randomInt}}{{cmc_applicationrequirementdefinitionname}}\",\r\n\"cmc_applicationstatuswhenallrequirementsrecei\":\"{{cmc_applicationstatuswhenallrequirementsrecei}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail 1- General",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appreqdefdetid;",
+									"",
+									"pm.test(\"Application Requirment Definition Detail Created (General)\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appreqdefdetid = jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									" ",
+									"});",
+									"",
+									"var cmc_requirementtype1=data.cmc_requirementtype1;",
+									"var cmc_reqdetailname1=data.cmc_reqdetailname1;",
+									"var cmc_requirementdeadline1=data.cmc_requirementdeadline1;",
+									"var cmc_requirementrequired1=data.cmc_requirementrequired1;",
+									"var cmc_statusonsubmit1=data.cmc_statusonsubmit1;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype1}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname1}}-{{$randomInt}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline1}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired1}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit1}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Test Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testid;",
+									"var Testtypename;",
+									"pm.test(\"GetTESTID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    testid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"    console.log('TesttypeID:'+testid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('gtestid',testid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq '{{cmc_testscoretype2}}'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq '{{cmc_testscoretype2}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail 2- Testscore",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appreqdefdetid;",
+									"",
+									"pm.test(\"Application Requirment Definition Detail Created (TestScore)\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appreqdefdetid = jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									" ",
+									"});",
+									"",
+									"var cmc_requirementtype2=data.cmc_requirementtype2;",
+									"var cmc_reqdetailname2=data.cmc_reqdetailname2;",
+									"var cmc_requirementdeadline2=data.cmc_requirementdeadline2;",
+									"var cmc_requirementrequired2=data.cmc_requirementrequired2;",
+									"var cmc_testsourcetype2=data.cmc_testsourcetype2;",
+									"var cmc_statusonsubmit2=data.cmc_statusonsubmit2;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype2}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname2}}-{{$randomInt}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline2}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired2}}\",\r\n\"cmc_testscoretype@odata.bind\":\"/mshied_testtypes({{gtestid}})\",\r\n\"cmc_testsourcetype\":\"{{cmc_testsourcetype2}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit2}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid;",
+									"",
+									"pm.test(\"Academicperiodid Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"    var mshied_name=jsonData.mshied_name;",
+									"    console.log('Academic period name is: '+mshied_name);",
+									"    var mshied_code=jsonData.mshied_code;",
+									"    console.log('Code is: ' +mshied_code);",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									"pm.globals.set('gacademicperiodid',academicperiodid);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"GG{{$randomInt}}{{$randomInt}}AC1{{$randomInt}}\",\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\n    \"mshied_startdate\": \"{{timestamp}}\",\n    \"mshied_name\": \"Academicperiod904392{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_academicperiods",
+							"host": [
+								"{{Eresource_URL}}mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appcontactid;",
+									"pm.test(\"Application Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appcontactid = jsonData.contactid;",
+									"});",
+									"",
+									"pm.globals.set('gcontactid',appcontactid);",
+									"",
+									"var firstname=data.firstname;",
+									"var lastname=data.lastname;",
+									"var emailaddress1=data.emailaddress1;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"{{$randomInt}}con{{firstname}}\",\r\n\"lastname\": \"{{$randomInt}}{{lastname}}{{$randomInt}}\",\r\n\"middlename\":\"mid{{$randomInt}}\",\r\n\"emailaddress1\":\"Test{{$randomInt}}{{emailaddress1}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Program 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"    console.log('Program 1 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid1', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"Qc{{$randomInt}}{{$randomInt}}ode{{$randomInt}}\",\n    \"mshied_name\": \"program-904392{{$randomInt}}\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"     console.log('Program 2 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid2', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}{{$randomInt}}Ecode{{$randomInt}}\",\n    \"mshied_name\": \"Program904392{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"     console.log('Program 3 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid3', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}code{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"Program904392{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"    console.log('Program 4 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid4', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"{{$randomInt}}Wcode{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"Program904392{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"    console.log('Program 5 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid5', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"Wc{{$randomInt}}{{$randomInt}}ode5{{$randomInt}}\",\n    \"mshied_name\": \"Program9043925{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"    console.log('Program 6 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid6', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"Wc{{$randomInt}}{{$randomInt}}ode6{{$randomInt}}\",\n    \"mshied_name\": \"Program9043926{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 7",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"    console.log('Program 7 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid7', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"Wc{{$randomInt}}{{$randomInt}}ode7{{$randomInt}}\",\n    \"mshied_name\": \"Program9043927{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 8",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"    console.log('Program 8 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid8', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"Wc{{$randomInt}}{{$randomInt}}ode8{{$randomInt}}\",\n    \"mshied_name\": \"Program9043928{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Programs 9",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var programid;",
+									"pm.test(\"Get Program\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"",
+									"    programid = jsonData.mshied_programid; ",
+									"    console.log('Program 9 created: '+programid);",
+									"});",
+									"pm.globals.set('gprogramid9', programid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_code\": \"Wc{{$randomInt}}{{$randomInt}}ode9{{$randomInt}}\",\n    \"mshied_name\": \"Program9043929{{$randomInt}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_programs",
+							"host": [
+								"{{Eresource_URL}}mshied_programs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Period 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppPerID;",
+									"var AppPerName;",
+									"",
+									"pm.test(\"Application Period is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppPerID = jsonData.cmc_applicationperiodid;",
+									"    console.log('Application Period ID is: ' +AppPerID);",
+									"    ",
+									"    AppPerName = jsonData.cmc_applicationperiodname;",
+									"    console.log('Application Period 1 name is: ' +AppPerName);",
+									"});",
+									"",
+									"pm.globals.set('gAppPerName',AppPerName);",
+									" pm.globals.set('gAppPerID',AppPerID);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_applicationperiodname\": \"{{$randomInt}}{{$randomInt}}Applicationper-1-904392{{$randomInt}}{{$randomInt}}\",\n    \"cmc_AcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationperiods",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Period 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppPerID;",
+									"var AppPerName;",
+									"",
+									"pm.test(\"Application Period is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppPerID = jsonData.cmc_applicationperiodid;",
+									"    console.log('Application Period ID is: ' +AppPerID);",
+									"    ",
+									"    AppPerName = jsonData.cmc_applicationperiodname;",
+									"    console.log('Application Period 2 name is: ' +AppPerName);",
+									"});",
+									"pm.globals.set('gAppPerName2',AppPerName);",
+									" pm.globals.set('gAppPerID2',AppPerID);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_applicationperiodname\": \"{{$randomInt}}{{$randomInt}}Applicationper-2-904392 {{$randomInt}}{{$randomInt}}\",\n    \"cmc_AcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationperiods",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Period 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppPerID;",
+									"var AppPerName;",
+									"",
+									"pm.test(\"Application Period is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppPerID = jsonData.cmc_applicationperiodid;",
+									"    console.log('Application Period ID is: ' +AppPerID);",
+									"    ",
+									"    AppPerName = jsonData.cmc_applicationperiodname;",
+									"    console.log('Application Period 3 name is: ' +AppPerName);",
+									"});",
+									"",
+									"pm.globals.set('gAppPerName3',AppPerName);",
+									" pm.globals.set('gAppPerID3',AppPerID);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_applicationperiodname\": \"{{$randomInt}}{{$randomInt}} Applicationperiodd3-904392 {{$randomInt}}{{$randomInt}}\",\n    \"cmc_AcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationperiods",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Period 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var AppPerID;",
+									"var AppPerName;",
+									"",
+									"pm.test(\"Application Period is Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    AppPerID = jsonData.cmc_applicationperiodid;",
+									"    console.log('Application Period ID is: ' +AppPerID);",
+									"    ",
+									"    AppPerName = jsonData.cmc_applicationperiodname;",
+									"    console.log('Application Period 4 name is: ' +AppPerName);",
+									"});",
+									"pm.globals.set('gAppPerName4',AppPerName);",
+									" pm.globals.set('gAppPerID4',AppPerID);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_applicationperiodname\": \"{{$randomInt}}{{$randomInt}} Applicationperiod-4-904392 {{$randomInt}}{{$randomInt}}\",\n    \"cmc_AcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\n \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationperiods",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationperiods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create ApplicationType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationtypeid;",
+									"",
+									"pm.test(\"ApplicantType Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    applicationtypeid = jsonData.cmc_applicationtypeid;",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gapplicationtypeid',applicationtypeid);",
+									"",
+									"var cmc_applicationtypename=data.cmc_applicationtypename;",
+									"var cmc_applicationgroup=data.cmc_applicationgroup;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationtypename\":\"{{$randomInt}}AT{{cmc_applicationtypename}}App{{$randomInt}}\",\r\n\"cmc_applicationgroup\":\"{{cmc_applicationgroup}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationtypes",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationtypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Program1 to Application Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Program 1 record To Application Type\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var ProgName =jsonData.mshied_name;",
+									"    console.log('Program that is added to Application Type 1 is:' +ProgName);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n                \r\n                     \"@odata.id\":\"{{Eresource_URL}}mshied_programs({{gprogramid1}})\"\r\n}\r\n           \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})/cmc_cmc_applicationtype_mshied_program/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})"
+							],
+							"path": [
+								"cmc_cmc_applicationtype_mshied_program",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Program2 to Application Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Program 2 record To Application Type\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var ProgName =jsonData.mshied_name;",
+									"    console.log('Program that is added to Application Type 2 is:' +ProgName);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n                \r\n                     \"@odata.id\":\"{{Eresource_URL}}mshied_programs({{gprogramid2}})\"\r\n}\r\n           \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})/cmc_cmc_applicationtype_mshied_program/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})"
+							],
+							"path": [
+								"cmc_cmc_applicationtype_mshied_program",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Program3 to Application Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Program 3 record To Application Type\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var ProgName =jsonData.mshied_name;",
+									"    console.log('Program that is added to Application Type 3 is:' +ProgName);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n                \r\n                     \"@odata.id\":\"{{Eresource_URL}}mshied_programs({{gprogramid3}})\"\r\n}\r\n           \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})/cmc_cmc_applicationtype_mshied_program/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})"
+							],
+							"path": [
+								"cmc_cmc_applicationtype_mshied_program",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Program4 to Application Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Adding Program 3 record To Application Type\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202,200]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var ProgName =jsonData.mshied_name;",
+									"    console.log('Program that is added to Application 4 Type is:' +ProgName);",
+									"    ",
+									"  ",
+									"});",
+									"",
+									"//setTimeout(function(){}, 25000); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n                \r\n                     \"@odata.id\":\"{{Eresource_URL}}mshied_programs({{gprogramid4}})\"\r\n}\r\n           \r\n\r\n "
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})/cmc_cmc_applicationtype_mshied_program/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationtypes({{gapplicationtypeid}})"
+							],
+							"path": [
+								"cmc_cmc_applicationtype_mshied_program",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Requirement Definition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var requirementdefinition_id;",
+									"var applicationreqdefname;",
+									"",
+									"pm.test(\"Requirement Definition is created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    requirementdefinition_id = jsonData.cmc_applicationrequirementdefinitionid;",
+									"    applicationreqdefname = jsonData.cmc_applicationrequirementdefinitionname;",
+									"    console.log('RequirementDefinition:' +applicationreqdefname);",
+									"    ",
+									"});",
+									"pm.globals.set('grequirementdefname',applicationreqdefname);",
+									"pm.globals.set('grequirementdefinitionid',requirementdefinition_id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_applicationrequirementdefinitionname\":\"req def904392 {{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Requirement Definition Detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appreqdefinitiondetailname;",
+									"",
+									"pm.test(\"Application requirement Definition detailCreated\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"   appreqdefinitiondetailname = jsonData.cmc_applicationdefinitionversiondetailname;",
+									"    console.log(\"Application requirement Definition detail name is: \" + appreqdefinitiondetailname);",
+									"});",
+									"",
+									"pm.globals.set('gappreqdefinitiondetailname', appreqdefinitiondetailname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cmc_name\":\"Requirement{{$randomInt}}\",\r\n   \"cmc_requirementtype\":175490001,//upload\r\n   \"cmc_conditional\":false,\r\n   \"cmc_requirementrequired\":false,\r\n   \"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{grequirementdefinitionid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitionid;",
+									"",
+									"pm.test(\"Application Requirment Definition Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   applicationdefinitionid = jsonData.cmc_applicationdefinitionid;",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gappdefid',applicationdefinitionid);",
+									"",
+									"var cmc_applicationdefinitionname=data.cmc_applicationdefinitionname;",
+									"var cmc_statusoncreate=data.cmc_statusoncreate;",
+									"var cmc_statusonsave=data.cmc_statusonsave;",
+									"var cmc_statusonsubmit=data.cmc_statusonsubmit;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationdefinitionname\":\"{{$randomInt}}{{cmc_applicationdefinitionname}}\",\r\n\r\n\"cmc_requirementdefinitionid@odata.bind\":\"/cmc_applicationrequirementdefinitions({{grequirementdefinitionid}})\",\r\n\"cmc_statusoncreate\":\"{{cmc_statusoncreate}}\",\r\n\"cmc_statusonsave\":\"{{cmc_statusonsave}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition Version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitionverid;",
+									"",
+									"pm.test(\"Application Requirment Definition Version Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   applicationdefinitionverid = jsonData.cmc_applicationdefinitionversionid;",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gappdefverid',applicationdefinitionverid);",
+									"",
+									"var cmc_applicationdefinitionversionname=data.cmc_applicationdefinitionversionname;",
+									"var cmc_registrationcutoffmessage=data.cmc_registrationcutoffmessage;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationdefinitionversionname\":\"{{$randomInt}}Ap{{cmc_applicationdefinitionversionname}}Ver{{$randomInt}}\",\r\n\"cmc_applicationtype@odata.bind\":\"/cmc_applicationtypes({{gapplicationtypeid}})\",\r\n\"cmc_applicationdefinitionid@odata.bind\":\"/cmc_applicationdefinitions({{gappdefid}})\",\r\n\"cmc_registrationcutoffmessage\":\"{{cmc_registrationcutoffmessage}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitionversions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitionversions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Definition Version Detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitionverdetailid, applicationdefinitionverdetname;",
+									"",
+									"pm.test(\"Application Definition Version detail Created\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    applicationdefinitionverdetailid = jsonData.cmc_applicationdefinitionversiondetailid;",
+									"    applicationdefinitionverdetname = jsonData.cmc_applicationdefinitionversiondetailname;",
+									"    console.log(\"Application Definition version name is: \" + applicationdefinitionverdetname);",
+									"});",
+									"",
+									"pm.globals.set('gappdefverdetid1', applicationdefinitionverdetailid);",
+									"pm.globals.set('gapplicationdefinitionverdetname1', applicationdefinitionverdetname);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationdefinitionversion@odata.bind\": \"/cmc_applicationdefinitionversions({{gappdefverid}})\",\r\n\"cmc_applicationperiod@odata.bind\": \"/cmc_applicationperiods({{gAppPerID}})\",\r\n\"cmc_enddate\": \"{{timestampEndDate}}\",\r\n\"cmc_startdate\": \"{{timestamp}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationdefinitionversiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationdefinitionversiondetails"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update Reg Status and verify App Status",
+			"item": [
+				{
+					"name": "Create Application Registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var appregid;",
+									"pm.test(\"Application Registration Created\", function() ",
+									"{",
+									"   pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"   var jsonData =JSON.parse(responseBody);",
+									"   appregid = jsonData.cmc_applicationregistrationid;",
+									"   postman.setNextRequest(\"Create Application 1\");",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gappregid',appregid);",
+									"",
+									"var cmc_applicationstatus=data.cmc_applicationstatus;",
+									"var cmc_applicationsubmitted=data.cmc_applicationsubmitted;",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationdefinitionversionid@odata.bind\":\"/cmc_applicationdefinitionversions({{gappdefverid}})\",\r\n\"cmc_contactid@odata.bind\":\"/contacts({{gcontactid}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus}}\",\r\n\"cmc_applicationsubmitted\":\"{{cmc_applicationsubmitted}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid1',applicationid);",
+									"      postman.setNextRequest(\"Create Application 2\");",
+									"   });",
+									"",
+									"var cmc_applicationstatus1=data.cmc_applicationstatus1;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid1}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus1}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid2',applicationid);",
+									"      postman.setNextRequest(\"Create Application 3\");",
+									"   });",
+									"",
+									"var cmc_applicationstatus2=data.cmc_applicationstatus2;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid2}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus2}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 3\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid',applicationid);",
+									"      postman.setNextRequest(\"Create Application 4\");",
+									"   });",
+									"",
+									"var cmc_applicationstatus3=data.cmc_applicationstatus3;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid3}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus3}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 4\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid4',applicationid);",
+									"      postman.setNextRequest(\"Create Application 5\");",
+									"   });",
+									"",
+									"var cmc_applicationstatus4=data.cmc_applicationstatus4;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid4}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus4}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 5\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid5',applicationid);",
+									"      postman.setNextRequest(\"Create Application 6\");",
+									"   });",
+									"var cmc_applicationstatus5=data.cmc_applicationstatus5;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid5}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus5}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 6\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid6',applicationid);",
+									"      postman.setNextRequest(\"Create Application 7\");",
+									"   });",
+									"",
+									"var cmc_applicationstatus6=data.cmc_applicationstatus6;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid6}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus6}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 7",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 7\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid7',applicationid);",
+									"      postman.setNextRequest(\"Create Application 8\");",
+									"   });",
+									"var cmc_applicationstatus7=data.cmc_applicationstatus7;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid7}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus7}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 8",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 8\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid8',applicationid);",
+									"      postman.setNextRequest(\"Create Application 9\");",
+									"   });",
+									"",
+									"var cmc_applicationstatus8=data.cmc_applicationstatus8;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid8}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus8}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application 9",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationdefinitiondetailid;",
+									"pm.test(\"Create Application 9\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     applicationid = jsonData.cmc_applicationid;",
+									"     pm.globals.set('gappid9',applicationid);",
+									"      postman.setNextRequest(\"Update Application Registration Status InProgress\");",
+									"   });",
+									"",
+									"var cmc_applicationstatus9=data.cmc_applicationstatus9;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_contactid@odata.bind\": \"/contacts({{gcontactid}})\",\r\n\"cmc_applicationregistration@odata.bind\":\"/cmc_applicationregistrations({{gappregid}})\",\r\n\"cmc_programid@odata.bind\":\"/mshied_programs({{gprogramid9}})\",\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus9}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Registration Status InProgress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus2}}\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application 1 Status InProgress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify applicationstatus\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"       appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"       ",
+									"       ",
+									"    if(appid1status===175490001 && ",
+									"     appid2status===175490001 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490008 ",
+									" )",
+									"      {",
+									"          console.log(\"Application1 Staus Updated as In Progress\");",
+									"          ",
+									"      }",
+									"",
+									" postman.setNextRequest(\"Update Application Registration Status Started\");    ",
+									" ",
+									"    ",
+									" ",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Registration Status Started",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":\"{{cmc_applicationstatus1}}\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application Status no change1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"",
+									"pm.test(\"Verify applicationstatus\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"          appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"       ",
+									"       ",
+									"           if(appid1status===175490001 && ",
+									"     appid2status===175490001 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490008 )",
+									"     ",
+									"     {",
+									"           console.log(\"All Applications status is same\");",
+									"     }",
+									"    ",
+									"postman.setNextRequest(\"Update Application Status started\");",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Status started",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);",
+									"pm.test(\"Update Application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490000\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gappid1}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gappid1}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Registration Status Submitted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);",
+									"pm.test(\"Update Application Registration Status3\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490008\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify App1 App2 App9 Status submitted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);",
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify app1 app2 app9 status submitted\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"         appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"      if(appid1status===175490008 && ",
+									"     appid2status===175490008 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490008 ",
+									" )",
+									"      {",
+									"          console.log(\"App1 App2 App9 Staus Updated as Submitted\");",
+									"          ",
+									"      }",
+									"    ",
+									"  postman.setNextRequest(\"Update Application Reg Status started\");  ",
+									"",
+									"    ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Reg Status started",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);",
+									"pm.test(\"Update Application Registration Status1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490000\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application Status should same",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);",
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"         appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"      if(appid1status===175490008 && ",
+									"     appid2status===175490008 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490008 ",
+									" )",
+									"      {",
+									"          console.log(\"No change\");",
+									"          ",
+									"      }",
+									"    ",
+									"    ",
+									"    postman.setNextRequest(\"Update Application Reg Status InProgress1\");",
+									"    ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Reg Status InProgress1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    console.log(\"Updated Application status InProgress\");",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490001\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application Status should same Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"       appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"if(appid1status===175490008 &&",
+									"   appid2status===175490008 && ",
+									"   appid3status===175490005 &&",
+									"   appid4status===175490002 && ",
+									"   appid5status===175490006 && ",
+									"   appid6status===175490003 && ",
+									"   appid7status===175490007 && ",
+									"   appid8status===175490004 &&",
+									"    appid9status===175490008)",
+									"      {",
+									"          console.log(\"All Applications status is same\");",
+									"          ",
+									"      }",
+									"    else",
+									"    {",
+									"    ",
+									"  console.log(\"kjkjml.\");",
+									"    }",
+									"    ",
+									"    ",
+									"    postman.setNextRequest(\"Update Application1 Status InProgress\");",
+									"    ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application1 Status InProgress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);   ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490001\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gappid1}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gappid1}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application2 Status started",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490000\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gappid2}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gappid2}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Reg Status Complete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationstatus\":175490005\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify App1 App2 App9 Status Complete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify app1 app2 app9 status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"         appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"      if(appid1status===175490005 && ",
+									"     appid2status===175490005 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490005 ",
+									" )",
+									"      {",
+									"          console.log(\"App1 App2 and App9 Status changed as COMPLETE\");",
+									"          ",
+									"      }",
+									"    ",
+									"    ",
+									"    ",
+									"     postman.setNextRequest(\"Update Application Reg Status Submitted\");",
+									"    ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Reg Status Submitted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490008\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application status no change",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"         appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"      if(appid1status===175490005 && ",
+									"     appid2status===175490005 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490005 ",
+									" )",
+									"      {",
+									"          console.log(\"No change\");",
+									"          ",
+									"      }",
+									"    ",
+									"postman.setNextRequest(\"Update Application Reg Status Started\");",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Reg Status Started",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490000\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application status no change--",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"         appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"      if(appid1status===175490005 && ",
+									"     appid2status===175490005 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490005 ",
+									" )",
+									"      {",
+									"          console.log(\"No change\");",
+									"          ",
+									"      }",
+									"    ",
+									"  postman.setNextRequest(\"Update Application Reg Status InProgress\");  ",
+									"",
+									"    ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Reg Status InProgress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490000\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application status no change----",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"         appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"      if(appid1status===175490005 && ",
+									"     appid2status===175490005 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490005 ",
+									" )",
+									"      {",
+									"          console.log(\"No change\");",
+									"          ",
+									"      }",
+									"        postman.setNextRequest(\"Update Application1 Status started\");",
+									"",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application1 Status started",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application1 Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490000\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gappid1}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gappid1}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application2 Status Inprogress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);",
+									"pm.test(\"Update Application2 Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490001\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gappid2}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gappid2}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application9 Status Submitted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);",
+									"pm.test(\"Update Application9 Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490008\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications({{gappid9}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applications({{gappid9}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Reg Status Incomplete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Application Registration Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"cmc_applicationstatus\":175490006\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationregistrations({{gappregid}})"
+							]
+						},
+						"description": "Create Account with new Address"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Application status no change------",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var applicationstatusid;",
+									"",
+									"var appid1status,appid2status,appid3status,appid4status,appid5status,appid6status,appid7status,appid8status,appid9status;",
+									"",
+									"pm.test(\"Verify application Status\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"         appid1status=jsonData.value[0].cmc_applicationstatus;",
+									"       appid2status=jsonData.value[1].cmc_applicationstatus;",
+									"       appid3status=jsonData.value[2].cmc_applicationstatus;",
+									"       appid4status=jsonData.value[3].cmc_applicationstatus;",
+									"       appid5status=jsonData.value[4].cmc_applicationstatus;",
+									"       appid6status=jsonData.value[5].cmc_applicationstatus;",
+									"       appid7status=jsonData.value[6].cmc_applicationstatus;",
+									"       appid8status=jsonData.value[7].cmc_applicationstatus;",
+									"       appid9status=jsonData.value[8].cmc_applicationstatus;",
+									"    ",
+									"      if(appid1status===175490005 && ",
+									"     appid2status===175490005 && ",
+									"     appid3status===175490005 &&",
+									"     appid4status===175490002 &&",
+									"     appid5status===175490006 &&",
+									"     appid6status===175490003 &&",
+									"     appid7status===175490007 &&",
+									"     appid8status===175490004 &&",
+									"     appid9status===175490005 ",
+									" )",
+									"      {",
+									"          console.log(\"No change\");",
+									"          ",
+									"      }",
+									" ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applications?$filter=_cmc_applicationregistration_value eq '{{gappregid}}'",
+							"host": [
+								"{{Eresource_URL}}cmc_applications"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "_cmc_applicationregistration_value eq '{{gappregid}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

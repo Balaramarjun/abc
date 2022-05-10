@@ -1,0 +1,2672 @@
+{
+	"info": {
+		"_postman_id": "6d78ade3-5c54-45f9-8f41-9870996bd843",
+		"name": "TC_954913_AppReview",
+		"description": "Verify the coordinator and Reviewer should not have access to create contacts in Engage app.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Application Coordinator",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"console.log(pm.globals.get(\"gaccess_token\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid2',userid);",
+									"console.log('Systemuser:'+userid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get DCRM-Admin current Roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get current roles of user\", function() {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+									"    var jsonData = JSON.parse(responseBody);\r",
+									"    var rolesassosiated;\r",
+									"    totallen = jsonData.value.length;\r",
+									"    var extraRcord = [];\r",
+									"    for(var i=0;i<totallen;i++)\r",
+									"    {\r",
+									"        rolesassosiated = jsonData.value[i].roleid;\r",
+									"        rolename= jsonData.value[i].name;\r",
+									"        console.log('Rolesassosiated:'+rolesassosiated);\r",
+									"        console.log('Role name: '+rolename);\r",
+									"        extraRcord.add(rolesassosiated);//adding values to array\r",
+									"    }\r",
+									"    console.log('TotalRecords '+ extraRcord.length);//display total records added to array\r",
+									"    pm.globals.set('gadminrole',extraRcord);//setting array values in global\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid2}})"
+							],
+							"path": [
+								"systemuserroles_association"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dissociate Admin roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"DisAssociate Roles for user\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202]);  \r",
+									"});\r",
+									"\r",
+									"var gLoops=pm.globals.get(\"gadminrole\");\r",
+									"console.log(gLoops.length);\r",
+									"if (gLoops && gLoops.length>0)\r",
+									"{\r",
+									"postman.setNextRequest(\"Dissociate Admin roles\");\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var  extraid =pm.globals.get(\"gadminrole\");\r",
+									"var currentvalue=extraid.shift();\r",
+									"\r",
+									"console.log(currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gLoop\",currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gadminrole\",extraid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref?$id={{Eresource_URL}}roles({{gLoop}})",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid2}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							],
+							"query": [
+								{
+									"key": "$id",
+									"value": "{{Eresource_URL}}roles({{gLoop}})"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Roles from Engage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var xrmbase;\r",
+									"var flag;\r",
+									"pm.test(\"Get All Roles\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+									"    var jsonData =JSON.parse(responseBody);\r",
+									"    \r",
+									"    jsonData.value.forEach(function(role){        \r",
+									"        switch(role.name){                \r",
+									"            case \"CMC - Base\":\r",
+									"                console.log(\"CMC - Base: \"+role.roleid);\r",
+									"                pm.globals.set('gBase',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - xRM Base\":\r",
+									"                console.log(\"CMC - xRM Base: \"+role.roleid);\r",
+									"                xrmbase = role.roleid;\r",
+									"                pm.globals.set('gxRMBase',role.roleid);                \r",
+									"                break;\r",
+									"            case \"CMC - Shared\":\r",
+									"                console.log(\"CMC - Shared: \"+role.roleid);\r",
+									"                pm.globals.set('gShared',role.roleid);\r",
+									"                break;\r",
+									"            case \"System Administrator\":\r",
+									"                console.log(\"System Administrator: \"+role.roleid);\r",
+									"                pm.globals.set('gSystemAdministrator',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Azure Function Security Role\":\r",
+									"                console.log(\"CMC - Azure Function Security Role: \"+role.roleid);\r",
+									"                pm.globals.set('gAzureFunction',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Event Coordinator\":\r",
+									"                console.log(\"CMC - Event Coordinator: \"+role.roleid);\r",
+									"                pm.globals.set('gEventCoordinator',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Faculty/Instructor\":\r",
+									"                console.log(\"CMC - Faculty/Instructor: \"+role.roleid);\r",
+									"                pm.globals.set('gFacultyInstructor',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Add On - Trip Approver\":\r",
+									"                console.log(\"CMC - Add On - Trip Approver: \"+role.roleid);\r",
+									"                pm.globals.set('gAddOnTripApprover',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Admissions Representative\":\r",
+									"                console.log(\"CMC - Admissions Representative: \"+role.roleid);\r",
+									"                pm.globals.set('gAdmissionsRepresentative',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Add On - Application Reviewer\":\r",
+									"                console.log(\"CMC - Add On - Application Reviewer: \"+role.roleid);\r",
+									"                pm.globals.set('gAddOnApplicationReviewer',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Add On - Application Coordinator\":\r",
+									"                console.log(\"CMC - Add On - Application Coordinator: \"+role.roleid);\r",
+									"                pm.globals.set('gAddOnApplicationCoordinator',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Add On - Application Admin\":\r",
+									"                console.log(\"CMC - Add On - Application Admin: \"+role.roleid);\r",
+									"                pm.globals.set('gAddOnApplicationAdmin',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Add On - Admissions Decision\":\r",
+									"                console.log(\"CMC - Add On - Admissions Decision: \"+role.roleid);\r",
+									"                pm.globals.set('gAdmissionsDecision',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Student Advisor / Recruiter\":\r",
+									"                console.log(\"CMC - Student Advisor / Recruiter: \"+role.roleid);\r",
+									"                pm.globals.set('gStudentAdvisorRecruiter',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Add On - Delete Permissions\":\r",
+									"                console.log(\"CMC - Add On - Delete Permissions: \"+role.roleid);\r",
+									"                pm.globals.set('gAddOnDeletePermissions',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Business Unit Administrator\":\r",
+									"                console.log(\"CMC - Business Unit Administrator: \"+role.roleid);\r",
+									"                pm.globals.set('gBusinessUnitAdministrator',role.roleid);\r",
+									"                break;\r",
+									"            case \"CMC - Global Business Administrator\":\r",
+									"                console.log(\"CMC - Global Business Administrator: \"+role.roleid);\r",
+									"                pm.globals.set('gGlobalBusinessAdministrator',role.roleid);\r",
+									"                break;\r",
+									"            case \"mscrm-addons general security role\":\r",
+									"                console.log(\"mscrm-addons general security role: \"+role.roleid);\r",
+									"                pm.globals.set('gmscrmsecurity',role.roleid);\r",
+									"                break;\r",
+									"            case \"MSCRM-ADDONS.com AutoMerge\":\r",
+									"                console.log(\"MSCRM-ADDONS.com AutoMerge: \"+role.roleid);\r",
+									"                pm.globals.set('gmscrmautomerge',role.roleid);\r",
+									"                break;\r",
+									"            case \"DocumentsCorePack Security Role\":\r",
+									"                console.log(\"DocumentsCorePack Security Role: \"+role.roleid);\r",
+									"                pm.globals.set('gdocumentscorepack',role.roleid);\r",
+									"                break;\r",
+									"            case \"The Portal Connector Admin\":\r",
+									"                console.log(\"The Portal Connector Admin: \"+role.roleid);\r",
+									"                pm.globals.set('gportalconnectoradmin',role.roleid);\r",
+									"                break;\r",
+									"        }\r",
+									"    });    \r",
+									"    if(xrmbase){\r",
+									"        flag = true;\r",
+									"        postman.setNextRequest(\"Associate role_xRM Base to Admin\");            \r",
+									"    }\r",
+									"    else{\r",
+									"        flag = false;\r",
+									"        postman.setNextRequest(\"Associate role_Base to Admin\");\r",
+									"    }    \r",
+									"    pm.globals.set('gflag',flag);   \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}roles?$select=roleid,name&$filter=contains(name, 'CMC') or contains(name, 'System Administrator') or contains(name, 'mscrm') or contains(name, 'portal') or contains(name, 'documents')",
+							"host": [
+								"{{Eresource_URL}}roles"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "roleid,name"
+								},
+								{
+									"key": "$filter",
+									"value": "contains(name, 'CMC') or contains(name, 'System Administrator') or contains(name, 'mscrm') or contains(name, 'portal') or contains(name, 'documents')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_xRM Base to Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide xRM Base role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\":\"{{Eresource_URL}}roles({{gxRMBase}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid2}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_Base to Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide Base role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\":\"{{Eresource_URL}}roles({{gBase}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid2}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_Shared",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide shared role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gShared}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid2}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_CMC - Add On - Application Coordinator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide CMC - Application Coordinator role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gAddOnApplicationCoordinator}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid2}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact Not Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([403]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"{{firstname}}{{$randomInt}}\",\r\n\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\"middlename\":\"mid{{$randomInt}}\",\r\n\"emailaddress1\":\"Test{{$randomInt}}{{emailaddress1}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Application Reviewer",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Reviewer/Approver",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid3',userid);",
+									"console.log('Systemuser:'+userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'reviewer@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'reviewer@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get DCRM Reviewer/Approver current Roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get current roles of user\", function() {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+									"    var jsonData = JSON.parse(responseBody);\r",
+									"    var rolesassosiated;\r",
+									"    totallen = jsonData.value.length;\r",
+									"    var extraRcord = [];\r",
+									"    for(var i=0;i<totallen;i++)\r",
+									"    {\r",
+									"        rolesassosiated = jsonData.value[i].roleid;\r",
+									"        rolename= jsonData.value[i].name;\r",
+									"        console.log('Rolesassosiated:'+rolesassosiated);\r",
+									"        console.log('Role name: '+rolename);        \r",
+									"        extraRcord.add(rolesassosiated);//adding values to array\r",
+									"    }\r",
+									"    console.log('TotalRecords '+ extraRcord.length);//display total records added to array\r",
+									"    pm.globals.set('greviewerrole',extraRcord);//setting array values in global\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid3}})"
+							],
+							"path": [
+								"systemuserroles_association"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dissociate Reviewer roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"DisAssociate Roles for user\", function() \r",
+									"{\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,201,202]);  \r",
+									"});\r",
+									"\r",
+									"var gLoops=pm.globals.get(\"greviewerrole\");\r",
+									"console.log(gLoops.length);\r",
+									"if (gLoops && gLoops.length>0)\r",
+									"{\r",
+									"postman.setNextRequest(\"Dissociate Reviewer roles\");\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var  extraid =pm.globals.get(\"greviewerrole\");\r",
+									"var currentvalue=extraid.shift();\r",
+									"\r",
+									"console.log(currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gLoop\",currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"greviewerrole\",extraid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association/$ref?$id={{Eresource_URL}}roles({{gLoop}})",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid3}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							],
+							"query": [
+								{
+									"key": "$id",
+									"value": "{{Eresource_URL}}roles({{gLoop}})"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get DCRM Reviewer/Approver current Roles Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get current roles of user\", function() {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+									"    var jsonData = JSON.parse(responseBody);\r",
+									"    var rolesassosiated;\r",
+									"    totallen = jsonData.value.length;\r",
+									"    var extraRcord = [];\r",
+									"    for(var i=0;i<totallen;i++)\r",
+									"    {\r",
+									"        rolesassosiated = jsonData.value[i].roleid;\r",
+									"        rolename= jsonData.value[i].name;\r",
+									"        console.log('Rolesassosiated:'+rolesassosiated);\r",
+									"        console.log('Role name: '+rolename);        \r",
+									"        extraRcord.add(rolesassosiated);//adding values to array\r",
+									"    }\r",
+									"    console.log('TotalRecords '+ extraRcord.length);//display total records added to array\r",
+									"    pm.globals.set('greviewerrole',extraRcord);//setting array values in global\r",
+									"});\r",
+									"var flag = pm.globals.get(\"gflag\");\r",
+									"if(flag){\r",
+									"    postman.setNextRequest(\"Associate role_xRM Base to Reviewer\");\r",
+									"}\r",
+									"else{\r",
+									"    postman.setNextRequest(\"Associate role_Base to Reviewer\");\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid3}})"
+							],
+							"path": [
+								"systemuserroles_association"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_xRM Base to Reviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide xRM Base role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\":\"{{Eresource_URL}}roles({{gxRMBase}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid3}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_Base to Reviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide Base role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);",
+									"    ",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gBase}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid3}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_Shared",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide shared role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gShared}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid3}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associate role_CMC - Add On - Application Reviewer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid;",
+									"pm.test(\"Provide CMC - Add On - Application Reviewer role\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);    ",
+									"    var name=jsonData.name;",
+									"    console.log(\"Role name that is provided is: \" +name);    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\":\"{{Eresource_URL}}roles({{gAddOnApplicationReviewer}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association/$ref",
+							"host": [
+								"{{Eresource_URL}}systemusers({{guserid3}})"
+							],
+							"path": [
+								"systemuserroles_association",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetToken_DCRM Reviewer/Approver",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{EreviewerOrapprover_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{EreviewerOrapprover_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact Not Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([403]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"     ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstname\": \"{{firstname}}{{$randomInt}}\",\r\n\"lastname\": \"{{lastname}}{{$randomInt}}\",\r\n\"middlename\":\"mid{{$randomInt}}\",\r\n\"emailaddress1\":\"Test{{$randomInt}}{{emailaddress1}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Re-associating roles",
+			"item": [
+				{
+					"name": "Role to DCRM-Admin",
+					"item": [
+						{
+							"name": "GetToken_DCRMAPI-System Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"postman.setGlobalVariable('gaccess_token', data.access_token);",
+											"",
+											"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+											"console.log(pm.globals.get(\"gaccess_token\"));",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{Esystemadmin_id}}",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "{{Esystemadmin_secret}}",
+											"type": "text"
+										},
+										{
+											"key": "resource",
+											"value": "{{Eresource}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+									"protocol": "https",
+									"host": [
+										"login",
+										"microsoftonline",
+										"com"
+									],
+									"path": [
+										"{{Eredirectid}}",
+										"oauth2",
+										"token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUser - DCRM Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid,fullname;",
+											"pm.test(\"GetUserID\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    userid = jsonData.value[0].systemuserid;",
+											"    fullname=jsonData.value[0].fullname;",
+											"",
+											"    console.log(\"Application User name: \" +fullname);",
+											"    ",
+											"});",
+											"pm.globals.set('guserid2',userid);",
+											"console.log('Systemuser:'+userid);",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+									"host": [
+										"{{Eresource_URL}}systemusers"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "internalemailaddress eq 'admin@api.com'"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_CMC - Add On - Application Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide CMC - Add On - Application Admin role\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gAddOnApplicationAdmin}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_CMC - Add On - Delete Permissions",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide CMC - Add On - Delete Permissions role\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gAddOnDeletePermissions}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_CMC - Business Unit Administrator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide CMC - Business Unit Administrator role\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gBusinessUnitAdministrator}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_CMC - Event Coordinator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide CMC - Event Coordinator role\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gEventCoordinator}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_CMC - Add On - Admissions Decision",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide CMC - Admissions Decision role\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gAdmissionsDecision}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_The Portal Connector Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide The Portal Connector Admin role\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gportalconnectoradmin}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_mscrm-addons general security role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide mscrm-addons general security role \", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gmscrmsecurity}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_MSCRM-ADDONS.com AutoMerge",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide MSCRM-ADDONS.com AutoMerge role \", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gmscrmautomerge}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_DocumentsCorePack Security Role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide DocumentsCorePack Security Role \", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gdocumentscorepack}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get DCRM-Admin current Roles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											"pm.test(\"Get current roles of user\", function() {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+											"    var jsonData = JSON.parse(responseBody);\r",
+											"\r",
+											"      var rolesassosiated;\r",
+											"      totallen = jsonData.value.length;\r",
+											"      var extraRcord = [];\r",
+											"      for(var i=0;i<totallen;i++)\r",
+											"      {\r",
+											"          \r",
+											"      rolesassosiated = jsonData.value[i].roleid;\r",
+											"      rolename= jsonData.value[i].name;\r",
+											"      console.log('Rolesassosiated:'+rolesassosiated);\r",
+											"      console.log('Role name: '+rolename);\r",
+											"      \r",
+											"        extraRcord.add(rolesassosiated);//adding values to array\r",
+											"        \r",
+											"       }\r",
+											"        console.log('TotalRecords '+extraRcord.length);//display total records added to array\r",
+											"        \r",
+											"  //pm.globals.set('gLoops',extraRcord);//setting array values in global\r",
+											" \r",
+											"    \r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid2}})/systemuserroles_association",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid2}})"
+									],
+									"path": [
+										"systemuserroles_association"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Role to DCRM Reviewer/Approver",
+					"item": [
+						{
+							"name": "Get DCRM Reviewer/Approver current Roles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Get current roles of user\", function() {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+											"    var jsonData = JSON.parse(responseBody);\r",
+											"    var rolesassosiated;\r",
+											"    totallen = jsonData.value.length;\r",
+											"    var extraRcord = [];\r",
+											"    for(var i=0;i<totallen;i++)\r",
+											"    {\r",
+											"        rolesassosiated = jsonData.value[i].roleid;\r",
+											"        rolename= jsonData.value[i].name;\r",
+											"        console.log('Rolesassosiated:'+rolesassosiated);\r",
+											"        console.log('Role name: '+rolename);        \r",
+											"        extraRcord.add(rolesassosiated);//adding values to array\r",
+											"    }\r",
+											"    console.log('TotalRecords '+ extraRcord.length);//display total records added to array\r",
+											"    pm.globals.set('greviewerrole',extraRcord);//setting array values in global\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid3}})"
+									],
+									"path": [
+										"systemuserroles_association"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Associate role_CMC - Add On - Trip Approver",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid;",
+											"pm.test(\"Provide CMC - Add On - Trip Approver role\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    ",
+											"    var name=jsonData.name;",
+											"    console.log(\"Role name that is provided is: \" +name);",
+											"    ",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n\"@odata.id\":\"{{Eresource_URL}}roles({{gAddOnTripApprover}})\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association/$ref",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid3}})"
+									],
+									"path": [
+										"systemuserroles_association",
+										"$ref"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get DCRM Reviewer/Approver current Roles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											"pm.test(\"Get current roles of user\", function() {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);\r",
+											"    var jsonData = JSON.parse(responseBody);\r",
+											"\r",
+											"      var rolesassosiated;\r",
+											"      totallen = jsonData.value.length;\r",
+											"      var extraRcord = [];\r",
+											"      for(var i=0;i<totallen;i++)\r",
+											"      {\r",
+											"          \r",
+											"      rolesassosiated = jsonData.value[i].roleid;\r",
+											"      rolename= jsonData.value[i].name;\r",
+											"      console.log('Rolesassosiated:'+rolesassosiated);\r",
+											"      console.log('Role name: '+rolename);\r",
+											"      \r",
+											"        extraRcord.add(rolesassosiated);//adding values to array\r",
+											"        \r",
+											"       }\r",
+											"        console.log('TotalRecords '+extraRcord.length);//display total records added to array\r",
+											"        \r",
+											"  //pm.globals.set('gLoops',extraRcord);//setting array values in global\r",
+											" \r",
+											"    \r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers({{guserid3}})/systemuserroles_association",
+									"host": [
+										"{{Eresource_URL}}systemusers({{guserid3}})"
+									],
+									"path": [
+										"systemuserroles_association"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

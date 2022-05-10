@@ -1,0 +1,1361 @@
+{
+	"info": {
+		"_postman_id": "59e381ed-d7fc-433a-95ad-c57fb4b1ebb2",
+		"name": "TC_832312_LifecycleAutoNameUpdate",
+		"description": "Validate lifecycle name updation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken_DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Eadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Eadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser - DCRM Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid,fullname;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    fullname=jsonData.value[0].fullname;",
+							"",
+							"    console.log(\"Application User name: \" +fullname);",
+							"    ",
+							"});",
+							"pm.globals.set('guserid2',userid);",
+							"console.log('Systemuser:'+userid);",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq 'admin@api.com'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var account_id; ",
+							"var Accname;",
+							"pm.test(\"Account Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    account_id = jsonData.accountid;",
+							"    Accname = jsonData.name;",
+							"    console.log(Accname);",
+							"});",
+							"",
+							"pm.globals.set('gaccountId',account_id);",
+							"pm.globals.set('gaccountname',Accname);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\":\"{{name}}{{$randomInt}}\",\r\n\t\"mshied_accounttype\":\"{{mshied_accounttype}}\",\r\n\t\"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n\t\"preferredcontactmethodcode\":1\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"accounts"
+					]
+				},
+				"description": "Create Account with new Address"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Academic period",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var academicperiodid;",
+							"var apname;",
+							"var code;",
+							"",
+							"pm.test(\"Academicperiodid Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    academicperiodid = jsonData.mshied_academicperiodid;",
+							"    apname = jsonData.mshied_name;",
+							"    code = jsonData.mshied_code;",
+							" ",
+							"});",
+							"",
+							"pm.globals.set('gacademicperiodid',academicperiodid);",
+							"pm.globals.set('gacademicperiodname',apname);",
+							"pm.globals.set('gacademicperiodcode',code);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+							"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"mshied_name\":\"{{cmc_academicperiodname}}{{$randomInt}}\",\r\n\t\"mshied_startdate\":\"{{timestamp}}\",\r\n\t\"mshied_enddate\":\"{{timestampEndDate}}\",\r\n\t\"mshied_code\":\"{{$randomInt}}{{cmc_code}}LH{{$randomInt}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"mshied_academicperiods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Program",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var programid;",
+							"var programname;",
+							"pm.test(\"Get Program\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    programid = jsonData.mshied_programid;",
+							"    programname = jsonData.mshied_name;",
+							"    console.log(\"Program ID: \" + programid);",
+							"    console.log(\"Program Name: \" + programname);",
+							"});",
+							"pm.globals.set('gProgram1', programid);",
+							"pm.globals.set('gProgramName1', programname);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_code\": \"{{$randomInt}}P{{$randomInt}}rg1{{$randomInt}}\",\n    \"mshied_name\": \"code{{$randomInt}}\"\n}\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_programs",
+					"host": [
+						"{{Eresource_URL}}mshied_programs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Source Category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var sourcecategoryid;",
+							"pm.test(\"Create Sourcecategory\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    sourcecategoryid = jsonData.cmc_sourcecategoryid;",
+							"    console.log(\"sourcecategoryid : \" + sourcecategoryid);",
+							"});",
+							"pm.globals.set('gsourcecategoryid', sourcecategoryid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cmc_sourcecategoryname\": \"{{$randomInt}}-TestSoucreCategor-y{{$randomInt}}\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_sourcecategories",
+					"host": [
+						"{{Eresource_URL}}cmc_sourcecategories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Source Method",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var sourcemethodid;",
+							"pm.test(\"Create sourcemethod\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    sourcemethodid = jsonData.cmc_sourcemethodid;",
+							"    console.log(\"sourcemethodid : \" + sourcemethodid);",
+							"});",
+							"pm.globals.set('gsourcemethodid', sourcemethodid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"cmc_sourcemethodname\": \"{{$randomInt}}-TestSoucreMethod{{$randomInt}}\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_sourcemethods",
+					"host": [
+						"{{Eresource_URL}}cmc_sourcemethods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Role/Title",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var titleid;",
+							"pm.test(\"Create title\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    titleid = jsonData.cmc_titleid;",
+							"    console.log(\"titleid : \" + titleid);",
+							"});",
+							"pm.globals.set('gtitleid', titleid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"cmc_titlename\": \"{{$randomInt}}-Test-Title-{{$randomInt}}\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}cmc_titles",
+					"host": [
+						"{{Eresource_URL}}cmc_titles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Program Level",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var programlevelid;",
+							"pm.test(\"Create Sourcecategory\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    programlevelid = jsonData.mshied_programlevelid;",
+							"    console.log(\"programlevelid : \" + programlevelid);",
+							"});",
+							"pm.globals.set('gprogramlevelid', programlevelid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-{{$randomInt}} {{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-PrgLevel-{{$randomInt}}\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_programlevels",
+					"host": [
+						"{{Eresource_URL}}mshied_programlevels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Education Level",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var educationlevelid;",
+							"pm.test(\"Create educationlevelid\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    educationlevelid = jsonData.mshied_educationlevelid;",
+							"    console.log(\"educationlevelid : \" + educationlevelid);",
+							"});",
+							"pm.globals.set('geducationlevelid', educationlevelid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-Co{{$randomInt}} {{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-EduLevel-{{$randomInt}}\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_educationlevels",
+					"host": [
+						"{{Eresource_URL}}mshied_educationlevels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Student Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var studentstatusid;",
+							"pm.test(\"Create Sourcecategory\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    studentstatusid = jsonData.mshied_studentstatusid;",
+							"    console.log(\"studentstatusid : \" + studentstatusid);",
+							"});",
+							"pm.globals.set('gstudentstatusid', studentstatusid);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_code\": \"{{$randomInt}}-Co{{$randomInt}}{{$randomInt}}\",\n    \"mshied_name\": \"{{$randomInt}}-Test-StudentStatus-{{$randomInt}}\"\n}\n"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_studentstatuses",
+					"host": [
+						"{{Eresource_URL}}mshied_studentstatuses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contact_id;",
+							"var Name;",
+							"var fullname;",
+							"pm.test(\"Contact Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contact_id = jsonData.contactid;",
+							"    Name = jsonData.firstname;",
+							"    fullname = jsonData.fullname;",
+							"});",
+							"",
+							"pm.globals.set('gcontactid',contact_id);",
+							"pm.globals.set('gcontactfullname',fullname);",
+							"",
+							"console.log(fullname);",
+							"console.log('Contactid:'+contact_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"firstname\": \"{{firstname}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{lastname}}\",\r\n\t\"middlename\":\"mid{{$randomInt}}\",\r\n\t\"mshied_maidenname\":\"maid{{$randomInt}}\",\r\n\t\"mshied_legacy\":\"true\",\r\n\t\"emailaddress1\":\"{{$randomInt}}{{emailaddress1}}\",\r\n\t\"gendercode\":\"{{gendercode}}\",\r\n\t\"anniversary\":\"{{anniversary}}\",\r\n\t\"lastonholdtime\":\"{{currentdate}}\",\r\n\t\"numberofchildren\":\"{{numberofchildren}}\",\r\n\t\"nickname\":\"Nickname{{$randomInt}}\",\r\n\t\"familystatuscode\":2,\r\n\t\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\t\"birthdate\":\"{{cmc_dateofbirth}}\",\r\n\t\"cmc_recentsat\":\"{{cmc_recentsat}}\",\r\n\t\"cmc_recentact\":\"{{cmc_recentact}}\",\r\n\t\"mshied_contacttype\":\"{{mshied_contacttype}}\",\r\n\t\"mshied_race\":{{mshied_race}},\r\n\t\"mshied_ethnicgroup\":{{mshied_ethnicgroup}},\r\n\t\"mshied_miltarystatus\":\"{{mshied_miltarystatus}}\",\r\n\t\"mshied_hipaaindicator\":false,\r\n\t\"creditonhold\":\"true\",\r\n\t\"leadsourcecode\":1,\r\n\t\"territorycode\":1,\r\n\t\"spousesname\":\"wife{{$randomInt}}\",\r\n\t\"shippingmethodcode\":\"{{shippingmethodcode}}\",\r\n\t\"preferredcontactmethodcode\": \"{{preferredcontactmethodcode}}\",\r\n\t\"mshied_nationality\":\"{{mshied_nationality}}\",\r\n\t\"cmc_sourcecategoryid@odata.bind\":\"/contacts({{gsourcecategoryid}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\":\"/contacts({{gsourcemethodid}})\",\r\n\t\"cmc_titleid@odata.bind\": \"/contacts({{gtitleid}})\",\r\n\t\"cmc_srcpogramlevelid@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\t\"cmc_srcprogramid@odata.bind\": \"/contacts({{gProgram1}})\",\r\n\t\"cmc_educationlevelid@odata.bind\": \"/contacts({{geducationlevelid}})\",\r\n\t\"mshied_CurrentProgramLevelId@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\t\"mshied_StudentStatusId@odata.bind\": \"/contacts({{gstudentstatusid}})\",\r\n\t\"donotemail\":true,\r\n\t\"followemail\":true,\r\n\t\"cmc_donotsmstext\":true,\r\n\t\"donotbulkemail\":true,\r\n\t\"donotpostalmail\":true,\r\n\t\"donotphone\":true,\r\n\t\"donotfax\":true,\r\n\t\"cmc_autoupdatepicture\":true,\r\n\t\"fax\":\"78865{{$randomInt}}30\",\r\n\t\"mobilephone\":\"78965{{$randomInt}}30\",\r\n\t\"telephone1\":\"8569{{$randomInt}}230\",\r\n\t\"cmc_phone2extension\":\"8083{{$randomInt}}569\",\r\n\t\"websiteurl\":\"www.dcrm{{$randomInt}}.com\"\r\n }"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LifeCycle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var lifecycleid ;",
+							"var contactid ;",
+							"var accountid;",
+							"var lifecyclename;",
+							"var createdon;",
+							"var shortname;",
+							"",
+							"pm.test(\"LifeCycle Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    lifecycleid  = jsonData.opportunityid ;",
+							"    contactid = jsonData._cmc_campusid_value;",
+							"    accountid = jsonData._cmc_contactid_value;",
+							"    lifecyclename = jsonData.name;",
+							"    createdon = jsonData.createdon;",
+							"    shortname = jsonData.cmc_shortname;",
+							"    ",
+							"    console.log('Lifecycle name: '+lifecyclename);",
+							"    console.log('Lifecycle short name: '+shortname);",
+							"    console.log('LifeCyleID:' +lifecycleid);",
+							"    console.log('ContactID:' +contactid);",
+							"    console.log('AccountID:' +accountid);",
+							"    ",
+							"    var expectedName = pm.globals.get('gcontactfullname') + \" - \" +pm.globals.get('gaccountname') + \" - \" +pm.globals.get('gacademicperiodname')+ \" - \" +pm.globals.get('gProgramName1') + \" - \";",
+							"    ",
+							"    console.log('Lifecycle expected name:' +expectedName);",
+							"    ",
+							"    pm.test(\"Validate Lifecycle Name\", function () {",
+							"        pm.expect(lifecyclename).to.include(expectedName);",
+							"    });",
+							"    ",
+							"    var expectedshortname = pm.globals.get('gProgramName1')+ \"-\" +pm.globals.get('gacademicperiodcode')+\" \";",
+							"    console.log('Lifecycle expected short name: ' +expectedshortname);",
+							"    ",
+							"    pm.test(\"Validate Lifecycle Short Name\", function()",
+							"    {",
+							"        pm.expect(shortname).to.equal(expectedshortname);",
+							"    });",
+							"  ",
+							"});",
+							"",
+							"pm.globals.set('glifecycleid',lifecycleid);",
+							"pm.globals.set('glifecyclename',lifecyclename);",
+							"",
+							"var cmc_lifecycletypeid=data.cmc_lifecycletype;",
+							"var cmc_sourcemethod =data.cmc_sourcemethodid;",
+							"var cmc_sourcecategory =data.cmc_sourcecategoryid;",
+							"var cmc_programid1 =data.cmc_programid;",
+							"var cmc_programlevelid1 =data.cmc_programlevelid;",
+							"var cmc_sourceprogram =data.cmc_sourceprogramid;",
+							"var cmc_sourceexpectedstart =data.cmc_sourceexpectedstartid;",
+							"var cmc_expectedstartdate =data.cmc_expectedstartdateid;",
+							"var cmc_sourceprogramlevelid =data.cmc_sourceprogramlevelid;"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"cmc_lifecycletype\":\"{{cmc_lifecycletype}}\",\r\n\t\"cmc_campusid@odata.bind\":\"/accounts({{gaccountId}})\",\r\n\t\"cmc_contactid@odata.bind\":\"/contacts({{gcontactid}})\",\r\n\t\"cmc_prgmid@odata.bind\":\"/opportunities({{gProgram1}})\",\r\n\t\"cmc_prgmlevelid@odata.bind\":\"/opportunities({{gprogramlevelid}})\",\r\n\t\"cmc_expectedstartid@odata.bind\":\"/opportunities({{gacademicperiodid}})\",\r\n\t\"cmc_sourcecategoryid@odata.bind\":\"/opportunities({{gsourcecategoryid}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\":\"/opportunities({{gsourcemethodid}})\",\r\n\t\"cmc_srcprgmlevelid@odata.bind\":\"/opportunities({{gprogramlevelid}})\",\r\n\t\"cmc_sourcereferringcontactid@odata.bind\":\"/contacts({{gcontactid}})\",\r\n\t\"cmc_sourceprgmid@odata.bind\":\"/opportunities({{gProgram1}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/opportunities",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"opportunities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Program",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var programid;",
+							"var programname;",
+							"pm.test(\"Get Program\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"",
+							"    programid = jsonData.mshied_programid;",
+							"    programname = jsonData.mshied_name;",
+							"    console.log(\"Program ID: \" + programid);",
+							"    console.log(\"Program Name: \" + programname);",
+							"});",
+							"pm.globals.set('gProgram2', programid);",
+							"pm.globals.set('gProgramName2', programname);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mshied_code\": \"{{$randomInt}}P{{$randomInt}}rg1{{$randomInt}}\",\n    \"mshied_name\": \"code{{$randomInt}}\",\n    \"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}mshied_programs",
+					"host": [
+						"{{Eresource_URL}}mshied_programs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Academic period",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var academicperiodid;",
+							"var apname;",
+							"var code;",
+							"",
+							"pm.test(\"Academicperiodid Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    academicperiodid = jsonData.mshied_academicperiodid;",
+							"    apname = jsonData.mshied_name;",
+							"    code = jsonData.mshied_code;",
+							" ",
+							"});",
+							"",
+							"pm.globals.set('gacademicperiodid1',academicperiodid);",
+							"pm.globals.set('gacademicperiodname1',apname);",
+							"pm.globals.set('gacademicperiodcode1',code);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+							"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"mshied_name\":\"{{cmc_academicperiodname}}{{$randomInt}}\",\r\n\t\"mshied_startdate\":\"{{timestamp}}\",\r\n\t\"mshied_enddate\":\"{{timestampEndDate}}\",\r\n\t\"mshied_code\":\"{{$randomInt}}{{cmc_code}}LJ{{$randomInt}}\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{guserid2}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/mshied_academicperiods",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"mshied_academicperiods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contact_id;",
+							"var fullname;",
+							"pm.test(\"Contact Updated\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([201,200,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contact_id = jsonData.contactid;",
+							"    fullname = jsonData.fullname;",
+							"    console.log('New Updated Contact Name:'+fullname);",
+							"    console.log('Contact ID :'+contact_id);",
+							"});",
+							"",
+							"pm.globals.set('gcontactid2',contact_id);",
+							"pm.globals.set('gcontactfullname2',fullname);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"pm.environment.set('currentdate', moment().format((\"YYYY-MM-DD\")));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"firstname\": \"Updated{{firstname}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{lastname}}\",\r\n\t\"middlename\":\"mid{{$randomInt}}\",\r\n\t\"mshied_maidenname\":\"maid{{$randomInt}}\",\r\n\t\"mshied_legacy\":\"true\",\r\n\t\"emailaddress1\":\"{{$randomInt}}{{emailaddress1}}\",\r\n\t\"gendercode\":\"{{gendercode}}\",\r\n\t\"anniversary\":\"{{anniversary}}\",\r\n\t\"lastonholdtime\":\"{{currentdate}}\",\r\n\t\"numberofchildren\":\"{{numberofchildren}}\",\r\n\t\"nickname\":\"Nickname{{$randomInt}}\",\r\n\t\"familystatuscode\":2,\r\n\t\"cmc_sourcedate\":\"{{currentdate}}\",\r\n\t\"cmc_recentsat\":\"{{cmc_recentsat}}\",\r\n\t\"cmc_recentact\":\"{{cmc_recentact}}\",\r\n\t\"mshied_contacttype\":\"{{mshied_contacttype}}\",\r\n\t\"mshied_race\":{{mshied_race}},\r\n\t\"mshied_ethnicgroup\":{{mshied_ethnicgroup}},\r\n\t\"mshied_miltarystatus\":\"{{mshied_miltarystatus}}\",\r\n\t\"mshied_hipaaindicator\":false,\r\n\t\"creditonhold\":\"true\",\r\n\t\"leadsourcecode\":1,\r\n\t\"territorycode\":1,\r\n\t\"spousesname\":\"wife{{$randomInt}}\",\r\n\t\"shippingmethodcode\":\"{{shippingmethodcode}}\",\r\n\t\"preferredcontactmethodcode\": \"{{preferredcontactmethodcode}}\",\r\n\t\"mshied_nationality\":\"{{mshied_nationality}}\",\r\n\t\"cmc_sourcecategoryid@odata.bind\":\"/contacts({{gsourcecategoryid}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\":\"/contacts({{gsourcemethodid}})\",\r\n\t\"cmc_titleid@odata.bind\": \"/contacts({{gtitleid}})\",\r\n\t\"cmc_srcpogramlevelid@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\t\"cmc_srcprogramid@odata.bind\": \"/contacts({{gProgram1}})\",\r\n\t\"cmc_educationlevelid@odata.bind\": \"/contacts({{geducationlevelid}})\",\r\n\t\"mshied_CurrentProgramLevelId@odata.bind\": \"/contacts({{gprogramlevelid}})\",\r\n\t\"mshied_CurrentProgramId@odata.bind\": \"/contacts({{gProgram1}})\",\r\n\t\"mshied_StudentStatusId@odata.bind\": \"/contacts({{gstudentstatusid}})\",\r\n\t\"donotemail\":true,\r\n\t\"followemail\":true,\r\n\t\"cmc_donotsmstext\":true,\r\n\t\"donotbulkemail\":true,\r\n\t\"donotpostalmail\":true,\r\n\t\"donotphone\":true,\r\n\t\"donotfax\":true,\r\n\t\"cmc_autoupdatepicture\":true,\r\n\t\"fax\":\"78865{{$randomInt}}30\",\r\n\t\"mobilephone\":\"78965{{$randomInt}}30\",\r\n\t\"telephone1\":\"8569{{$randomInt}}230\",\r\n\t\"cmc_phone2extension\":\"8083{{$randomInt}}569\",\r\n\t\"websiteurl\":\"www.dcrm{{$randomInt}}.com\"\r\n }"
+				},
+				"url": {
+					"raw": "{{Eresource}}/api/data/{{Eversion}}/contacts",
+					"host": [
+						"{{Eresource}}"
+					],
+					"path": [
+						"api",
+						"data",
+						"{{Eversion}}",
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var account_id; ",
+							"var name1;",
+							"pm.test(\"Account Updated\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([201,200,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    account_id = jsonData.accountid;",
+							"    name1 = jsonData.name;",
+							"    console.log('New Updated Account Name:'+name1);",
+							"    console.log('Account ID :'+account_id);",
+							"});",
+							"",
+							"pm.globals.set('gaccountId2',account_id);",
+							"pm.globals.set('gaccountname2',name1);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\":\"Updated{{name}}{{$randomInt}}\",\r\n\t\"mshied_accounttype\":\"{{mshied_accounttype}}\",\r\n\t\"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n\t\"preferredcontactmethodcode\":1\r\n} "
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"accounts"
+					]
+				},
+				"description": "Create Account with new Address"
+			},
+			"response": []
+		},
+		{
+			"name": "Update LifeCycle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var lifecycleid;",
+							"var contactid;",
+							"var accountid;",
+							"var updatedlifecyclename;",
+							"",
+							"pm.test(\"Lifecycle is Updated Successfully\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    lifecycleid = jsonData.opportunityid",
+							"    contactid = jsonData._cmc_campusid_value;",
+							"    accountid = jsonData._cmc_contactid_value;",
+							"    updatedlifecyclename = jsonData.name;",
+							"    var createdon = jsonData.createdon;",
+							"    console.log(\"createdon \", createdon);",
+							"",
+							"    console.log('LifeCyleID:' + lifecycleid);",
+							"    console.log('ContactID:' + contactid);",
+							"    console.log('AccountID:' + accountid);",
+							"",
+							"    var oldcontact = pm.globals.get('gcontactfullname');",
+							"    var oldaccount = pm.globals.get('gaccountname')",
+							"    var oldacademic = pm.globals.get('gacademicperiodname');",
+							"    var oldprogram = pm.globals.get('gProgramName1')",
+							"",
+							"    var expectedName = pm.globals.get('gcontactfullname2') + \" - \" + pm.globals.get('gaccountname2') + \" - \" + pm.globals.get('gacademicperiodid1') + \" - \" + pm.globals.get('gProgram2') + \" - \";",
+							"",
+							"     pm.test(\"Validate Lifecycle Name\", function () {",
+							"        pm.expect(updatedlifecyclename).to.not.include(expectedName);",
+							"    });",
+							"",
+							"    pm.test(\"Validate Lifecycle ContactName\", function () {",
+							"        pm.expect(updatedlifecyclename).to.not.include(oldcontact);",
+							"    });",
+							"    pm.test(\"Validate Lifecycle AccountName\", function () {",
+							"        pm.expect(updatedlifecyclename).to.not.include(oldaccount);",
+							"    });",
+							"    pm.test(\"Validate Lifecycle AcademicName\", function () {",
+							"        pm.expect(updatedlifecyclename).to.not.include(oldacademic);",
+							"    });",
+							"    pm.test(\"Validate Lifecycle ProgramName\", function () {",
+							"        pm.expect(updatedlifecyclename).to.not.include(oldprogram);",
+							"    });",
+							"",
+							"    var oldlifecyclename = pm.globals.get('glifecyclename');",
+							"    console.log('Old LifeCycleName:' + oldlifecyclename);",
+							"    console.log('Update lifecyclename:' + updatedlifecyclename);",
+							"",
+							"    if (updatedlifecyclename === oldlifecyclename) {",
+							"        console.log(\"Lifecycle is not Updated\");",
+							"    }",
+							"    else {",
+							"        console.log(\"Lifecycle is Updated Successfully\");",
+							"    }",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"cmc_lifecycletype\":\"{{cmc_lifecycletype}}\",\r\n\t\"cmc_campusid@odata.bind\":\"/accounts({{gaccountId2}})\",\r\n\t\"cmc_contactid@odata.bind\":\"/contacts({{gcontactid2}})\",\r\n\t\"cmc_prgmid@odata.bind\":\"/opportunities({{gProgram2}})\",\r\n\t\"cmc_expectedstartid@odata.bind\":\"/opportunities({{gacademicperiodid1}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/opportunities({{glifecycleid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"opportunities({{glifecycleid}})"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

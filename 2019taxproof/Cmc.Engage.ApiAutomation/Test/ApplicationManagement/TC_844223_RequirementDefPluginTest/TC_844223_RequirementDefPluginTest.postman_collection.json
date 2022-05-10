@@ -1,0 +1,1604 @@
+{
+	"info": {
+		"_postman_id": "ce14ab5b-3e32-4582-9163-ee8749905804",
+		"name": "TC_844223_RequirementDefPluginTest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona - Application Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fc14e5d5-6ce1-4d79-9898-57eb694c5aa0",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1554cc25-11a9-4279-91e0-3af46b79242c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a9a9fba0-0662-4c53-aebf-59d87c6b6eb3",
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('guserid',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5dbeb9ae-6c2e-46e2-ba5a-91cf5df439d2",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Requirementdefinition",
+			"item": [
+				{
+					"name": "Create App Req Definition(CARD)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1590334-59b6-4d8d-8dde-ae574c4ddc5b",
+								"exec": [
+									"var appreqdefid;",
+									"pm.test(\"Application Requirment Definition Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appreqdefid = jsonData.cmc_applicationrequirementdefinitionid;",
+									"    //postman.setNextRequest(\"Get Test Type\");",
+									"});",
+									"",
+									"pm.globals.set('gappreqdefid',appreqdefid);",
+									"",
+									"var cmc_applicationrequirementdefinitionname=data.cmc_applicationrequirementdefinitionname;",
+									"var cmc_applicationstatuswhenallrequirementsrecei=data.cmc_applicationstatuswhenallrequirementsrecei;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "002ae5dc-957c-458a-a4e0-46f6d652f2f7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinitionname\":\"{{$randomInt}}{{cmc_applicationrequirementdefinitionname}}{{$randomInt}}{{$randomInt}}\",\r\n\"cmc_applicationstatuswhenallrequirementsrecei\":\"{{cmc_applicationstatuswhenallrequirementsrecei}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitions",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Test Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "65dc9925-3eef-4eaf-9a3d-f0d702654c71",
+								"exec": [
+									"var testid;",
+									"var Testtypename;",
+									"pm.test(\"Get Test ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    if(jsonData.value.length > 0)",
+									"    {",
+									"        testid = jsonData.value[0].mshied_testtypeid;",
+									"        Testtypename = jsonData.value[0].mshied_name;",
+									"        console.log('TesttypeID:'+testid);",
+									"        console.log('Testtype:'+Testtypename);",
+									"        postman.setNextRequest(\"CARD Detail - General\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"No record found\");",
+									"        throw new Error();",
+									"    }",
+									"});",
+									"pm.globals.set('gtestid',testid);",
+									"pm.globals.set('gTesttypename',Testtypename);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "12b72640-4c26-4f1b-a737-07f820bfd03d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq '{{cmc_testscoretype1}}'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq '{{cmc_testscoretype1}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail - General",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "16fab634-e9fc-4a48-9c77-8126387f3058",
+								"exec": [
+									"var reqDefDetID, name1;",
+									"pm.test(\"Application Requirment Definition Detail Created (General)\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    reqDefDetID= jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									"    name1 = jsonData.cmc_name;",
+									"        ",
+									"    //workflow name check",
+									"    if(name1!== null) ",
+									"    {",
+									"       console.log(\"Autoname workflow is generating names correctly\");     ",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Workflow might not be activated. Please check again!!\");",
+									"    }",
+									"    ",
+									"    if(reqDefDetID === null)",
+									"    {",
+									"        console.log(\"Application Requirment Definition Detail (General) failed to create\");",
+									"        throw new Error();",
+									"    }",
+									"});",
+									"",
+									"pm.globals.set('greqDefDetID',reqDefDetID);",
+									"",
+									"var cmc_reqgeneraltype=data.cmc_reqgeneraltype;",
+									"var cmc_reqgeneralname=data.cmc_reqgeneralname;",
+									"var cmc_requirementdeadline1=data.cmc_requirementdeadline1;",
+									"var cmc_requirementrequired1=data.cmc_requirementrequired1;",
+									"var cmc_statusonsubmit1=data.cmc_statusonsubmit1;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d022d299-a89e-491a-ac36-a520c748d10c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_reqgeneraltype}}\",\r\n\"cmc_name\":\"{{cmc_reqgeneralname}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline1}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired1}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit1}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail - General Duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "101e8187-a9c1-4002-84df-25c4d761bfde",
+								"exec": [
+									"var cmc_applicationrequirementdefinitiondetailid;",
+									"pm.test(\"Application Requirment Definition Detail Created (General - 1)\", function() ",
+									"{",
+									"     pm.expect(pm.response.code).to.be.oneOf([400]);   ",
+									"});",
+									"",
+									"var cmc_reqgeneraltype=data.cmc_reqgeneraltype;",
+									"var cmc_reqgeneralname=data.cmc_reqgeneralname;",
+									"var cmc_requirementdeadline1=data.cmc_requirementdeadline1;",
+									"var cmc_requirementrequired1=data.cmc_requirementrequired1;",
+									"var cmc_statusonsubmit1=data.cmc_statusonsubmit1;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b78a047-0f11-4b14-80a6-5b2040df5434",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_reqgeneraltype}}\",\r\n\"cmc_name\":\"{{cmc_reqgeneralname}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline1}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired1}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit1}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail - Upload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ab6ab9f1-5d6b-41ec-bcb9-74ee60a98e31",
+								"exec": [
+									"var cmc_applicationrequirementdefinitiondetailid, name1;",
+									"pm.test(\"Application Requirment Definition Detail Created (Upload)\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    cmc_applicationrequirementdefinitiondetailid = jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									"    name1 = jsonData.cmc_name;",
+									"",
+									"    //workflow name check",
+									"    if (name1 !== null) {",
+									"        console.log(\"Autoname workflow is generating names correctly\");",
+									"    }",
+									"    else {",
+									"        console.log(\"Workflow might not be activated. Please check again!!\");",
+									"    }",
+									"",
+									"",
+									"    if (cmc_applicationrequirementdefinitiondetailid === null) {",
+									"        console.log(\"Application Requirment Definition Detail (Upload) failed to create\");",
+									"        throw new Error();",
+									"    }",
+									"});",
+									"",
+									"var cmc_requploadtype = data.cmc_requploadtype;",
+									"var cmc_requploadname = data.cmc_requploadname;",
+									"var cmc_requirementdeadline1 = data.cmc_requirementdeadline1;",
+									"var cmc_requirementrequired1 = data.cmc_requirementrequired1;",
+									"var cmc_statusonsubmit1 = data.cmc_statusonsubmit1;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d77b6296-bc26-4f83-817d-672f2f57fe4c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_applicationrequirementdefinition@odata.bind\": \"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n    \"cmc_requirementtype\": \"{{cmc_requploadtype}}\",\r\n    \"cmc_name\": \"{{cmc_requploadname}}\",\r\n    \"cmc_requirementdeadline\": \"{{cmc_requirementdeadline1}}\",\r\n    \"cmc_requirementrequired\": \"{{cmc_requirementrequired1}}\",\r\n    \"cmc_statusonsubmit\": \"{{cmc_statusonsubmit1}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail - Upload Duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "489aa543-c0ba-4e38-9dd7-1f8012c8affd",
+								"exec": [
+									"var cmc_applicationrequirementdefinitiondetailid;",
+									"pm.test(\"Application Requirment Definition Detail Created (General - 1)\", function() ",
+									"{",
+									"     pm.expect(pm.response.code).to.be.oneOf([400]);       ",
+									"});",
+									"",
+									"var cmc_requploadtype=data.cmc_requploadtype;",
+									"var cmc_requploadname=data.cmc_requploadname;",
+									"var cmc_requirementdeadline1=data.cmc_requirementdeadline1;",
+									"var cmc_requirementrequired1=data.cmc_requirementrequired1;",
+									"var cmc_statusonsubmit1=data.cmc_statusonsubmit1;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e88e6e75-7930-48c2-9e37-b1101dc079f9",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requploadtype}}\",\r\n\"cmc_name\":\"{{cmc_requploadname}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline1}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired1}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit1}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail - Testscore",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "602fa0b0-fd4c-4fd8-b57a-e57c20753d5c",
+								"exec": [
+									"var appreqdefdetname;",
+									"var testsourcetype;",
+									"var testtypename;",
+									"var autoname;",
+									"pm.test(\"Application Requirment Definition Detail Created (TestScore)\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    appreqdefdetname = jsonData.cmc_name;",
+									"    testsourcetype = jsonData.cmc_testsourcetype;",
+									"    testtypename = pm.globals.get('gTesttypename');",
+									"",
+									"    autoname = \"Official - Testing Agency\" + \" \" + \"-\" + \" \" + testtypename;",
+									"    console.log(\"autoname is: \" + autoname);",
+									"",
+									"    //Workflow name check",
+									"",
+									"    if (appreqdefdetname === autoname) {",
+									"        console.log(\"Workflow is autogenerating the names correctly\");",
+									"    }",
+									"    else {",
+									"        console.log(\"Workflow might not be activated. Please Check again!!\");",
+									"    }",
+									"",
+									"",
+									"    if (appreqdefdetname === pm.iterationData.get(\"cmc_reqdetailname1\")) {",
+									"        console.log(\"AutoName not generating names\");",
+									"        throw new Error();",
+									"    }",
+									"});",
+									"",
+									"var cmc_requirementtype1 = data.cmc_requirementtype1;",
+									"var cmc_reqdetailname1 = data.cmc_reqdetailname1;",
+									"var cmc_requirementdeadline1 = data.cmc_requirementdeadline1;",
+									"var cmc_requirementrequired1 = data.cmc_requirementrequired1;",
+									"var cmc_testsourcetype1 = data.cmc_testsourcetype1;",
+									"var cmc_statusonsubmit1 = data.cmc_statusonsubmit1;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6af4599a-6c5a-4ebf-bd3c-ee84074affa5",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_applicationrequirementdefinition@odata.bind\": \"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n    \"cmc_requirementtype\": \"{{cmc_requirementtype1}}\",\r\n    \"cmc_name\": \"{{cmc_reqdetailname1}}\",\r\n    \"cmc_requirementdeadline\": \"{{cmc_requirementdeadline1}}\",\r\n    \"cmc_requirementrequired\": \"{{cmc_requirementrequired1}}\",\r\n    \"cmc_testscoretype@odata.bind\": \"/mshied_testtypes({{gtestid}})\",\r\n    \"cmc_testsourcetype\": \"{{cmc_testsourcetype1}}\",\r\n    \"cmc_statusonsubmit\": \"{{cmc_statusonsubmit1}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail - Testscore Duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ef583850-8a8d-4d4e-8b85-4549897c1f84",
+								"exec": [
+									"var appreqdefdetname;",
+									"pm.test(\"Application Requirment Definition Detail Created (TestScore-Duplicate)\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"});",
+									"",
+									"var cmc_requirementtype1=data.cmc_requirementtype1;",
+									"var cmc_reqdetailname1=data.cmc_reqdetailname1;",
+									"var cmc_requirementdeadline1=data.cmc_requirementdeadline1;",
+									"var cmc_requirementrequired1=data.cmc_requirementrequired1;",
+									"var cmc_testsourcetype1=data.cmc_testsourcetype1;",
+									"var cmc_statusonsubmit1=data.cmc_statusonsubmit1;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "046b867d-4bfa-4f74-8425-7642da7d0beb",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype1}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname1}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline1}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired1}}\",\r\n\"cmc_testscoretype@odata.bind\":\"/mshied_testtypes({{gtestid}})\",\r\n\"cmc_testsourcetype\":\"{{cmc_testsourcetype1}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit1}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail Rec",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "996cd39f-201a-4286-bca9-61e48b8e55de",
+								"exec": [
+									"var appreqdefdetid, name1;",
+									"pm.test(\"Application Requirment Definition Detail Created (Unofficial Transcript)\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    appreqdefdetid = jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									"    name1 = jsonData.cmc_name;",
+									"",
+									"    //Workflow autoname check",
+									"    if (name1 === 'Recommendation') {",
+									"        console.log(\"Autoname workflow is generating names correctly\");",
+									"    }",
+									"    else {",
+									"        console.log(\"Workflow might not be activated. Please check again!!\");",
+									"    }",
+									"",
+									"});",
+									"pm.globals.set('gappreqdefdetid', appreqdefdetid);",
+									"",
+									"var cmc_requirementtype6 = data.cmc_requirementtype6;",
+									"var cmc_reqdetailname6 = data.cmc_reqdetailname6;",
+									"var cmc_requirementdeadline6 = data.cmc_requirementdeadline6;",
+									"var cmc_requirementrequired6 = data.cmc_requirementrequired6;",
+									"var cmc_statusonsubmit6 = data.cmc_statusonsubmit6;",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ab7df3ff-d61a-431c-ac9b-864dd59712b6",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype6}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname6}}-{{$randomInt}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline6}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired6}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit6}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail Rec Duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3542e3a5-6e7f-4edf-9784-c16c3b66c668",
+								"exec": [
+									"pm.test(\"Application Requirment Definition Detail Created (Unofficial Transcript)-Duplicate Creation Stopped\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"});",
+									"",
+									"postman.setNextRequest(\"Update Rec to General\");",
+									"",
+									"var cmc_requirementtype7 = data.cmc_requirementtype7;",
+									"var cmc_reqdetailname7 = data.cmc_reqdetailname7;",
+									"var cmc_requirementdeadline7 = data.cmc_requirementdeadline7;",
+									"var cmc_requirementrequired7 = data.cmc_requirementrequired7;",
+									"var cmc_statusonsubmit7 = data.cmc_statusonsubmit7;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "af4e0b73-db88-4010-828f-6b087aeefa16",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype7}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname7}}-{{$randomInt}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline7}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired7}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit7}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rec to General",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "73515d10-306c-4af4-8253-119708b85b22",
+								"exec": [
+									"var reqDefDetID, name1;",
+									"pm.test(\"Application Requirment Definition Detail Created (General)\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    reqDefDetID= jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									"    name1 = jsonData.cmc_name;",
+									"        ",
+									"    //workflow name check",
+									"    if(name1==='General- update') ",
+									"    {",
+									"       console.log(\"Autoname workflow is generating names correctly\");     ",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Workflow might not be activated. Please check again!!\");",
+									"    }",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "46d6d6ae-0a9b-4061-bfce-818145ac240e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_reqgeneraltype}}\",\r\n\"cmc_name\":\"General- update\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails({{greqDefDetID}})",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails({{greqDefDetID}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Create Education level",
+			"item": [
+				{
+					"name": "Create Education Level 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f8cec65c-f147-455c-a8b5-ae16a561f24d",
+								"exec": [
+									"var code,name,edulevel;",
+									"pm.test(\"Create Education Level 1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    code = jsonData.mshied_code;",
+									"    name=jsonData.mshied_name;",
+									"    edulevel = jsonData.mshied_educationlevelid",
+									"  ",
+									"});",
+									"",
+									"",
+									"pm.globals.set('geduLevelID1',edulevel);",
+									"pm.globals.set('gname1',name);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "845eea0c-7a6d-4f30-bcb5-c4fb2d634cc8",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mshied_code\": \"{{$randomInt}}124E{{$randomInt}}{{$randomInt}}\",\r\n    \"mshied_name\": \"{{$randomInt}}-TestEducation-   {{$randomInt}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_educationlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_educationlevels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Education Level 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9607024-a44a-43c9-945f-671f4bf2594e",
+								"exec": [
+									"var code,name,edulevel;",
+									"pm.test(\"Create Education Level 2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    code = jsonData.mshied_code;",
+									"    name=jsonData.mshied_name;",
+									"    edulevel = jsonData.mshied_educationlevelid",
+									"  ",
+									"});",
+									"",
+									"",
+									"pm.globals.set('geduLevelID2',edulevel);",
+									"pm.globals.set('gname2',name);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "55849894-3e0b-42ee-8121-2ced1abd0b00",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"mshied_code\": \"{{$randomInt}}{{$randomInt}}123E{{$randomInt}}\",\r\n\"mshied_name\": \"TestEducation\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_educationlevels",
+							"host": [
+								"{{Eresource_URL}}mshied_educationlevels"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Dup check for OT & UT",
+			"item": [
+				{
+					"name": "CARD Detail OT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a528040a-bb20-4529-bc86-1a339b5f4e04",
+								"exec": [
+									"var appreqdefdetid,name1;",
+									"pm.test(\"Create detail Official Transcript\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appreqdefdetid = jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									"    name1=jsonData.cmc_name;",
+									"    ",
+									"    var educationlevelName=pm.globals.get('gname1');",
+									"    var autoname = \"Official Transcript\"+ \"-\"+ educationlevelName+\" \";",
+									"    console.log(\"autoname is: \" + autoname);",
+									"",
+									"    //Workflow name check",
+									"",
+									"    if (name1 === autoname) {",
+									"        console.log(\"Workflow is autogenerating the names correctly\");",
+									"    }",
+									"    else {",
+									"        console.log(\"Workflow might not be activated. Please Check again!!\");",
+									"        throw new Error();",
+									"    }",
+									"",
+									"   ",
+									"    ",
+									"});",
+									"",
+									"var cmc_requirementtype2=data.cmc_requirementtype2;",
+									"var cmc_reqdetailname2=data.cmc_reqdetailname2;",
+									"var cmc_requirementdeadline2=data.cmc_requirementdeadline2;",
+									"var cmc_requirementrequired2=data.cmc_requirementrequired2;",
+									"var cmc_statusonsubmit2=data.cmc_statusonsubmit2;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "89729341-650a-4002-bfad-d2a9cc64257c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype2}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname2}}-{{$randomInt}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline2}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired2}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit2}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\",\r\n\"cmc_requirementeducationlevelid@odata.bind\": \"/mshied_educationlevels({{geduLevelID1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail OT Duplicate Edu Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a0e59a99-1a59-43ee-a278-e01efa6bce0d",
+								"exec": [
+									"var appreqdefdetid,name1;",
+									"pm.test(\"Create duplicate Official Transcript with same Education level\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400])",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var errormsg = jsonData.error.message;",
+									"    console.log(\"Errormsg: \",errormsg);",
+									"    name1=jsonData.cmc_name;          ",
+									"});",
+									"",
+									"var cmc_requirementtype2=data.cmc_requirementtype2;",
+									"var cmc_reqdetailname2=data.cmc_reqdetailname2;",
+									"var cmc_requirementdeadline2=data.cmc_requirementdeadline2;",
+									"var cmc_requirementrequired2=data.cmc_requirementrequired2;",
+									"var cmc_statusonsubmit2=data.cmc_statusonsubmit2;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1392545f-2e7f-4d40-a036-72fe90b5736d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_applicationrequirementdefinition@odata.bind\": \"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n    \"cmc_requirementtype\": \"{{cmc_requirementtype2}}\",\r\n    \"cmc_name\": \"{{cmc_reqdetailname2}}-{{$randomInt}}\",\r\n    \"cmc_requirementdeadline\": \"{{cmc_requirementdeadline2}}\",\r\n    \"cmc_requirementrequired\": \"{{cmc_requirementrequired2}}\",\r\n    \"cmc_statusonsubmit\": \"{{cmc_statusonsubmit2}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid}})\",\r\n    \"cmc_requirementeducationlevelid@odata.bind\": \"/mshied_educationlevels({{geduLevelID1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail OT Different Edu Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "be82faf4-3280-48cc-9ab0-439950957846",
+								"exec": [
+									"var appreqdefdetid,name1;",
+									"pm.test(\"Create Official Transcript with different Education Level\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204])",
+									"    var jsonData =JSON.parse(responseBody);",
+									"   ",
+									"    name1=jsonData.cmc_name;",
+									"    ",
+									"    var educationlevelName=pm.globals.get('gname2');",
+									"    var autoname = \"Official Transcript\"+ \"-\"+ educationlevelName+\" \";",
+									"    console.log(\"autoname is: \" + autoname);",
+									"",
+									"    //Workflow name check",
+									"",
+									"    if (name1 === autoname) {",
+									"        console.log(\"Workflow is autogenerating the names correctly\");",
+									"    }",
+									"    else {",
+									"        console.log(\"Workflow might not be activated. Please Check again!!\");",
+									"        throw new Error();",
+									"    }",
+									"",
+									"     ",
+									"});",
+									"",
+									"var cmc_requirementtype2=data.cmc_requirementtype2;",
+									"var cmc_reqdetailname2=data.cmc_reqdetailname2;",
+									"var cmc_requirementdeadline2=data.cmc_requirementdeadline2;",
+									"var cmc_requirementrequired2=data.cmc_requirementrequired2;",
+									"var cmc_statusonsubmit2=data.cmc_statusonsubmit2;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "711b1607-d577-49d0-8661-8bd0c0945cab",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_applicationrequirementdefinition@odata.bind\": \"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n    \"cmc_requirementtype\": \"{{cmc_requirementtype2}}\",\r\n    \"cmc_name\": \"{{cmc_reqdetailname2}}-{{$randomInt}}\",\r\n    \"cmc_requirementdeadline\": \"{{cmc_requirementdeadline2}}\",\r\n    \"cmc_requirementrequired\": \"{{cmc_requirementrequired2}}\",\r\n    \"cmc_statusonsubmit\": \"{{cmc_statusonsubmit2}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid}})\",\r\n    \"cmc_requirementeducationlevelid@odata.bind\": \"/mshied_educationlevels({{geduLevelID2}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail UT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "742ec39b-0785-4cd7-b244-866b74e923f8",
+								"exec": [
+									"var appreqdefdetid,name1;",
+									"pm.test(\"Create duplicate UnOfficial Transcript\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appreqdefdetid = jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									"    name1=jsonData.cmc_name;",
+									"    ",
+									"    var educationlevelName=pm.globals.get('gname1');",
+									"    var autoname = \"Unofficial Transcript\"+ \"-\"+ educationlevelName+\" \";",
+									"    console.log(\"autoname is: \" + autoname);",
+									"",
+									"    //Workflow name check",
+									"",
+									"    if (name1 === autoname) {",
+									"        console.log(\"Workflow is autogenerating the names correctly\");",
+									"    }",
+									"    else {",
+									"        console.log(\"Workflow might not be activated. Please Check again!!\");",
+									"        throw new Error();",
+									"    }",
+									"",
+									"      ",
+									"});",
+									"",
+									"var cmc_requirementtype4=data.cmc_requirementtype4;",
+									"var cmc_reqdetailname4=data.cmc_reqdetailname4;",
+									"var cmc_requirementdeadline4=data.cmc_requirementdeadline4;",
+									"var cmc_requirementrequired4=data.cmc_requirementrequired4;",
+									"var cmc_statusonsubmit4=data.cmc_statusonsubmit4;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9dbdf84b-7429-4994-8a85-f2578797d201",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype4}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname4}}-{{$randomInt}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline4}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired4}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit4}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\",\r\n\"cmc_requirementeducationlevelid@odata.bind\": \"/mshied_educationlevels({{geduLevelID1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail UT Duplicate Edu Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8d18b4ec-56d4-4804-86a6-5e9c252bf765",
+								"exec": [
+									"var appreqdefdetid;",
+									"pm.test(\"Application Requirment Definition Detail Created (Unofficial Transcript)-Duplicate Creation Stopped\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    var errormsg = jsonData.error.message;",
+									"    console.log(\"Errormsg: \", errormsg);",
+									"});",
+									"",
+									"var cmc_requirementtype5 = data.cmc_requirementtype5;",
+									"var cmc_reqdetailname5 = data.cmc_reqdetailname5;",
+									"var cmc_requirementdeadline5 = data.cmc_requirementdeadline5;",
+									"var cmc_requirementrequired5 = data.cmc_requirementrequired5;",
+									"var cmc_statusonsubmit5 = data.cmc_statusonsubmit5;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87188a6d-1664-40a6-986a-5461fcbd461a",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_applicationrequirementdefinition@odata.bind\": \"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n    \"cmc_requirementtype\": \"{{cmc_requirementtype5}}\",\r\n    \"cmc_name\": \"{{cmc_reqdetailname5}}-{{$randomInt}}\",\r\n    \"cmc_requirementdeadline\": \"{{cmc_requirementdeadline5}}\",\r\n    \"cmc_requirementrequired\": \"{{cmc_requirementrequired5}}\",\r\n    \"cmc_statusonsubmit\": \"{{cmc_statusonsubmit5}}\",\r\n    \"ownerid@odata.bind\": \"/systemusers({{guserid}})\",\r\n    \"cmc_requirementeducationlevelid@odata.bind\": \"/mshied_educationlevels({{geduLevelID1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CARD Detail UT Differnet Edu Level",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "097fa351-a5da-4576-b843-abe583efc23f",
+								"exec": [
+									"var appreqdefdetid;",
+									"pm.test(\"Create duplicate UnOfficial Transcript with different Education level\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    appreqdefdetid = jsonData.cmc_applicationrequirementdefinitiondetailid;",
+									"    name1=jsonData.cmc_name;",
+									"",
+									"    var educationlevelName=pm.globals.get('gname2');",
+									"    var autoname = \"Unofficial Transcript\"+ \"-\"+ educationlevelName+\" \";",
+									"    console.log(\"autoname is: \" + autoname);",
+									"",
+									"    //Workflow name check",
+									"",
+									"    if (name1 === autoname) {",
+									"        console.log(\"Workflow is autogenerating the names correctly\");",
+									"    }",
+									"    else {",
+									"        console.log(\"Workflow might not be activated. Please Check again!!\");",
+									"        throw new Error();",
+									"    }",
+									"});",
+									"",
+									"var cmc_requirementtype5 = data.cmc_requirementtype5;",
+									"var cmc_reqdetailname5 = data.cmc_reqdetailname5;",
+									"var cmc_requirementdeadline5 = data.cmc_requirementdeadline5;",
+									"var cmc_requirementrequired5 = data.cmc_requirementrequired5;",
+									"var cmc_statusonsubmit5 = data.cmc_statusonsubmit5;",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "43f03e36-d25f-4fab-bbd8-66f80240aa7d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_applicationrequirementdefinition@odata.bind\":\"/cmc_applicationrequirementdefinitions({{gappreqdefid}})\",\r\n\"cmc_requirementtype\":\"{{cmc_requirementtype5}}\",\r\n\"cmc_name\":\"{{cmc_reqdetailname5}}-{{$randomInt}}\",\r\n\"cmc_requirementdeadline\":\"{{cmc_requirementdeadline5}}\",\r\n\"cmc_requirementrequired\":\"{{cmc_requirementrequired5}}\",\r\n\"cmc_statusonsubmit\":\"{{cmc_statusonsubmit5}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{guserid}})\",\r\n\"cmc_requirementeducationlevelid@odata.bind\": \"/mshied_educationlevels({{geduLevelID2}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails",
+							"host": [
+								"{{Eresource_URL}}cmc_applicationrequirementdefinitiondetails"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

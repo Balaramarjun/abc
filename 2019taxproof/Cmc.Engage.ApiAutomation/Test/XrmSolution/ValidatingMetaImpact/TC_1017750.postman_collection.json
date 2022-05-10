@@ -1,0 +1,1103 @@
+{
+	"info": {
+		"_postman_id": "44651f11-5d07-420d-8386-ad1b31c90a91",
+		"name": "TC_1017750",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Meta Impact and Conflict after XRM Solution",
+			"item": [
+				{
+					"name": "GetToken_DCRMAPI-System Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Solution Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var solnid;",
+									"var environment;",
+									"environment = pm.environment.name;",
+									"",
+									"pm.test(\"Getsolutionid\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);  ",
+									"    var jsonData =JSON.parse(responseBody); ",
+									"    if (jsonData.value.length ===0  ){",
+									"       ",
+									"        console.log(\"XrmSolution is not Installed in this Environment \",environment);       ",
+									"        postman.setNextRequest(null);",
+									"    }",
+									"    else{",
+									"        var solnid= jsonData.value[0].solutionid; ",
+									"        console.log(\"XrmSolution ID \"+solnid);",
+									"        console.log(\"solution CampusManagementAdvance_xRM is installed\");",
+									"    }",
+									"",
+									"  ",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}solutions?$filter=contains(uniquename,'CampusManagementAdvance_xRM')",
+							"host": [
+								"{{Eresource_URL}}solutions"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(uniquename,'CampusManagementAdvance_xRM')"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Import FoundationSetting.csv ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var importid;",
+									"var filename;",
+									"",
+									"pm.test(\"GetImportId\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);  ",
+									"    var jsonData =JSON.parse(responseBody);                     ",
+									"   var importid= jsonData.value[0].importid;                  ",
+									"   var filename= jsonData.value[0].name;  ",
+									"   ",
+									"   if(importid!==null && filename!==null)",
+									"   {",
+									"       console.log(\"Importid ID: \"+importid);",
+									"        console.log(\"Filename: \"+filename);",
+									"        console.log(\"File Foundation Settings.csv is exist in Solution\");",
+									"   }",
+									"   else",
+									"   {",
+									"       throw new Error(\"File Foundation Settings.csv is NOT exist in solution\");",
+									"   }",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}imports?$select=name,importid&$filter=name eq 'Foundation Settings.csv'",
+							"host": [
+								"{{Eresource_URL}}imports"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "name,importid"
+								},
+								{
+									"key": "$filter",
+									"value": "name eq 'Foundation Settings.csv'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Account\";",
+									"",
+									"pm.test(\"Validating Display name Account\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='account')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='account')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Account Attribute Owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Owner\";",
+									"",
+									"pm.test(\"Validating Display name Account Attribute Owner\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='account')/Attributes(LogicalName='ownerid')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='account')"
+							],
+							"path": [
+								"Attributes(LogicalName='ownerid')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Account Attribute parentaccountid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Parent Account\";",
+									"",
+									"",
+									"pm.test(\"Validating Display name Account Attribute parentaccountid\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='account')/Attributes(LogicalName='parentaccountid')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='account')"
+							],
+							"path": [
+								"Attributes(LogicalName='parentaccountid')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Account Attribute primarycontactid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Primary Contact\";",
+									"",
+									"",
+									"pm.test(\"Validating Display name Account Attribute primarycontactid\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm); ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='account')/Attributes(LogicalName='primarycontactid')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='account')"
+							],
+							"path": [
+								"Attributes(LogicalName='primarycontactid')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Account Attribute address1_composite",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Address 1\";",
+									"",
+									"",
+									"pm.test(\"Validating Display name Account Attribute address1_composite\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm); ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='account')/Attributes(LogicalName='address1_composite')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='account')"
+							],
+							"path": [
+								"Attributes(LogicalName='address1_composite')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validating Display name Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Contact\";",
+									"",
+									"pm.test(\"Validating Display name contact\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='contact')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='contact')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validating Display name Parentcustomerid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Current Campus/Company\";",
+									"",
+									"pm.test(\"Validating Display name contact\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='contact')/Attributes(LogicalName='parentcustomerid')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='contact')"
+							],
+							"path": [
+								"Attributes(LogicalName='parentcustomerid')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Contact Attribute emailaddress1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Email\";",
+									"",
+									"pm.test(\"Validating Display name contact Attribute emailaddress1\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='contact')/Attributes(LogicalName='emailaddress1')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='contact')"
+							],
+							"path": [
+								"Attributes(LogicalName='emailaddress1')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Contact Attribute emailaddress2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Email Address 2\";",
+									"",
+									"pm.test(\"Validating Display name contact Attribute emailaddress2\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='contact')/Attributes(LogicalName='emailaddress2')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='contact')"
+							],
+							"path": [
+								"Attributes(LogicalName='emailaddress2')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Contact Attribute Ownerid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Owner\";",
+									"",
+									"pm.test(\"Validating Display name contact Attribute Ownerid\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='contact')/Attributes(LogicalName='ownerid')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='contact')"
+							],
+							"path": [
+								"Attributes(LogicalName='ownerid')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Contact Attribute SpouseName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Spouse/Partner Name\";",
+									"",
+									"pm.test(\"Validating Display name contact Attribute SpouseName\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='contact')/Attributes(LogicalName='spousesname')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='contact')"
+							],
+							"path": [
+								"Attributes(LogicalName='spousesname')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Contact Attribute telephone1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Business Phone\";",
+									"",
+									"pm.test(\"Validating Display name contact Attribute telephone1\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='contact')/Attributes(eac88f8f-9072-4a1a-ad67-cf439d900dc8)",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='contact')"
+							],
+							"path": [
+								"Attributes(eac88f8f-9072-4a1a-ad67-cf439d900dc8)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Cases Attribute createdon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Submitted Date\";",
+									"",
+									"pm.test(\"Validating Display name contact Attribute createdon\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='incident')/Attributes(LogicalName='createdon')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='incident')"
+							],
+							"path": [
+								"Attributes(LogicalName='createdon')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Cases Attribute Customerid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Submitted For\";",
+									"",
+									"pm.test(\"Validating Display name contact Attribute Customerid\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='incident')/Attributes(LogicalName='customerid')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='incident')"
+							],
+							"path": [
+								"Attributes(LogicalName='customerid')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validating Display name Lead",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Inbound Interest\";",
+									"",
+									"pm.test(\"Validating Display name lead\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='lead')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='lead')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validating Display name Lifecycle",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Lifecycle\";",
+									"",
+									"pm.test(\"Validating Display name Lifecycle\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='opportunity')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='opportunity')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Display name Lifecycle Attribute owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var displaynm;",
+									"var str;",
+									"str=\"Owner\";",
+									"",
+									"pm.test(\"Validating Display name Lifecycle Attribute owner\", function() ",
+									"{ ",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]); ",
+									"    var jsonData =JSON.parse(responseBody);                   ",
+									"    var displaynm= jsonData.DisplayName.LocalizedLabels[0].Label;                  ",
+									"    console.log(\"DisplayName: \"+displaynm);",
+									"    pm.expect(str).to.equal(displaynm);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}EntityDefinitions(LogicalName='opportunity')/Attributes(LogicalName='ownerid')",
+							"host": [
+								"{{Eresource_URL}}EntityDefinitions(LogicalName='opportunity')"
+							],
+							"path": [
+								"Attributes(LogicalName='ownerid')"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

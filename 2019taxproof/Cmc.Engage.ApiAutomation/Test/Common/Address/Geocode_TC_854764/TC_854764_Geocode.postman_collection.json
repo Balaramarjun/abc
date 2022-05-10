@@ -1,0 +1,2084 @@
+{
+	"info": {
+		"_postman_id": "f86c0d14-89b2-46a9-9cc7-3f3249d78305",
+		"name": "TC_854764_Geocode",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Eadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Eadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var account_id; ",
+							"pm.test(\"Account Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    account_id = jsonData.accountid;",
+							"    accountaname = jsonData.name;",
+							"    console.log(\"Account:\" +accountaname);",
+							"});",
+							"",
+							"",
+							"pm.globals.set('gaccountId',account_id);",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"name\":\"College{{$randomCountry}}\",\r\n \"mshied_accounttype\":\"494280000\",\r\n \"cmc_accountcode\":\"Acc{{$randomInt}}\",\r\n \"preferredcontactmethodcode\":1\r\n \r\n \r\n  \r\n\r\n} \r\n\r\n "
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/accounts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"accounts"
+					]
+				},
+				"description": "Create Account with new Address"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contact_id;",
+							"pm.test(\"Contact Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contact_id = jsonData.contactid;",
+							"    var firstname = jsonData.firstname;",
+							"    console.log('Contact:' +contact_id);",
+							"    console.log('firstname:' +firstname);",
+							"    ",
+							"});",
+							"",
+							"pm.globals.set(\"gcontactid\",contact_id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"firstname\": \"ContactGeo{{$randomFirstName}}\",\r\n     \"lastname\": \"ContLast{{$randomLastName}}\",\r\n     \"mshied_contacttype\":\"494280011\",\r\n   \"cmc_sourcecategoryid@odata.bind\":\"/contacts(379733e4-142b-e811-a965-000d3a11e605)\",\r\n   \"cmc_sourcemethodid@odata.bind\":\"/contacts(827ff116-142b-e811-a965-000d3a11e605)\",\r\n     \"parentcustomerid_account@odata.bind\": \"/accounts({{gaccountId}})\"\r\n   \r\n}\r\n\r\n  \r\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Address for contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contcustomeraddressid1",
+							"pm.test(\"Created Account Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    console.log(\"Contact's Primary Address Created Successfully\"); ",
+							"    contcustomeraddressid1 = jsonData.customeraddressid;",
+							"    ",
+							"}); ",
+							"",
+							"   pm.globals.set('gcontcustomeraddressid',contcustomeraddressid1);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"addresstypecode\": \"3\",\r\n    \"mshied_mailtype\": 494280000,\r\n    \"name\": \"address{{$randomInt}}\",\r\n    \"cmc_countryregion\": \"175490231 \",\r\n    \"cmc_state\": \"175490013 \",\r\n    \"line1\": \"3640 SW 22nd Street.\",\r\n    \"postalcode\": \"33145\",\r\n    \"city\": \"Miami\",\r\n    \"parentid_contact@odata.bind\": \"/contacts({{gcontactid}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Address for Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var acccustomeraddressid1",
+							"pm.test(\"Created Account Address\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    console.log(\"Account's Primary Address Created Successfully\"); ",
+							"    acccustomeraddressid1=jsonData.customeraddressid;",
+							"    ",
+							"}); ",
+							"",
+							"   pm.globals.set('gAccountcustomeraddressid',acccustomeraddressid1);",
+							"  ",
+							"setTimeout(function(){}, 75000); ",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"addresstypecode\": 3,\r\n    \"mshied_mailtype\": 494280000,\r\n    \"name\": \"AccountAddress{{$randomInt}}\",\r\n    \"cmc_countryregion\": \"175490236 \",\r\n    \"cmc_state\": \"175490013 \",\r\n    \"line1\": \"5201 Congress Ave.\",\r\n    \"postalcode\": \"33431\",\r\n    \"city\": \"Boca Raton\",\r\n    \"parentid_account@odata.bind\": \"/accounts({{gaccountId}})\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitude1;",
+							"    var ContLong = data.longitude1;",
+							"    var Milescsv =data.miles;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"    console.log('Miles-CSV:' +Milescsv);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address1_latitude);",
+							"    var longitude = parseFloat(jsonData.address1_longitude);",
+							"    var miles = jsonData.cmc_milesfromcampus;    ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    console.log('Miles From Campus:' + miles);",
+							"    pm.globals.set('gmiles',)",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(ContLong);",
+							"        });",
+							"//   pm.test(\"Validate Miles\", function()",
+							"//         {",
+							"//             pm.expect(miles).to.equal(Milescsv);",
+							"//         });",
+							"        ",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Latitude and Longitude -Account",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Account\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"",
+							"    //Reading values from CSV file",
+							"    var AccLat = data.latitude2;",
+							"    var AccLong = data.longitude2;",
+							"    console.log('Account-Latitude-CSV:' +AccLat);",
+							"    console.log('Account-Longitude-CSV:' +AccLong); ",
+							"    pm.variables.set(\"name\", AccLat );",
+							"    pm.variables.set(\"name\", AccLong );",
+							"    //Reading values from Response",
+							"    var latitudeAcc = jsonData.address1_latitude;",
+							"    var longitudeAcc =  parseFloat(jsonData.address1_longitude);",
+							"    console.log('latitudeAcc : ' + latitudeAcc);",
+							"    console.log('longitudeAcc : ' + longitudeAcc);",
+							"    ",
+							"   pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitudeAcc).to.equal(AccLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitudeAcc).to.equal(AccLong);",
+							"        });",
+							" ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/accounts({{gaccountId}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"accounts({{gaccountId}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update primary Address of contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contcustomeraddressid1",
+							"pm.test(\"Updated contact's primary Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    console.log(\"Contact's Primary Address Created Successfully\"); ",
+							"    contcustomeraddressid1 = jsonData.customeraddressid;",
+							"    ",
+							"}); ",
+							"",
+							"   pm.globals.set('gcontcustomeraddressid',contcustomeraddressid1);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"postalcode\": \"60007\",\r\n    \"city\": \"Chicago\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcontcustomeraddressid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses({{gcontcustomeraddressid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Address1 for Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Updated Account Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							" ",
+							"    console.log(\"Account's Primary Address Updated Successfully\");",
+							"    ",
+							"});",
+							"  ",
+							"setTimeout(function(){}, 75000); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+							"pm.environment.set(\"timestampEndDate\", moment().add(1095, 'days').format(\"YYYY-MM-DD\"));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"addresstypecode\": 3,\r\n    \"mshied_mailtype\": 494280000,\r\n    \"name\": \"AccountAddress{{$randomInt}}\",\r\n    \"cmc_country\": \"175490231 \",\r\n    \"cmc_stateprovince\": \"175490317 \",\r\n    \"line1\": \"1700 W Blancke St\",\r\n    \"postalcode\": \"07036\",\r\n    \"city\": \"Linden\",\r\n    \"mshied_startdate\": \"{{timestamp}}\",\r\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\r\n    \"objecttypecode\": \"account\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gAccountcustomeraddressid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses({{gAccountcustomeraddressid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Updated Miles from Campus-Contact",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);   ",
+							"  ",
+							"",
+							"    //Reading values from Response",
+							"    ",
+							"   var Beforeupdatemiles=pm.globals.get(\"gmiles\");",
+							"    console.log('BeforeUpdate'+Beforeupdatemiles);",
+							"    ",
+							"    var latitude = parseFloat(jsonData.address1_latitude);",
+							"    var longitude = parseFloat(jsonData.address1_longitude);",
+							"    var updatedmiles = jsonData.cmc_milesfromcampus;    ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    console.log('Miles From Campus:' + updatedmiles);",
+							"   pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"        pm.expect(latitude).not.equal(undefined);",
+							"\t\tpm.expect(latitude).not.equal(null);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {            ",
+							"        pm.expect(longitude).not.equal(undefined);",
+							"\t\tpm.expect(longitude).not.equal(null);",
+							"        });",
+							"  pm.test(\"Validate Miles\", function()",
+							"        {",
+							"            pm.expect(updatedmiles).not.equal(Beforeupdatemiles);",
+							"        });",
+							" ",
+							"        ",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact-Address1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitudeup1;",
+							"    var ContLong = data.longitudeup1;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address1_latitude);",
+							"    var longitude = parseFloat(jsonData.address1_longitude);  ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(ContLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Address1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Get Lat and Long of primary Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var AddLat = data.latitudeup1;",
+							"    var AddLong = data.longitudeup1;",
+							"    console.log('Latitude-CSV:' +AddLat);",
+							"    console.log('Longitude-CSV:' +AddLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.latitude);",
+							"    var longitude = parseFloat(jsonData.longitude);  ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(AddLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(AddLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcontcustomeraddressid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses({{gcontcustomeraddressid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact-Address2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitudeup1;",
+							"    var ContLong = data.longitudeup1;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address2_latitude);",
+							"    var longitude = parseFloat(jsonData.address2_longitude);    ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).not.eql(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).not.eql(ContLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get address with address number 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Fetching the Customer Address record with number 2\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    var result=jsonData.Contact_CustomerAddress;",
+							"    var custAddressLength=result.length;",
+							"    console.log('Length: ' +custAddressLength);",
+							"    var tmp_message;",
+							"    ",
+							"    if(custAddressLength===1)",
+							"    {",
+							"        //Data from Response(Json)",
+							"        var engage_address1=result[0].line1;",
+							"        var engage_address2=result[0].line2;",
+							"        var engage_address3=result[0].line3;",
+							"        var engage_city=result[0].city;",
+							"        var engage_country=result[0].cmc_countryregion;",
+							"        var engage_state=result[0].cmc_state;",
+							"        var engage_postal=result[0].postalcode;",
+							"    ",
+							"        var engage_addressId=result[0].customeraddressid;        ",
+							"        console.log(\"Customer Address ID is: \" +engage_addressId);",
+							"        pm.globals.set('gaddressId2',engage_addressId);",
+							"        ",
+							"    }",
+							"    else if(custAddressLength>1)",
+							"    {",
+							"        tmp_message = 'Duplicate Customer Address has been created with the same name';",
+							"        console.log(tmp_message);",
+							"        pm.expect.fail(tmp_message);",
+							"    }",
+							"    else",
+							"    {",
+							"        tmp_message = 'No records exist with this Customer Address detail';",
+							"        console.log(tmp_message);",
+							"        pm.expect.fail(tmp_message);",
+							"    }",
+							" ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})?$expand=Contact_CustomerAddress($filter=addressnumber eq 2)",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					],
+					"query": [
+						{
+							"key": "$expand",
+							"value": "Contact_CustomerAddress($filter=addressnumber eq 2)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update 2nd Address of contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contcustomeraddressid2",
+							"pm.test(\"Updated contact's 2nd Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contcustomeraddressid2 = jsonData.customeraddressid;",
+							"",
+							"    console.log(\"Updated contact's 2nd Address\"); ",
+							"    ",
+							"}); ",
+							"",
+							"   pm.globals.set('gcontcustomeraddressid2',contcustomeraddressid2);",
+							"   setTimeout(function(){}, 75000); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"postalcode\": \"07036\",\r\n    \"city\": \"Linden\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gaddressId2}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses({{gaddressId2}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact-Address1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitudeup1;",
+							"    var ContLong = data.longitudeup1;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address1_latitude);",
+							"    var longitude = parseFloat(jsonData.address1_longitude);  ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(ContLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact-Address2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitudeAdd2;",
+							"    var ContLong = data.longitudeAdd2;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address2_latitude);",
+							"    var longitude = parseFloat(jsonData.address2_longitude);    ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(ContLong);",
+							"        });",
+							"",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Address2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Get Lat and Long of primary Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var AddLat = data.latitudeAdd2;",
+							"    var AddLong = data.longitudeAdd2;",
+							"    console.log('Latitude-CSV:' +AddLat);",
+							"    console.log('Longitude-CSV:' +AddLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.latitude);",
+							"    var longitude = parseFloat(jsonData.longitude);  ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(AddLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(AddLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcontcustomeraddressid2}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses({{gcontcustomeraddressid2}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get address with address number 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Fetching the Customer Address record with number 3\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    var result=jsonData.Contact_CustomerAddress;",
+							"    var custAddressLength=result.length;",
+							"    console.log('Length: ' +custAddressLength);",
+							"    var tmp_message;",
+							"    ",
+							"    if(custAddressLength===1)",
+							"    {",
+							"        //Data from Response(Json)",
+							"        var engage_address1=result[0].line1;",
+							"        var engage_address2=result[0].line2;",
+							"        var engage_address3=result[0].line3;",
+							"        var engage_city=result[0].city;",
+							"        var engage_country=result[0].cmc_countryregion;",
+							"        var engage_state=result[0].cmc_state;",
+							"        var engage_postal=result[0].postalcode;",
+							"    ",
+							"        var engage_addressId=result[0].customeraddressid;        ",
+							"        console.log(\"Customer Address ID is: \" +engage_addressId);",
+							"        pm.globals.set('gaddressId3',engage_addressId);",
+							"        ",
+							"    }",
+							"    else if(custAddressLength>1)",
+							"    {",
+							"        tmp_message = 'Duplicate Customer Address has been created with the same name';",
+							"        console.log(tmp_message);",
+							"        pm.expect.fail(tmp_message);",
+							"    }",
+							"    else",
+							"    {",
+							"        tmp_message = 'No records exist with this Customer Address detail';",
+							"        console.log(tmp_message);",
+							"        pm.expect.fail(tmp_message);",
+							"    }",
+							" ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})?$expand=Contact_CustomerAddress($filter=addressnumber eq 3)",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					],
+					"query": [
+						{
+							"key": "$expand",
+							"value": "Contact_CustomerAddress($filter=addressnumber eq 3)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update 3rd Address of contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contcustomeraddressid3;",
+							"pm.test(\"Updated contact's 3rd Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    contcustomeraddressid3 = jsonData.customeraddressid;",
+							"",
+							"    console.log(\"Updated contact's 3rd Address\"); ",
+							"    ",
+							"}); ",
+							"",
+							"   pm.globals.set('gcontcustomeraddressid3',contcustomeraddressid3);",
+							"   setTimeout(function(){}, 75000); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					},
+					{
+						"key": "OData-Version",
+						"value": "4.0"
+					},
+					{
+						"key": "OData-MaxVersion",
+						"value": "4.0"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"postalcode\": \"10001\",\r\n    \"city\": \"NewYork\"\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gaddressId3}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses({{gaddressId3}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact-Address1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitudeup1;",
+							"    var ContLong = data.longitudeup1;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address1_latitude);",
+							"    var longitude = parseFloat(jsonData.address1_longitude);  ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(ContLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact-Address2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitudeAdd2;",
+							"    var ContLong = data.longitudeAdd2;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address2_latitude);",
+							"    var longitude = parseFloat(jsonData.address2_longitude);    ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(ContLong);",
+							"        });",
+							"",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Contact-Address3",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Geo Code-Contact\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var ContLat = data.latitudeAdd3;",
+							"    var ContLong = data.longitudeAdd3;",
+							"    console.log('Latitude-CSV:' +ContLat);",
+							"    console.log('Longitude-CSV:' +ContLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.address3_latitude);",
+							"    var longitude = parseFloat(jsonData.address3_longitude);    ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(ContLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(ContLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/contacts({{gcontactid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"contacts({{gcontactid}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		},
+		{
+			"name": "Get laititude and Longitude-Address3",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Get Lat and Long of primary Address\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    //Reading values from CSV file",
+							"    var AddLat = data.latitudeAdd3;",
+							"    var AddLong = data.longitudeAdd3;",
+							"    console.log('Latitude-CSV:' +AddLat);",
+							"    console.log('Longitude-CSV:' +AddLong);",
+							"",
+							"    //Reading values from Response",
+							"    var latitude = parseFloat(jsonData.latitude);",
+							"    var longitude = parseFloat(jsonData.longitude);  ",
+							"    console.log('Latitude:' + latitude);",
+							"    console.log('Longitude:' + longitude);",
+							"    ",
+							"  pm.test(\"Validate Latitude\", function()",
+							"        {",
+							"            pm.expect(latitude).to.equal(AddLat);",
+							"        });\t\t",
+							"  pm.test(\"Validate Longitude\", function()",
+							"        {",
+							"            pm.expect(longitude).to.equal(AddLong);",
+							"        });",
+							"        ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/customeraddresses({{gcontcustomeraddressid3}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"customeraddresses({{gcontcustomeraddressid3}})"
+					]
+				},
+				"description": "Get laititude and Longitude"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "accessToken",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlNTUWRoSTFjS3ZoUUVEU0p4RTJnR1lzNDBRMCIsImtpZCI6IlNTUWRoSTFjS3ZoUUVEU0p4RTJnR1lzNDBRMCJ9.eyJhdWQiOiJodHRwczovL2F1cm9yYWNybTlxYS5jcm0uZHluYW1pY3MuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNzAwODQxMGYtMmUxOS00MzFmLWIwZDctN2JjYzJmY2FjZTNmLyIsImlhdCI6MTUyMDQyMzc2NiwibmJmIjoxNTIwNDIzNzY2LCJleHAiOjE1MjA0Mjc2NjYsImFjciI6IjEiLCJhaW8iOiJZMk5nWUZnY1BKdXhzR2NkOTh1SEQvKzFSL0pucEFhVWlxMlJybW5XVy92ZXhlZk1zdE1BIiwiYW1yIjpbInB3ZCJdLCJhcHBpZCI6ImQzYWNiYzllLTUyZmQtNDA3OC1iMWZmLTA3MmU3YWJhZWE2NCIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiVmVtdWxhIiwiZ2l2ZW5fbmFtZSI6IkFiaGluZXNoIiwiaXBhZGRyIjoiMTE1LjExMC44Mi4xNDIiLCJuYW1lIjoiQWJoaW5lc2ggVmVtdWxhIiwib2lkIjoiZGNlNzg5YTAtMWZiZC00NzQ2LTlmZDItMjkzY2NiMDdkMzZlIiwicHVpZCI6IjEwMDMwMDAwQTdBRjdEQzciLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzdWIiOiJBdFg0TUxXVktmRlRzWnFlQ0ZXSjdUb2oybDBwOTdVMF9IQ3RVYXJwa3pFIiwidGlkIjoiNzAwODQxMGYtMmUxOS00MzFmLWIwZDctN2JjYzJmY2FjZTNmIiwidW5pcXVlX25hbWUiOiJhYmhpbmVzaHZAYXVyb3JhY3JtOVFBLm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6ImFiaGluZXNodkBhdXJvcmFjcm05UUEub25taWNyb3NvZnQuY29tIiwidXRpIjoiMW5fYXVCV3p1VXlzRlM2U0t6UUxBQSIsInZlciI6IjEuMCIsIndpZHMiOlsiNjJlOTAzOTQtNjlmNS00MjM3LTkxOTAtMDEyMTc3MTQ1ZTEwIl19.T-CTmb8YG3yb7QVajCStjVJJ4c0XZRjynaagsC8E_Fopj5LM0MgL0RwGcP_WUNO2ny97vbdgJEzyi6yGqOv2go09sHpkYu20fVM8NgpYi78t-fdkf-_HBcDlfuDSTUIeaZd2E3DW3wswbYf81HRppz6yPvH6c9X_YeaF25xCFGuhBUm6F8cjZgh-myJB2LHt86pcVihJOJNxN-mLEPLAlunX0qrOmv7_7x50J6kkqHXig6DDIki63AoZFVufywCbx1YrQVOIkSodDOk77Cb_F_KWO4x0ZBgXA0QiIF9QWWceNbBxCI22PWuc73GenSQIeEQ3JjCWipPIICFzyHqC4A",
+				"type": "string"
+			},
+			{
+				"key": "tokenType",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

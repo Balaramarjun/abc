@@ -1,0 +1,3441 @@
+{
+	"info": {
+		"_postman_id": "4d86db2d-d528-41fa-b785-8d5b4cf9553b",
+		"name": "TC_747597_SuccessPlanAssignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DCRM Admin",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"//Genarate global session value",
+									"",
+									"var number = Math.floor(Math.random() * 1000);",
+									"pm.globals.set('globalsessionvalue',number)",
+									"",
+									"console.log(pm.globals.get(\"globalsessionvalue\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid, fullname;",
+									"pm.test(\"GetUserID\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname = jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" + fullname);",
+									"",
+									"});",
+									"pm.globals.set('guserid2', userid);",
+									"console.log('Systemuser:' + userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'admin@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var academicperiodid,academicPeriodname;",
+									"",
+									"pm.test(\"Academicperiodid Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    academicperiodid = jsonData.mshied_academicperiodid;",
+									"    academicPeriodname=jsonData.mshied_name;",
+									"",
+									"    console.log(\"Academic Period Name: \"+academicPeriodname);",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('gacademicperiodid',academicperiodid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"  var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(10, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"mshied_code\": \"{{$randomInt}}API-Aca-{{$randomInt}}{{globalsessionvalue}}\",\r\n    \"mshied_enddate\": \"{{timestampEndDate}}\",\r\n    \"mshied_name\": \"API-SuccessPlanAzure-{{$randomInt}}\",\r\n    \"mshied_startdate\": \"{{timestamp}}\"\r\n \r\n}\r\n\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_academicperiods",
+							"host": [
+								"{{Eresource_URL}}mshied_academicperiods"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DCRM Student Advisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid, fullname;",
+									"pm.test(\"GetUserID\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname = jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" + fullname);",
+									"",
+									"});",
+									"pm.globals.set('guserid4', userid);",
+									"console.log('Systemuser:' + userid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress  eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress  eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Contact records",
+			"item": [
+				{
+					"name": "Get SourceMethod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceMethodid;",
+									"",
+									"pm.test(\"Source Method record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceMethodid = jsonData.value[0].cmc_sourcemethodid;",
+									"    var sourceMethodName = jsonData.value[0].cmc_sourcemethodname;",
+									"    console.log('SourceMethod Name is: ' + sourceMethodName);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gsourceMethodid1', sourceMethodid);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcemethods",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcemethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SourceCategory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var sourceCategoryid;",
+									"",
+									"pm.test(\"Source category record Fetched\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204]);",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    sourceCategoryid = jsonData.value[0].cmc_sourcecategoryid;",
+									"    var sourceCategoryName = jsonData.value[0].cmc_sourcecategoryname;",
+									"    console.log('SourceCategory Name is: ' + sourceCategoryName);",
+									"",
+									"});",
+									"",
+									"pm.globals.set('gsourceCategoryid1', sourceCategoryid);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_sourcecategories",
+							"host": [
+								"{{Eresource_URL}}cmc_sourcecategories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact1 with Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact 1 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var contact_id = jsonData.contactid;",
+									"    console.log('Contact ID: ' +contact_id);",
+									"    var contactname = jsonData.fullname;",
+									"    console.log('Contact name: ' +contactname);",
+									"    var academicperiodvalue = jsonData._mshied_currentacademicperiodid_value;",
+									"    console.log('Current academic Period value:' +academicperiodvalue);",
+									"    ",
+									"    pm.globals.set('gcontactid1',contact_id);",
+									"    pm.globals.set('gcontactname1',contactname);",
+									"   ",
+									"    var academicperiod=pm.globals.get(\"gacademicperiodid\");",
+									"    ",
+									"    pm.test(\"Academic Period associated to contact\", function()",
+									"        {",
+									"            pm.expect(academicperiodvalue).to.equal(academicperiod);",
+									"        });",
+									"});",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}} 1 {{$randomInt}} \",\r\n    \"lastname\": \"SuccessPlanStatic{{$randomInt}}\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\r\n  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact2 without Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact 2 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var contact_id = jsonData.contactid;",
+									"    console.log('Contact ID: ' +contact_id);",
+									"    var contactname = jsonData.fullname;",
+									"    console.log('Contact name: ' +contactname);",
+									"    var academicperiodvalue = jsonData._mshied_currentacademicperiodid_value;",
+									"    console.log('Current academic Period value:' +academicperiodvalue);",
+									"        ",
+									"    pm.globals.set('gcontactid2',contact_id);",
+									"    pm.globals.set('gcontactname2',contactname);",
+									"    ",
+									"    pm.test(\"Academic Period is not associated to contact\", function()",
+									"        {",
+									"            pm.expect(academicperiodvalue).to.equal(null);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}} 2 {{$randomInt}} \",\r\n    \"lastname\": \"SuccessPlanStatic {{$randomInt}}\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\"\r\n  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact3 with Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact 3 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var contact_id = jsonData.contactid;",
+									"    console.log('Contact ID: ' +contact_id);",
+									"    var contactname = jsonData.fullname;",
+									"    console.log('Contact name: ' +contactname);",
+									"    var academicperiodvalue = jsonData._mshied_currentacademicperiodid_value;",
+									"    console.log('Current academic Period value:' +academicperiodvalue);",
+									"    ",
+									"    pm.globals.set('gcontactid3',contact_id);",
+									"    pm.globals.set('gcontactname3',contactname);",
+									"   ",
+									"    var academicperiod=pm.globals.get(\"gacademicperiodid\");",
+									"    ",
+									"    pm.test(\"Academic Period associated to contact\", function()",
+									"        {",
+									"            pm.expect(academicperiodvalue).to.equal(academicperiod);",
+									"        });",
+									"});",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}} 3FN {{globalsessionvalue}}\",\r\n    \"lastname\": \"{{globalsessionvalue}}{{$randomLastName}} {{$randomInt}}\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\r\n  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact4 with Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact 4 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var contact_id = jsonData.contactid;",
+									"    console.log('Contact ID: ' +contact_id);",
+									"    var contactname = jsonData.fullname;",
+									"    console.log('Contact name: ' +contactname);",
+									"    var academicperiodvalue = jsonData._mshied_currentacademicperiodid_value;",
+									"    console.log('Current academic Period value:' +academicperiodvalue);",
+									"    ",
+									"    pm.globals.set('gcontactid4',contact_id);",
+									"    pm.globals.set('gcontactname4',contactname);",
+									"   ",
+									"    var academicperiod=pm.globals.get(\"gacademicperiodid\");",
+									"    ",
+									"    pm.test(\"Academic Period associated to contact\", function()",
+									"        {",
+									"            pm.expect(academicperiodvalue).to.equal(academicperiod);",
+									"        });",
+									"});",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}} 4FN {{globalsessionvalue}} \",\r\n    \"lastname\": \"{{globalsessionvalue}}{{$randomLastName}} {{$randomInt}}\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\r\n  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact5 with Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact 5 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var contact_id = jsonData.contactid;",
+									"    console.log('Contact ID: ' +contact_id);",
+									"    var contactname = jsonData.fullname;",
+									"    console.log('Contact name: ' +contactname);",
+									"    var academicperiodvalue = jsonData._mshied_currentacademicperiodid_value;",
+									"    console.log('Current academic Period value:' +academicperiodvalue);",
+									"    ",
+									"    pm.globals.set('gcontactid5',contact_id);",
+									"    pm.globals.set('gcontactname5',contactname);",
+									"   ",
+									"    var academicperiod=pm.globals.get(\"gacademicperiodid\");",
+									"    ",
+									"    pm.test(\"Academic Period associated to contact\", function()",
+									"        {",
+									"            pm.expect(academicperiodvalue).to.equal(academicperiod);",
+									"        });",
+									"});",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}} 5FN {{globalsessionvalue}} \",\r\n    \"lastname\": \"{{globalsessionvalue}}{{$randomLastName}} {{$randomInt}}\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\r\n  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact6 without Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact 6 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var contact_id = jsonData.contactid;",
+									"    console.log('Contact ID: ' +contact_id);",
+									"    var contactname = jsonData.fullname;",
+									"    console.log('Contact name: ' +contactname);",
+									"    var academicperiodvalue = jsonData._mshied_currentacademicperiodid_value;",
+									"    console.log('Current academic Period value:' +academicperiodvalue);",
+									"        ",
+									"    pm.globals.set('gcontactid6',contact_id);",
+									"    pm.globals.set('gcontactname6',contactname);",
+									"    ",
+									"    pm.test(\"Academic Period is not associated to contact\", function()",
+									"        {",
+									"            pm.expect(academicperiodvalue).to.equal(null);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}} 6FN {{globalsessionvalue}} \",\r\n    \"lastname\": \"{{globalsessionvalue}}{{$randomLastName}} {{$randomInt}}\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\"\r\n  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create static and Dynamic Marketing List",
+			"item": [
+				{
+					"name": "Create Static Marketing List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var listid = jsonData.listid;",
+									"    ",
+									"    var mlname =jsonData.listname; ",
+									"    console.log('Marketing List name:' +mlname);",
+									"    var stateid = jsonData.statecode;",
+									"    console.log('Statecode:'+stateid);",
+									" ",
+									" if(stateid ===0)",
+									"   {  ",
+									"        var  active=\"is Activated\";",
+									"        console.log(mlname +active);",
+									"   } ",
+									" else",
+									"    { ",
+									"        var deactive=\"is De-Activated\";",
+									"        console.log(mlname +deactive);",
+									"     }",
+									"     ",
+									"     pm.globals.set('glistid', listid);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listname\": \"Static ML-Successplan{{$randomInt}}1{{$randomInt}}\",\r\n    \"type\": false,\r\n    \"createdfromcode\": 2,\r\n    \"cmc_marketinglisttype\": \"175490000\",\r\n    \"description\": \"Successplan static ML\",\r\n    \"source\": \"Contact\"\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}lists",
+							"host": [
+								"{{Eresource_URL}}lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding Contact1 and contact2 to Static ML",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact Added to Marketing List\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+									"   ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"List\": {\r\n        \"listid\": \"{{glistid}}\",\r\n        \"@odata.type\": \"Microsoft.Dynamics.CRM.list\"\r\n    },\r\n    \"Members\": [\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.contact\",\r\n            \"contactid\": \"{{gcontactid1}}\"\r\n        },\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.contact\",\r\n            \"contactid\": \"{{gcontactid2}}\"\r\n        }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}AddListMembersList",
+							"host": [
+								"{{Eresource_URL}}AddListMembersList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Dynamic ML for adding contacts 3,4,5 and 6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var listid,SGName,expirationdate,membercount;",
+									"pm.test(\"Student Group Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    listid = jsonData.listid;",
+									"    membercount =jsonData.membercount;     ",
+									"    SGName =jsonData.listname;   ",
+									" ",
+									"});",
+									"",
+									"pm.globals.set('glistid1', listid);",
+									"console.log(\"SGName: \" +SGName);",
+									"console.log(\"listid: \" +listid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"listname\":\"Dynamic Successplan{{$randomFullName}}\",\r\n\"description\": \"{{$randomAbbreviation}}\",\r\n\"createdfromcode\":2,\r\n\"type\": true,\r\n\"query\": \"<fetch version=\\\"1.0\\\" output-format=\\\"xml-platform\\\" mapping=\\\"logical\\\" distinct=\\\"true\\\">\\n    <entity name=\\\"contact\\\">\\n        <attribute name=\\\"fullname\\\"/>\\n        <attribute name=\\\"telephone1\\\"/>\\n        <attribute name=\\\"contactid\\\"/>\\n        <order attribute=\\\"fullname\\\" descending=\\\"false\\\"/>\\n        <filter type=\\\"and\\\">\\n            <condition attribute=\\\"lastname\\\" operator=\\\"like\\\" value=\\\"{{globalsessionvalue}}%\\\"/>\\n        </filter>\\n    </entity>\\n</fetch>\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}lists",
+							"host": [
+								"{{Eresource_URL}}lists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SuccessPlanTemplate & SuccessPlanToDoTemplate",
+			"item": [
+				{
+					"name": "Create Successplan Template1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan Template1 created that will be linked with SuccessPlan ToDo Templates\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    pm.globals.set('gsuccessplanTemplateid', jsonData.cmc_successplantemplateid);",
+									"    var successplantemplatename = jsonData.cmc_successplantemplatename;",
+									"    console.log(\"Success Plan Template name:\" +successplantemplatename);",
+									"    pm.globals.set(\"gsuccessplantemplatename\", successplantemplatename );",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_successplantemplatename\": \"SPTemplateAzure 1{{$randomInt}}API {{$randomInt}}\",\r\n    \"cmc_portaldescription\": \"SPTemplateAzure{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Successplan Template2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan Template 2 created that will not be linked with any SuccessPlan ToDo Templates\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    pm.globals.set('gsuccessplanTemplateid1', jsonData.cmc_successplantemplateid);",
+									"    var successplantemplatename = jsonData.cmc_successplantemplatename;",
+									"    console.log(\"Success Plan Template2 name:\" +successplantemplatename);",
+									"    pm.globals.set(\"gsuccessplantemplatename1\", successplantemplatename );",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_successplantemplatename\": \"SPTemplateAzure 2{{$randomInt}}API {{$randomInt}}\",\r\n    \"cmc_portaldescription\": \"SPTemplateAzure{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Successplan Template2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan Template 2 is updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    pm.globals.set('gsuccessplanTemplateid2', jsonData.cmc_successplantemplateid);",
+									"    var successplantemplatename = jsonData.cmc_successplantemplatename;",
+									"    console.log(\"Success Plan Template name:\" +successplantemplatename);",
+									"    pm.globals.set(\"gsuccessplantemplatename2\", successplantemplatename );",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"cmc_successplantemplatename\": \"SPTemplateAzureUpdate 2{{$randomInt}}API {{$randomInt}}\",\r\n    \"cmc_portaldescription\": \"SPTemplateAzure{{$randomInt}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantemplates({{gsuccessplanTemplateid1}})",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantemplates({{gsuccessplanTemplateid1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create SP TDT-Static Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan Static to do Template created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplantodotemplateid= jsonData.cmc_successplantodotemplateid;",
+									"    var successplantodotemplatename= jsonData.cmc_successplantodotemplatename;",
+									"    var parentsuccessplanid=jsonData._cmc_successplantemplateid_value;",
+									"    var duedateStatic=jsonData.cmc_duedatestatic;",
+									"    ",
+									"    console.log('Successplan Todo template name:' +successplantodotemplatename);",
+									"    ",
+									"    pm.globals.set('gsuccessplantodotemplateid',successplantodotemplateid);",
+									"    pm.globals.set('gsuccessplantodotemplatename',successplantodotemplatename);",
+									"    pm.globals.set('gduedateStatic',duedateStatic);",
+									"    ",
+									"    var parentsuccessplanidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"Parent Successplan template association check\", function()",
+									"        {",
+									"            pm.expect(parentsuccessplanid).to.equal(parentsuccessplanidglobal);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_successplantodotemplatename\": \"SPToDoTemplate-static-{{$randomInt}}API{{$randomInt}}\",\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\",\n    \"cmc_duedatecalculationtype\": \"175490000\",\n    \"cmc_duedatestatic\": \"{{current_timestamp}}\",\n    \"cmc_todocategoryid@odata.bind\": \"/cmc_successplantodotemplates(D185C9BC-F881-E711-8100-5065F38B0191)\",\n    \"cmc_description\": \"Success plan to do template with static due date calculation type\",\n    \"cmc_ownershiptype\": \"175490000\",\n    \"cmc_requiredoptional\": \"175490000\",\n    \"cmc_studentcancomplete\": false\n   \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create SP TDT-Calculated.Before.AssignmentDate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan to do Template of calculated type Before.Assignment Date created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplantodotemplateid1=jsonData.cmc_successplantodotemplateid;",
+									"    var duedatecalculationtype=jsonData.cmc_duedatecalculationtype;",
+									"    var parentsuccessplanid=jsonData._cmc_successplantemplateid_value;",
+									"    var cmc_successplantodotemplatename1=jsonData.cmc_successplantodotemplatename;",
+									"    ",
+									"    console.log(\"success plan todo template name:\"+cmc_successplantodotemplatename1);",
+									"    pm.globals.set(\"gduedatecalculationtype1\", duedatecalculationtype);",
+									"    pm.globals.set(\"gsuccessplantodotemplateid1\", successplantodotemplateid1 );",
+									"    pm.globals.set(\"gsuccessplantodotemplatename1\", cmc_successplantodotemplatename1);",
+									"    ",
+									"    var parentsuccessplanidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"Parent Successplan template association check\", function()",
+									"        {",
+									"            pm.expect(parentsuccessplanid).to.equal(parentsuccessplanidglobal);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_successplantodotemplatename\": \"SPToDoTemplate-Before AssignmentDate{{$randomInt}} API{{$randomInt}}\",\r\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\",\r\n    \"cmc_duedatecalculationtype\": \"175490001\",\r\n    \"cmc_duedatenumberofdays\": 7,\r\n    \"cmc_duedatedaysdirection\": \"175490000\",\r\n    \"cmc_duedatecalculationfield\": \"175490000\"    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create SP TDT-Calculated.After.AssignmentDate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan to do Template of calculated type After.Assignment Date created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplantodotemplateid2=jsonData.cmc_successplantodotemplateid;",
+									"    var duedatecalculationtype=jsonData.cmc_duedatecalculationtype;",
+									"    var cmc_successplantodotemplatename2=jsonData.cmc_successplantodotemplatename;",
+									"    ",
+									"    console.log(\"cmc_successplantodotemplatename:\"+cmc_successplantodotemplatename2);",
+									"    pm.globals.set(\"gduedatecalculationtype2\", duedatecalculationtype );",
+									"    pm.globals.set(\"gsuccessplantodotemplateid2\", successplantodotemplateid2 );",
+									"    pm.globals.set(\"gsuccessplantodotemplatename2\", cmc_successplantodotemplatename2);",
+									"    ",
+									"    var parentsuccessplanid=jsonData._cmc_successplantemplateid_value;",
+									"    var parentsuccessplanidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"Parent Successplan template association check\", function()",
+									"        {",
+									"            pm.expect(parentsuccessplanid).to.equal(parentsuccessplanidglobal);",
+									"        });",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_successplantodotemplatename\": \"SPToDoTemplate-After AssignmentDate{{$randomInt}} API {{$randomInt}}\",\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\",\n    \"cmc_duedatecalculationtype\": \"175490001\",\n    \"cmc_duedatenumberofdays\": 7,\n    \"cmc_duedatedaysdirection\": \"175490001\",\n    \"cmc_duedatecalculationfield\": \"175490000\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create SP TDT-Calculated.Before.EndDateAcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan to do Template of calculated type Before.EndDateOfAcademicPeriod created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplantodotemplateid3=jsonData.cmc_successplantodotemplateid;",
+									"    var duedatecalculationtype=jsonData.cmc_duedatecalculationtype;",
+									"    var cmc_successplantodotemplatename3=jsonData.cmc_successplantodotemplatename;",
+									"    ",
+									"    console.log(\"cmc_successplantodotemplatename:\"+cmc_successplantodotemplatename3);",
+									"    pm.globals.set(\"gduedatecalculationtype3\", duedatecalculationtype );",
+									"    pm.globals.set(\"gsuccessplantodotemplateid3\", successplantodotemplateid3 );",
+									"    pm.globals.set(\"gsuccessplantodotemplatename3\", cmc_successplantodotemplatename3);",
+									"    ",
+									"    var parentsuccessplanid=jsonData._cmc_successplantemplateid_value;",
+									"    var parentsuccessplanidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"Parent Successplan template association check\", function()",
+									"        {",
+									"            pm.expect(parentsuccessplanid).to.equal(parentsuccessplanidglobal);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_successplantodotemplatename\": \"SPToDoTemplate-Before EndAcademicPeriod{{$randomInt}}API{{$randomInt}}\",\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\",\n    \"cmc_duedatecalculationtype\": \"175490001\",\n    \"cmc_duedatenumberofdays\": 7,\n    \"cmc_duedatedaysdirection\": \"175490000\",\n    \"cmc_duedatecalculationfield\": \"175490001\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create SP TDT-Calculated.After.EndDateAcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan to do Template of calculated type After.EndDateOfAcademicPeriod created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplantodotemplateid4=jsonData.cmc_successplantodotemplateid;",
+									"    var duedatecalculationtype=jsonData.cmc_duedatecalculationtype;",
+									"    var cmc_successplantodotemplatename4=jsonData.cmc_successplantodotemplatename;",
+									"    ",
+									"    console.log(\"cmc_successplantodotemplatename:\"+cmc_successplantodotemplatename4);",
+									"    pm.globals.set(\"gduedatecalculationtype4\", duedatecalculationtype);",
+									"    pm.globals.set(\"gsuccessplantodotemplateid4\", successplantodotemplateid4);",
+									"    pm.globals.set(\"gsuccessplantodotemplatename4\", cmc_successplantodotemplatename4);",
+									"    ",
+									"    var parentsuccessplanid=jsonData._cmc_successplantemplateid_value;",
+									"    var parentsuccessplanidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"Parent Successplan template association check\", function()",
+									"        {",
+									"            pm.expect(parentsuccessplanid).to.equal(parentsuccessplanidglobal);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_successplantodotemplatename\": \"SPToDoTemplate-After EndAcademicPeriod{{$randomInt}}API{{$randomInt}}\",\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\",\n    \"cmc_duedatecalculationtype\": \"175490001\",\n    \"cmc_duedatenumberofdays\": 7,\n    \"cmc_duedatedaysdirection\": \"175490001\",\n    \"cmc_duedatecalculationfield\": \"175490001\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create SP TDT-Calculated.Before.StartDateAcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan to do Template of calculated type Before.StartDateOfAcademicPeriod created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplantodotemplateid5=jsonData.cmc_successplantodotemplateid;",
+									"    var duedatecalculationtype=jsonData.cmc_duedatecalculationtype;",
+									"    var cmc_successplantodotemplatename5=jsonData.cmc_successplantodotemplatename;",
+									"    ",
+									"    console.log(\"cmc_successplantodotemplatename:\"+cmc_successplantodotemplatename5);",
+									"    pm.globals.set(\"gduedatecalculationtype5\", duedatecalculationtype);",
+									"    pm.globals.set(\"gsuccessplantodotemplateid5\", successplantodotemplateid5 );",
+									"    pm.globals.set(\"gsuccessplantodotemplatename5\", cmc_successplantodotemplatename5);",
+									"    ",
+									"    var parentsuccessplanid=jsonData._cmc_successplantemplateid_value;",
+									"    var parentsuccessplanidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"Parent Successplan template association check\", function()",
+									"        {",
+									"            pm.expect(parentsuccessplanid).to.equal(parentsuccessplanidglobal);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_successplantodotemplatename\": \"SPToDoTemplate-Before StartOfAcademicPeriod{{$randomInt}}API{{$randomInt}}\",\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\",\n    \"cmc_duedatecalculationtype\": \"175490001\",\n    \"cmc_duedatenumberofdays\": 7,\n    \"cmc_duedatedaysdirection\": \"175490000\",\n    \"cmc_duedatecalculationfield\": \"175490002\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create SP TDT-Calculated.After.StartDateAcademicPeriod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan to do Template of calculated type After.StartDateOfAcademicPeriod created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplantodotemplateid6=jsonData.cmc_successplantodotemplateid;",
+									"    var duedatecalculationtype=jsonData.cmc_duedatecalculationtype;",
+									"    var cmc_successplantodotemplatename6=jsonData.cmc_successplantodotemplatename;",
+									"    ",
+									"    console.log(\"cmc_successplantodotemplatename:\"+cmc_successplantodotemplatename6);",
+									"    pm.globals.set(\"gduedatecalculationtype6\", duedatecalculationtype);",
+									"    pm.globals.set(\"gsuccessplantodotemplateid6\", successplantodotemplateid6 );",
+									"    pm.globals.set(\"gsuccessplantodotemplatename6\", cmc_successplantodotemplatename6);",
+									"    ",
+									"    var parentsuccessplanid=jsonData._cmc_successplantemplateid_value;",
+									"    var parentsuccessplanidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"Parent Successplan template association check\", function()",
+									"        {",
+									"            pm.expect(parentsuccessplanid).to.equal(parentsuccessplanidglobal);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cmc_successplantodotemplatename\": \"SPToDoTemplate-After StartOfAcademicPeriod{{$randomInt}}API{{$randomInt}}\",\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\",\n    \"cmc_duedatecalculationtype\": \"175490001\",\n    \"cmc_duedatenumberofdays\": 7,\n    \"cmc_duedatedaysdirection\": \"175490001\",\n    \"cmc_duedatecalculationfield\": \"175490002\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SuccessPlanAssignment and add ML to SuccessPlanAssgmt",
+			"item": [
+				{
+					"name": "Create Success Plan Assignment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"successplanassignment is created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([201,202,204,200,]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanassignmentid =jsonData.cmc_successplanassignmentid;",
+									"    var successplanassignmentname= jsonData.cmc_successplanassignmentname;",
+									"    console.log('SuccessPlanAssignment Name:' +successplanassignmentname);",
+									"    var successplantemplateid=jsonData._cmc_successplantemplateid_value;",
+									"    var assignedOwnerid=jsonData._ownerid_value;",
+									"    var parentsuccessplantemplateidglobal=pm.globals.get(\"gsuccessplanTemplateid\");",
+									"    ",
+									"    pm.test(\"SuccessPlanAssignment linked to correct successplan template check\", function()",
+									"        {",
+									"            pm.expect(successplantemplateid).to.equal(parentsuccessplantemplateidglobal);",
+									"        });",
+									"    ",
+									"    pm.globals.set('gsuccessplanassignmentid',successplanassignmentid);",
+									"    pm.globals.set('gassignedOwnerid',assignedOwnerid);",
+									"}); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cmc_successplanassignmentname\": \"SucessPlan Assignment{{$randomInt}}API {{globalsessionvalue}}\",\r\n    \"cmc_successplantemplateid@odata.bind\": \"/cmc_successplantemplates({{gsuccessplanTemplateid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplanassignments",
+							"host": [
+								"{{Eresource_URL}}cmc_successplanassignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Success Plan Assignment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"successplanassignment is updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([201,202,204,200,]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanassignmentid =jsonData.cmc_successplanassignmentid;",
+									"    var successplanassignmentname= jsonData.cmc_successplanassignmentname;",
+									"    console.log('SuccessPlanAssignment Name:' +successplanassignmentname);",
+									" ",
+									"});",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_successplanassignmentname\":\"SucessPlan Assignment Azure Update{{$randomInt}}API {{$randomInt}}\"\r\n\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding ML1 To SuccessPlanAssignment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Marketing List is added to successplanassignment\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var marketinglistid=jsonData.listid;",
+									"    if(marketinglistid === pm.globals.get('glistid'))",
+									"    {",
+									"        console.log(\"Marketing List record is correctly linked to SuccessplanAssignment\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Marketing List record is not linked to SuccessplanAssignment\");    ",
+									"     ",
+									"    }",
+									" ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\":\"{{Eresource_URL}}lists({{glistid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})/cmc_successplanassignment_list/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})"
+							],
+							"path": [
+								"cmc_successplanassignment_list",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding ML2 To SuccessPlanAssignment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Marketing List is added to successplanassignment\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([204,200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var marketinglistid=jsonData.listid;",
+									"    if(marketinglistid === pm.globals.get('glistid1'))",
+									"    {",
+									"        console.log(\"Marketing List record is correctly linked to SuccessplanAssignment\");",
+									"    }",
+									"    else",
+									"    {",
+									"        console.log(\"Marketing List record is not linked to SuccessplanAssignment\");    ",
+									"     ",
+									"    }",
+									" ",
+									"});",
+									"setTimeout(function(){}, 130000); ",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"description": " ",
+								"key": "OData-Version",
+								"value": "4.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"@odata.id\":\"{{Eresource_URL}}lists({{glistid1}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})/cmc_successplanassignment_list/$ref",
+							"host": [
+								"{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})"
+							],
+							"path": [
+								"cmc_successplanassignment_list",
+								"$ref"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verify SuccessPlanTemplate assignment under Contacts after Azure run",
+			"item": [
+				{
+					"name": "Verify SuccessplanAssignment for Contacts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify success plan assignments \", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"",
+									"    var contactglobal1 =pm.globals.get('gcontactid1');",
+									"    var contactglobal2 =pm.globals.get('gcontactid2');",
+									"    var contactglobal3 =pm.globals.get('gcontactid3');",
+									"    var contactglobal4 =pm.globals.get('gcontactid4');",
+									"    var contactglobal5 =pm.globals.get('gcontactid5');",
+									"    var contactglobal6 =pm.globals.get('gcontactid6');",
+									"    console.log('Contacts that are linked to Success Plan Assignment record are :'+contactglobal1 +' , '+' '+contactglobal2 +' , '+' '+contactglobal3 +' , '+' '+contactglobal4 +' , '+' '+contactglobal5 +' , '+' '+contactglobal6);",
+									"    ",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplanassignment;",
+									"    ",
+									"    if (result.length===4)",
+									"     {",
+									"        var contact1=result[0].contactid;",
+									"        var contact2=result[1].contactid;",
+									"        var contact3=result[2].contactid;",
+									"        var contact4=result[3].contactid;",
+									"",
+									"        console.log('Contacts that are linked to Success Plan Assignment record are :'+contact1 +' , '+' '+contact2 +' , '+' '+contact3 +' , '+' '+contact4);",
+									"        console.log(\"4 contacts which have academic period linked are assigned with successplan template correctly\")",
+									"     }",
+									"     else",
+									"     {",
+									"         throw new Error(\"Success Plan is not assigned to contact1 ,contact3, contact4, contact5 since azure funtion is not run\");",
+									"     }",
+									"    ",
+									" });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})?$expand=cmc_contact_successplanassignment",
+							"host": [
+								"{{Eresource_URL}}cmc_successplanassignments({{gsuccessplanassignmentid}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplanassignment"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Successplan under Contact1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify success plan under contact1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplan_assignedtoid;",
+									"    ",
+									"    if (result.length===0)",
+									"    {",
+									"           throw new Error(\"Success Plan Template is not assigned to contact1, Please check!!\");",
+									"    }",
+									"    else",
+									"    {  ",
+									"            //Success plan 1 validation",
+									"            var successplanid= result[0].cmc_successplanid;",
+									"            pm.globals.set('gsuccessplanid', successplanid); ",
+									"            var successplanname= result[0].cmc_successplanname;",
+									"            var successplanautoname= pm.globals.get('gsuccessplantemplatename')+\" \"+\"-\"+\" \"+pm.globals.get('gcontactname1');",
+									"            console.log('successplanid is:' +successplanid +',' +'successplanname is:'+successplanname+',' +'successplanautoname is: ' +successplanautoname);",
+									"",
+									"            pm.test(\"Workflow 'Success Plan - Auto name' record 1 check\", function()",
+									"                {",
+									"                    pm.expect(successplanname).to.equal(successplanautoname);",
+									"                });",
+									"    ",
+									"    ",
+									"    ",
+									"    }",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid1}})?$expand=cmc_contact_successplan_assignedtoid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid1}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplan_assignedtoid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Todo's linked to Successplan under Contact1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successplanid1;",
+									"pm.test(\"Validate Todo's linked under contact1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanid1=pm.globals.get('gsuccessplanid');",
+									"    var result =jsonData.cmc_contact_todo_assignedtostudentid;",
+									"    ",
+									"    ",
+									"    if(result.length===0)",
+									"    {",
+									"        throw new Error(\"Success Plan Template is not assigned to contact1 and hence no todos are present, Please check!!\");",
+									"    }",
+									"    else",
+									"    {",
+									"        for(var i=0;i<result.length ;i++)",
+									"        {",
+									"            if(result[i]._cmc_successplanid_value===successplanid1)",
+									"            {",
+									"\t\t\t\tvar todoid= result[i].cmc_todoid;",
+									"\t\t\t\tvar todoname= result[i].cmc_todoname;",
+									"\t\t\t\tvar parentsuccessplanid=result[i]._cmc_successplanid_value;",
+									"\t\t\t\tconsole.log('todoname is:'+todoname);",
+									"",
+									"            }",
+									"        }",
+									"    }",
+									" });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid1}})?$expand=cmc_contact_todo_assignedtostudentid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid1}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_todo_assignedtostudentid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Successplan under Contact2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Verify success plan under contact2\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplan_assignedtoid;",
+									"    ",
+									"    if (result.length===0)",
+									"    {",
+									"        console.log('Success Plan is not assigned to contact2 since current academic period is not linked. Also associated Todo templates under this Successplan template will also not appear');",
+									"            ",
+									"    }",
+									"    else",
+									"    {",
+									"        throw new Error(\"Success Plan Template is assigned to contact 2, which is incorrect\");",
+									"    ",
+									"    }",
+									" ",
+									" });",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid2}})?$expand=cmc_contact_successplan_assignedtoid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid2}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplan_assignedtoid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Successplan under Contact3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify success plan under contact3\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplan_assignedtoid;",
+									"    ",
+									"    if (result.length===0)",
+									"    {",
+									"           throw new Error(\"Success Plan Template is not assigned to contact3, Please check!!\");",
+									"    }",
+									"    else",
+									"    {  ",
+									"            //Success plan 1 validation",
+									"            var successplanid= result[0].cmc_successplanid;",
+									"            pm.globals.set('gsuccessplanid3', successplanid); ",
+									"            var successplanname= result[0].cmc_successplanname;",
+									"            var successplanautoname= pm.globals.get('gsuccessplantemplatename')+\" \"+\"-\"+\" \"+pm.globals.get('gcontactname3');",
+									"            console.log('successplanid is:' +successplanid +',' +'successplanname is:'+successplanname+',' +'successplanautoname is: ' +successplanautoname);",
+									"",
+									"            pm.test(\"Workflow 'Success Plan - Auto name' record 3 check\", function()",
+									"                {",
+									"                    pm.expect(successplanname).to.equal(successplanautoname);",
+									"                });",
+									"    ",
+									"    ",
+									"    ",
+									"    }",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid3}})?$expand=cmc_contact_successplan_assignedtoid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid3}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplan_assignedtoid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Todo's linked to Successplan under Contact3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successplanid1;",
+									"pm.test(\"Validate Todo's linked under contact3\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanid1=pm.globals.get('gsuccessplanid3');",
+									"    var result =jsonData.cmc_contact_todo_assignedtostudentid;",
+									"    ",
+									"    ",
+									"    if(result.length===0)",
+									"    {",
+									"        throw new Error(\"Success Plan Template is not assigned to contact3 and hence no todos are present, Please check!!\");",
+									"    }",
+									"    else",
+									"    {",
+									"        for(var i=0;i<result.length ;i++)",
+									"        {",
+									"            if(result[i]._cmc_successplanid_value===successplanid1)",
+									"            {",
+									"\t\t\t\tvar todoid= result[i].cmc_todoid;",
+									"\t\t\t\tvar todoname= result[i].cmc_todoname;",
+									"\t\t\t\tvar parentsuccessplanid=result[i]._cmc_successplanid_value;",
+									"\t\t\t\tconsole.log('todoname is:'+todoname);",
+									"",
+									"            }",
+									"        }",
+									"    }",
+									" });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid3}})?$expand=cmc_contact_todo_assignedtostudentid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid3}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_todo_assignedtostudentid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Successplan under Contact4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify success plan under contact4\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplan_assignedtoid;",
+									"    ",
+									"    if (result.length===0)",
+									"    {",
+									"           throw new Error(\"Success Plan Template is not assigned to contact4, Please check!!\");",
+									"    }",
+									"    else",
+									"    {  ",
+									"            //Success plan 1 validation",
+									"            var successplanid= result[0].cmc_successplanid;",
+									"            pm.globals.set('gsuccessplanid4', successplanid); ",
+									"            var successplanname= result[0].cmc_successplanname;",
+									"            var successplanautoname= pm.globals.get('gsuccessplantemplatename')+\" \"+\"-\"+\" \"+pm.globals.get('gcontactname4');",
+									"            console.log('successplanid is:' +successplanid +',' +'successplanname is:'+successplanname+',' +'successplanautoname is: ' +successplanautoname);",
+									"",
+									"            pm.test(\"Workflow 'Success Plan - Auto name' record 4 check\", function()",
+									"                {",
+									"                    pm.expect(successplanname).to.equal(successplanautoname);",
+									"                });",
+									"    ",
+									"    ",
+									"    ",
+									"    }",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid4}})?$expand=cmc_contact_successplan_assignedtoid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid4}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplan_assignedtoid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Todo's linked to Successplan under Contact4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successplanid1;",
+									"pm.test(\"Validate Todo's linked under contact4\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanid1=pm.globals.get('gsuccessplanid4');",
+									"    var result =jsonData.cmc_contact_todo_assignedtostudentid;",
+									"    ",
+									"    ",
+									"    if(result.length===0)",
+									"    {",
+									"        throw new Error(\"Success Plan Template is not assigned to contact4 and hence no todos are present, Please check!!\");",
+									"    }",
+									"    else",
+									"    {",
+									"        for(var i=0;i<result.length ;i++)",
+									"        {",
+									"            if(result[i]._cmc_successplanid_value===successplanid1)",
+									"            {",
+									"\t\t\t\tvar todoid= result[i].cmc_todoid;",
+									"\t\t\t\tvar todoname= result[i].cmc_todoname;",
+									"\t\t\t\tvar parentsuccessplanid=result[i]._cmc_successplanid_value;",
+									"\t\t\t\tconsole.log('todoname is:'+todoname);",
+									"",
+									"            }",
+									"        }",
+									"    }",
+									" });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid4}})?$expand=cmc_contact_todo_assignedtostudentid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid4}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_todo_assignedtostudentid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Successplan under Contact5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify success plan under contact5\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplan_assignedtoid;",
+									"    ",
+									"    if (result.length===0)",
+									"    {",
+									"           throw new Error(\"Success Plan Template is not assigned to contact5, Please check!!\");",
+									"    }",
+									"    else",
+									"    {  ",
+									"            //Success plan 1 validation",
+									"            var successplanid= result[0].cmc_successplanid;",
+									"            pm.globals.set('gsuccessplanid5', successplanid); ",
+									"            var successplanname= result[0].cmc_successplanname;",
+									"            var successplanautoname= pm.globals.get('gsuccessplantemplatename')+\" \"+\"-\"+\" \"+pm.globals.get('gcontactname5');",
+									"            console.log('successplanid is:' +successplanid +',' +'successplanname is:'+successplanname+',' +'successplanautoname is: ' +successplanautoname);",
+									"",
+									"            pm.test(\"Workflow 'Success Plan - Auto name' record 5 check\", function()",
+									"                {",
+									"                    pm.expect(successplanname).to.equal(successplanautoname);",
+									"                });",
+									"    ",
+									"    ",
+									"    ",
+									"    }",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid5}})?$expand=cmc_contact_successplan_assignedtoid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid5}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplan_assignedtoid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Todo's linked to Successplan under Contact5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successplanid1;",
+									"pm.test(\"Validate Todo's linked under contact5\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanid1=pm.globals.get('gsuccessplanid5');",
+									"    var result =jsonData.cmc_contact_todo_assignedtostudentid;",
+									"    ",
+									"    ",
+									"    if(result.length===0)",
+									"    {",
+									"        throw new Error(\"Success Plan Template is not assigned to contact5 and hence no todos are present, Please check!!\");",
+									"    }",
+									"    else",
+									"    {",
+									"        for(var i=0;i<result.length ;i++)",
+									"        {",
+									"            if(result[i]._cmc_successplanid_value===successplanid1)",
+									"            {",
+									"\t\t\t\tvar todoid= result[i].cmc_todoid;",
+									"\t\t\t\tvar todoname= result[i].cmc_todoname;",
+									"\t\t\t\tvar parentsuccessplanid=result[i]._cmc_successplanid_value;",
+									"\t\t\t\tconsole.log('todoname is:'+todoname);",
+									"",
+									"            }",
+									"        }",
+									"    }",
+									" });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid5}})?$expand=cmc_contact_todo_assignedtostudentid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid5}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_todo_assignedtostudentid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Successplan under Contact6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Verify success plan under contact6\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplan_assignedtoid;",
+									"    ",
+									"    if (result.length===0)",
+									"    {",
+									"        console.log('Success Plan is not assigned to contact6 since current academic period is not linked. Also associated Todo templates under this Successplan template will also not appear');",
+									"            ",
+									"    }",
+									"    else",
+									"    {",
+									"        throw new Error(\"Success Plan Template is assigned to contact 6, which is incorrect\");",
+									"    ",
+									"    }",
+									" ",
+									" });",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid6}})?$expand=cmc_contact_successplan_assignedtoid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid6}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplan_assignedtoid"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete parent SuccessPlan and check child todos get deleted",
+			"item": [
+				{
+					"name": "GetToken_DCRM Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Eadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Eadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Parent SuccessPlan",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var gLoops=pm.globals.get(\"gsuccessplanid\");",
+									"console.log(gLoops.length);",
+									"",
+									"pm.test(\"Delete SuccessPlan\",function()",
+									"{",
+									"",
+									"if((pm.response.code===200) || (pm.response.code===201) || (pm.response.code===202) || (pm.response.code===204))",
+									"{",
+									"if (gLoops && gLoops.length>0)",
+									"{",
+									"   ",
+									"   postman.setNextRequest(\"Delete Parent SuccessPlan\");",
+									"}\t",
+									"",
+									"}",
+									"else",
+									"{",
+									"console.log(\"record does not exist in the org\");",
+									"}",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var  extraid =pm.globals.get(\"gsuccessplanid\");\r",
+									"var currentvalue=extraid.shift();\r",
+									"console.log(currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"g1successplanid\",currentvalue);\r",
+									"\r",
+									"pm.globals.set(\"gsuccessplanid\",extraid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"type": "text",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplans({{g1successplanid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_successplans({{g1successplanid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Child todos are deleted from contact 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successplanid1;",
+									"pm.test(\"Validate Todo's linked under contact1\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanid1=pm.globals.get('gsuccessplanid');",
+									"    var result =jsonData.cmc_contact_todo_assignedtostudentid;",
+									"    ",
+									"    ",
+									"    if(result.length===0)",
+									"    {",
+									"        console.log(\"Child Todos are also deleted after parent successplan record is deleted\");",
+									"    }",
+									"    else",
+									"    {",
+									"        throw new Error(\"Child ToDos are not deleted even after parent successplan is deleted\");",
+									"    }",
+									" });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid1}})?$expand=cmc_contact_todo_assignedtostudentid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid1}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_todo_assignedtostudentid"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deactivate SuccessPlanTodo template and check assignment",
+			"item": [
+				{
+					"name": "Deactivate SP TDT-Static Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successplan Static to do Template created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var statecode= jsonData.statecode;",
+									"    var statuscode= jsonData.statuscode;",
+									"      ",
+									"    pm.test(\"Statecode check\", function()",
+									"        {",
+									"            pm.expect(statecode).to.equal(1);",
+									"        });",
+									"    ",
+									"    pm.test(\"Statuscode check\", function()",
+									"        {",
+									"            pm.expect(statuscode).to.equal(2);",
+									"        });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"statecode\": 1,\n    \"statuscode\": 2\n   \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantodotemplates({{gsuccessplantodotemplateid}})",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantodotemplates({{gsuccessplantodotemplateid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact7 with Academic period",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Contact 7 Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var contact_id = jsonData.contactid;",
+									"    console.log('Contact ID: ' +contact_id);",
+									"    var contactname = jsonData.fullname;",
+									"    console.log('Contact name: ' +contactname);",
+									"    var academicperiodvalue = jsonData._mshied_currentacademicperiodid_value;",
+									"    console.log('Current academic Period value:' +academicperiodvalue);",
+									"    ",
+									"    pm.globals.set('gcontactid7',contact_id);",
+									"    pm.globals.set('gcontactname7',contactname);",
+									"   ",
+									"    var academicperiod=pm.globals.get(\"gacademicperiodid\");",
+									"    ",
+									"    pm.test(\"Academic Period associated to contact\", function()",
+									"        {",
+									"            pm.expect(academicperiodvalue).to.equal(academicperiod);",
+									"        });",
+									"});",
+									" "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}} 7FN {{globalsessionvalue}} \",\r\n    \"lastname\": \"{{globalsessionvalue}}{{$randomLastName}} {{$randomInt}}\",\r\n    \"mshied_contacttype\": \"494280011\",\r\n\t\"cmc_sourcecategoryid@odata.bind\": \"/cmc_sourcecategories({{gsourceCategoryid1}})\",\r\n\t\"cmc_sourcemethodid@odata.bind\": \"/cmc_sourcemethods({{gsourceMethodid1}})\",\r\n    \"mshied_CurrentAcademicPeriodId@odata.bind\": \"/mshied_academicperiods({{gacademicperiodid}})\"\r\n  \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign SuccessPlan template 1 to Contact7",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Assigning SuccessPlan template to Contact records 7\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,204,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successPlanResponse=jsonData.SuccessPlanResponse;",
+									"    ",
+									"    console.log(\"SuccessPlan Response for reassigning the SuccessPlan template is: \" +successPlanResponse);",
+									"   ",
+									"});",
+									"    ",
+									"    ",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Students\": [\r\n        {\r\n            \"@odata.type\": \"Microsoft.Dynamics.CRM.contact\",\r\n            \"contactid\": \"{{gcontactid7}}\"\r\n        }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_successplantemplates({{gsuccessplanTemplateid}})/Microsoft.Dynamics.CRM.cmc_createstudentsuccessplansfromtemplate",
+							"host": [
+								"{{Eresource_URL}}cmc_successplantemplates({{gsuccessplanTemplateid}})"
+							],
+							"path": [
+								"Microsoft.Dynamics.CRM.cmc_createstudentsuccessplansfromtemplate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Successplan under Contact7",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify success plan under contact7\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var result =jsonData.cmc_contact_successplan_assignedtoid;",
+									"    ",
+									"    if (result.length===0)",
+									"    {",
+									"           throw new Error(\"Success Plan Template is not assigned to contact7, Please check!!\");",
+									"    }",
+									"    else",
+									"    {  ",
+									"            //Success plan 1 validation",
+									"            var successplanid= result[0].cmc_successplanid;",
+									"            pm.globals.set('gsuccessplanid7', successplanid); ",
+									"            var successplanname= result[0].cmc_successplanname;",
+									"            var successplanautoname= pm.globals.get('gsuccessplantemplatename')+\" \"+\"-\"+\" \"+pm.globals.get('gcontactname7');",
+									"            console.log('successplanid is:' +successplanid +',' +'successplanname is:'+successplanname+',' +'successplanautoname is: ' +successplanautoname);",
+									"",
+									"            pm.test(\"Workflow 'Success Plan - Auto name' record 1 check\", function()",
+									"                {",
+									"                    pm.expect(successplanname).to.equal(successplanautoname);",
+									"                });",
+									"    ",
+									"    ",
+									"    ",
+									"    }",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid7}})?$expand=cmc_contact_successplan_assignedtoid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid7}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_successplan_assignedtoid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Todo's linked to Successplan under Contact7",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var successplanid1;",
+									"pm.test(\"Validate Todo's linked under contact7\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    var successplanid1=pm.globals.get('gsuccessplanid7');",
+									"    var result =jsonData.cmc_contact_todo_assignedtostudentid;",
+									"    ",
+									"    ",
+									"    if(result.length===0)",
+									"    {",
+									"        throw new Error(\"Success Plan Template is not assigned to contact7 and hence no todos are present, Please check!!\");",
+									"    }",
+									"    else",
+									"    {",
+									"        for(var i=0;i<result.length ;i++)",
+									"        {",
+									"            if(result[i]._cmc_successplanid_value===successplanid1)",
+									"            {",
+									"\t\t\t\tvar todoid= result[i].cmc_todoid;",
+									"\t\t\t\tvar todoname= result[i].cmc_todoname;",
+									"\t\t\t\tvar parentsuccessplanid=result[i]._cmc_successplanid_value;",
+									"\t\t\t\tconsole.log('todoname is:'+todoname);",
+									"",
+									"            }",
+									"        }",
+									"    }",
+									" });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid7}})?$expand=cmc_contact_todo_assignedtostudentid",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid7}})"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "cmc_contact_todo_assignedtostudentid"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

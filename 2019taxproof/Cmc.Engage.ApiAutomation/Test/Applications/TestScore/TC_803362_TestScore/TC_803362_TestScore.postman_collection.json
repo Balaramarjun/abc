@@ -1,0 +1,3129 @@
+{
+	"info": {
+		"_postman_id": "48867e6c-e6c8-4292-962c-679414fa57fc",
+		"name": "TC_803362_TestScore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persona - StudentAdvisor",
+			"item": [
+				{
+					"name": "GetToken_DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Estudentadvisor_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Estudentadvisor_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUser - DCRM Student Advisor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userid,fullname;",
+									"pm.test(\"GetUserID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    userid = jsonData.value[0].systemuserid;",
+									"    fullname=jsonData.value[0].fullname;",
+									"",
+									"    console.log(\"Application User name: \" +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('gownerid',userid);",
+									"console.log('Systemuser:'+userid);",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+							"host": [
+								"{{Eresource_URL}}systemusers"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "internalemailaddress eq 'studentadvisor@api.com'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contact_id;",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contact_id = jsonData.contactid;",
+									"    var fullname = jsonData.fullname;",
+									"    console.log('Contact:' +fullname);",
+									"    ",
+									"});",
+									"pm.globals.set('gcontactid',contact_id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstname\": \"{{$randomFirstName}}{{$randomInt}}{{$randomInt}}\",\r\n\t\"lastname\": \"{{$randomLastName}}{{$randomInt}}{{$randomInt}}\",\r\n\t\"mshied_contacttype\":\"494280003,494280004\",\r\n\t\"birthdate\":\"1985-04-01\",\r\n\t\"emailaddress1\":\"TS{{$randomInt}}{{$randomInt}}@test.com\",\r\n\t\"cmc_recentsat\":266,\r\n\t\"cmc_recentact\":100,\r\n\t\"gendercode\":\"1\",\r\n\t\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n\t\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource}}api/data/v9.0/contacts",
+							"host": [
+								"{{Eresource}}api"
+							],
+							"path": [
+								"data",
+								"v9.0",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create ACT Testscore",
+			"item": [
+				{
+					"name": "Get ACT Test Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var actid;",
+									"var Testtypename;",
+									"pm.test(\"Get ACT id\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    actid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"    ",
+									"     console.log('TesttypeID:'+actid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('gactid',actid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'ACT'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq 'ACT'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScore ACT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var satequivalent;",
+									" var composite;",
+									" var math;",
+									" var english;",
+									" var ela;",
+									" var tname;",
+									" var reading;",
+									" var science;",
+									" var writing;",
+									" var stem;",
+									"pm.test(\"ACT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    satequivalent = jsonData.cmc_satequivalentscore;",
+									"    console.log('SAT equivalent score: '+satequivalent);",
+									"    composite = jsonData.mshied_actcomposite;",
+									"    english = jsonData.mshied_actenglish;",
+									"    tname = jsonData.mshied_name;",
+									"    ela = jsonData.mshied_actela;",
+									"    reading = jsonData.mshied_actreading;",
+									"    math = jsonData.mshied_actmath;",
+									"    science = jsonData.mshied_actscience;",
+									"    writing = jsonData.mshied_actwriting;",
+									"    stem = jsonData.mshied_actstem;",
+									"    ",
+									"    var csv_math = data.cmc_math;",
+									"    var csv_science = data.cmc_science;",
+									"    var csv_stem = data.cmc_stem;",
+									"    var csv_english = data.cmc_english;",
+									"    var csv_readingscore = data.cmc_readingscore;",
+									"    var csv_writingscore = data.cmc_writingscore;",
+									"    var csv_ela = data.cmc_ela;",
+									"    var csv_composite = data.cmc_composite;",
+									"    var csv_name = data.cmc_ACTname;",
+									"    ",
+									"    pm.test(\"Validate Composite score\", function()",
+									"    {",
+									"        pm.expect(composite).to.equal(csv_composite);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(reading).to.equal(csv_readingscore);",
+									"    });",
+									"    pm.test(\"Validate Math\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(csv_math);",
+									"    });",
+									"    pm.test(\"Validate Science\", function()",
+									"    {",
+									"        pm.expect(science).to.equal(csv_science);",
+									"    });",
+									"    pm.test(\"Validate Writing\", function()",
+									"    {",
+									"        pm.expect(writing).to.equal(csv_writingscore);",
+									"    });",
+									"     pm.test(\"Validate STEM\", function()",
+									"    {",
+									"        pm.expect(stem).to.equal(csv_stem);",
+									"    });",
+									"     pm.test(\"Validate ELA\", function()",
+									"    {",
+									"        pm.expect(ela).to.equal(csv_ela);",
+									"    });",
+									"     pm.test(\"Validate English\", function()",
+									"    {",
+									"        pm.expect(english).to.equal(csv_english);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(csv_name);",
+									"    });",
+									"});",
+									"var testsource3 = data.cmc_testsourceACT;",
+									"var testlocation3 = data.cmc_testlocationACT;",
+									"",
+									"var SATequivalentscore = data.cmc_SATequivalentscore;",
+									"var composite = data.cmc_composite;",
+									"",
+									"pm.globals.set('gACTtestscore',ACTtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_testsource\": \"{{cmc_testsourceACT}}\",\n    \"mshied_testlocation\": \"{{cmc_testlocationACT}}\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_actmath\": {{cmc_math}},\n    \"mshied_actscience\": {{cmc_science}},\n    \"cmc_includeinscorecalculations\": true,\n    \"mshied_actstem\":{{cmc_stem}},\n    \"mshied_actenglish\": {{cmc_english}},\n    \"mshied_actreading\": {{cmc_readingscore}},\n    \"mshied_actwriting\": {{cmc_writingscore}},\n    \"mshied_actela\": {{cmc_ela}},\n    \"mshied_actcomposite\": {{cmc_composite}},\n    \"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreACT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" var ACTtestscoreid;",
+									" var testscorevalue;",
+									" var includeinscorecalculations;",
+									"pm.test(\"ACT test score Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ACTtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('ACT test score id: '+ACTtestscoreid);",
+									"    testscorevalue = jsonData.mshied_actcomposite;",
+									"    console.log('mshied_actcomposite: '+testscorevalue);",
+									"    includeinscorecalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('After updating includeinscorecalculations: '+includeinscorecalculations);",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \n  \"cmc_includeinscorecalculations\": false\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gACTtestscore}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gACTtestscore}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create SAT Testscore",
+			"item": [
+				{
+					"name": "Get SAT Test Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var satid;",
+									"var Testtypename;",
+									"pm.test(\"get SAT id\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    satid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"  ",
+									"    console.log('TesttypeID:'+satid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('gsatid',satid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'SAT'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq 'SAT'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"var Autoname;",
+									"var math;",
+									"var evidencebasedreadingandwritingsection;",
+									"var essayreading;",
+									"var essayanalysis;",
+									"var essaywriting;",
+									"",
+									"pm.test(\"SAT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    Autoname= jsonData.mshied_name;",
+									"    console.log('Workflow autoname: '+Autoname);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"    math = jsonData.mshied_satmathsection;",
+									"    evidencebasedreadingandwritingsection = jsonData.mshied_satevidencebasedreadingandwritingsection;",
+									"    essayreading = jsonData.mshied_satessayreading;",
+									"    essayanalysis = jsonData.mshied_satessayanalysis;",
+									"    essaywriting = jsonData.mshied_satessaywriting;",
+									"    ",
+									"    var csv_evidencebasedreadingandwritingsection = data.cmc_evidencebasedreadingandwritingsection;",
+									"    var csv_mathsection = data.cmc_mathsection;",
+									"    var csv_satessayreading = data.cmc_satessayreading;",
+									"    var csv_satessayanalysis = data.cmc_satessayanalysis;",
+									"    var csv_satwessaywriting = data.cmc_satwessaywriting;",
+									"    var csv_sattotalscore = data.cmc_sattotalscore;",
+									"    var csv_name = data.cmc_SATname;",
+									"    ",
+									"    pm.test(\"Validate Evidence-based Reading and Writing section\", function()",
+									"    {",
+									"        pm.expect(evidencebasedreadingandwritingsection).to.equal(csv_evidencebasedreadingandwritingsection);",
+									"    });",
+									"    pm.test(\"Validate Math section\", function()",
+									"    {",
+									"        pm.expect(math).to.equal(csv_mathsection);",
+									"    });",
+									"    pm.test(\"Validate Essay Reading\", function()",
+									"    {",
+									"        pm.expect(essayreading).to.equal(csv_satessayreading);",
+									"    });",
+									"    pm.test(\"Validate Essay Analysis\", function()",
+									"    {",
+									"        pm.expect(essayanalysis).to.equal(csv_satessayanalysis);",
+									"    });",
+									"    pm.test(\"Validate Essay Writing\", function()",
+									"    {",
+									"        pm.expect(essaywriting).to.equal(csv_satwessaywriting);",
+									"    });",
+									"    pm.test(\"Validate Test Score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(csv_sattotalscore);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(Autoname).to.equal(csv_name);",
+									"    });",
+									" ",
+									"});",
+									"",
+									" var testsource3 = data.cmc_testsourceSAT;",
+									" var testlocation3 = data.cmc_testlocationSAT;",
+									" ",
+									"pm.globals.set('gSATtestscore',SATtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n     \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_testsource\": \"{{cmc_testsourceSAT}}\",\n    \"mshied_testlocation\": \"{{cmc_testlocationSAT}}\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_satevidencebasedreadingandwritingsection\": {{cmc_evidencebasedreadingandwritingsection}},\n    \"mshied_satmathsection\": {{cmc_mathsection}},\n    \"mshied_satessayreading\": {{cmc_satessayreading}},\n    \"mshied_satessayanalysis\": {{cmc_satessayanalysis}},\n    \"mshied_satessaywriting\":{{cmc_satwessaywriting}},\n    \"cmc_includeinscorecalculations\":true,\n    \"mshied_sattotalscore\":{{cmc_sattotalscore}},\n    \"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreSAT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var SATtestscoreid;",
+									"var testscorevalue;",
+									"var actequivalentscore1;",
+									"var includeincalculations;",
+									"",
+									"pm.test(\"SAT TestScore Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    SATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('SAT test score id: '+SATtestscoreid);",
+									"    testscorevalue = jsonData.mshied_sattotalscore;",
+									"    console.log('mshied_sattotalscore: '+testscorevalue);",
+									"    includeincalculations = jsonData.cmc_includeinscorecalculations;",
+									"    console.log('cmc_includeinscorecalculations: '+includeincalculations);",
+									"    actequivalentscore1 = jsonData.mshied_actequivalentscore;",
+									"    console.log('mshied_actequivalentscore:'+actequivalentscore1);",
+									"  ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_satevidencebasedreadingandwritingsection\": 250,\n    \"cmc_includeinscorecalculations\":false,\n    \"mshied_satmathsection\": 780,\n    \"mshied_satessayreading\": 4,\n    \"mshied_satessayanalysis\": 6,\n    \"mshied_satessaywriting\":8,\n     \"mshied_sattotalscore\":822\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gSATtestscore}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gSATtestscore}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create TOEFL Testscore",
+			"item": [
+				{
+					"name": "Get TOEFL Test Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var toeflid;",
+									"var Testtypename;",
+									"pm.test(\"GetTOEFLID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    toeflid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"    console.log('TesttypeID: '+toeflid);",
+									"    console.log('Testtype: '+Testtypename);",
+									"});",
+									"pm.globals.set('gtoeflid',toeflid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'TOEFL'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq 'TOEFL'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreTOEFL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var TOEFLtestscoreid;",
+									"var testscorevalue;",
+									"var tname;",
+									"var toeflreading;",
+									"var toeflwriting;",
+									"var toefllistening;",
+									"var toeflspeaking;",
+									"pm.test(\"TOEFL TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    TOEFLtestscoreid = jsonData.mshied_testscoreid;",
+									"    toeflreading = jsonData.mshied_toeflreadingsection;",
+									"    toefllistening = jsonData.mshied_toefllisteningsection;",
+									"    toeflspeaking = jsonData.mshied_toeflspeakingsection;",
+									"    toeflwriting = jsonData.mshied_toeflwritingsection;",
+									"    testscorevalue = jsonData.mshied_toefltotalscore;",
+									"    tname = jsonData.mshied_name;",
+									"    ",
+									"    console.log('TOEFL score id: '+TOEFLtestscoreid);",
+									"    console.log('TOEFL name: '+tname);",
+									"    console.log('mshied_toefltotalscore: '+testscorevalue);",
+									"    ",
+									"    var testsource = data.testsource;",
+									"    var testlocation = data.cmc_testlocation;",
+									"    var csv_writing = data.mshied_toeflwritingsection;",
+									"    var csv_speaking = data.mshied_toeflspeakingsection;",
+									"    var csv_listening = data.mshied_toefllisteningsection;",
+									"    var csv_reading = data.mshied_toeflreadingsection;",
+									"    var csv_totalscore = data.mshied_toefltotalscore;",
+									"    var csv_name = data.cmc_toeflname;",
+									"    ",
+									"    console.log('CSV Total score: '+ csv_totalscore);",
+									"    ",
+									"    pm.test(\"Validate Total score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(csv_totalscore);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(toeflreading).to.equal(csv_reading);",
+									"    });",
+									"    pm.test(\"Validate Listening\", function()",
+									"    {",
+									"        pm.expect(toefllistening).to.equal(csv_listening);",
+									"    });",
+									"    pm.test(\"Validate Speaking\", function()",
+									"    {",
+									"        pm.expect(toeflspeaking).to.equal(csv_speaking);",
+									"    });",
+									"    pm.test(\"Validate Writing\", function()",
+									"    {",
+									"        pm.expect(toeflwriting).to.equal(csv_writing);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(csv_name);",
+									"    });",
+									"",
+									"",
+									"  ",
+									"});",
+									"pm.globals.set('gtoefltestscore',TOEFLtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\r\n\"mshied_testsource\":\"{{testsource}}\",\r\n\"mshied_testlocation\":\"{{cmc_testlocation}}\",\r\n\"mshied_testdate\":\"{{current_timestamp}}\",\r\n\"mshied_toefllisteningsection\":{{mshied_toefllisteningsection}},\r\n\"mshied_toeflreadingsection\":{{mshied_toeflreadingsection}},\r\n\"mshied_toeflspeakingsection\":{{mshied_toeflspeakingsection}},\r\n\"mshied_toeflwritingsection\":{{mshied_toeflwritingsection}},\r\n\"mshied_toefltotalscore\":{{mshied_toefltotalscore}},\r\n\"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gtoeflid}})\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreTOEFL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var TOEFLtestscoreid;",
+									"var testscorevalue;",
+									"pm.test(\"TOEFL TestScore Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    TOEFLtestscoreid = jsonData.mshied_testscoreid;",
+									"    testscorevalue = jsonData.mshied_toefltotalscore;",
+									"    ",
+									"    ",
+									"    console.log('TOEFL score id: '+TOEFLtestscoreid);",
+									"    console.log('mshied_toefltotalscore: '+testscorevalue);",
+									"   ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n\r\n\r\n\"mshied_toeflreadingsection\":6,\r\n\"mshied_toefltotalscore\" : 120\r\n\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gtoefltestscore}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gtoefltestscore}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create GMAT Testscore",
+			"item": [
+				{
+					"name": "Get GMAT Test Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var Testtypename;",
+									"pm.test(\"Get GMAT ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    gmatid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"     console.log('TesttypeID:'+gmatid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('ggmatid',gmatid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq  'GMAT'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq  'GMAT'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreGMAT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var GMATtestscoreid;",
+									"var testscorevalue;",
+									"var analyticalwriting;",
+									"var integratedreasoning;",
+									"var quantitativereasoning;",
+									"var verbalreasoning;",
+									"var tname;",
+									"pm.test(\"GMAT TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    GMATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('GMAT score id: '+GMATtestscoreid);",
+									"    ",
+									"    verbalreasoning = jsonData.mshied_gmatverbalreasoning;",
+									"    analyticalwriting = jsonData.mshied_gmatanalyticalwriting;",
+									"    tname = jsonData.mshied_name;",
+									"    quantitativereasoning = jsonData.mshied_gmatquantitativereasoning;",
+									"    integratedreasoning = jsonData.mshied_gmatintegratedreasoning;",
+									"    ",
+									"    testscorevalue = jsonData.mshied_gmattotal;",
+									"    console.log('mshied_gmattotal: '+testscorevalue);",
+									"    ",
+									"    var csv_analyticalwriting = data.cmc_analyticalwritinggmat;",
+									"    var csv_integratedreasoning = data.cmc_integratedreasoninggmat;",
+									"    var csv_quantitativereasoning = data.cmc_gmatquantitativereasoninggmat;",
+									"    var csv_verbalreasoning = data.cmc_gmatverbalreasoninggmat;",
+									"    var csv_totalgmat = data.cmc_totalgmat;",
+									"    var csv_name = data.cmc_GMATname;",
+									"",
+									"    ",
+									"    pm.test(\"Validate Total score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(csv_totalgmat);",
+									"    });",
+									"    pm.test(\"Validate Analytical Writing\", function()",
+									"    {",
+									"        pm.expect(analyticalwriting).to.equal(csv_analyticalwriting);",
+									"    });",
+									"    pm.test(\"Validate Integrated Reasoning\", function()",
+									"    {",
+									"        pm.expect(integratedreasoning).to.equal(csv_integratedreasoning);",
+									"    });",
+									"    pm.test(\"Validate Quantitative Reasoning\", function()",
+									"    {",
+									"        pm.expect(quantitativereasoning).to.equal(csv_quantitativereasoning);",
+									"    });",
+									"    pm.test(\"Validate Verbal Reasoning\", function()",
+									"    {",
+									"        pm.expect(verbalreasoning).to.equal(csv_verbalreasoning);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(csv_name);",
+									"    });",
+									"});",
+									"",
+									"var testsource1 = data.cmc_testsourcegmat;",
+									"var testlocation1 = data.cmc_testlocationgmat;",
+									"",
+									"",
+									"",
+									"pm.globals.set('ggmattestscore',GMATtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \n\"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{ggmatid}})\",\n    \"mshied_testsource\": \"{{cmc_testsourcegmat}}\",\n    \"mshied_testlocation\": \"{{cmc_testlocationgmat}}\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_gmatanalyticalwriting\": {{cmc_analyticalwritinggmat}},\n    \"mshied_gmatintegratedreasoning\": {{cmc_integratedreasoninggmat}},\n    \"mshied_gmatquantitativereasoning\": {{cmc_gmatquantitativereasoninggmat}},\n    \"mshied_gmatverbalreasoning\": {{cmc_gmatverbalreasoninggmat}},\n    \"mshied_gmattotal\":{{cmc_totalgmat}},\n    \"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreGMAT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var GMATtestscoreid;",
+									"var testscorevalue;",
+									"pm.test(\"GMAT TestScore Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    GMATtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('GMAT score id: '+GMATtestscoreid);",
+									"",
+									"testscorevalue = jsonData.mshied_gmattotal;",
+									"console.log('mshied_gmattotal: '+testscorevalue);",
+									"   ",
+									"    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n    \"mshied_testlocation\": \"Hyderabad\",\n    \"mshied_gmattotal\":500\n    \n    \n   }"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{ggmattestscore}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{ggmattestscore}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create IELTS Testscore",
+			"item": [
+				{
+					"name": "Get IELTS Test Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var Testtypename;",
+									"pm.test(\"Get IELTS ID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    ieltsid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"     console.log('TesttypeID:'+ieltsid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('gieltsid',ieltsid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'IELTS'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq 'IELTS'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreIELTS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var IELTStestscoreid;",
+									"var testscorevalue;",
+									"var ieltslistening;",
+									"var ieltsspeakingscore;",
+									"var ieltswriting;",
+									"var ieltsreading;",
+									"var ieltsoverallbandscore;",
+									"var ieltscefr;",
+									"var tname;",
+									"pm.test(\"IELTS TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    IELTStestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('IELTS score id: '+IELTStestscoreid);",
+									"    ieltslistening = jsonData.mshied_ieltslistening;",
+									"    ieltsspeakingscore = jsonData.mshied_ieltsspeakingscore;",
+									"    ieltswriting = jsonData.mshied_ieltswriting;",
+									"    ieltsreading = jsonData.mshied_ieltsreading;",
+									"    ieltsoverallbandscore = jsonData.mshied_ieltsoverallbandscore;",
+									"    ieltscefr = jsonData.mshied_ieltscefr;",
+									"    tname = jsonData.mshied_name;",
+									"    ",
+									"    console.log('mshied_ieltsoverallbandscore: '+ieltsoverallbandscore);",
+									"    ",
+									"    var csv_listening1 = data.cmc_listeningIELTS;",
+									"    var csv_speaking1 = data.cmc_speakingIELTS;",
+									"    var csv_writing1 = data.cmc_writingIELTS;",
+									"    var csv_reading1 = data.cmc_readingIELTS;",
+									"    var csv_overallbandscore1 = data.cmc_overallbandscoreIELTS;",
+									"    var csv_cmc_cefr1 = data.cmc_cefrIELTS;",
+									"    var csv_name = data.cmc_IELTSname;",
+									"    ",
+									"    ",
+									"    pm.test(\"Validate Listening\", function()",
+									"    {",
+									"        pm.expect(ieltslistening).to.equal(csv_listening1);",
+									"    });",
+									"    pm.test(\"Validate Speaking\", function()",
+									"    {",
+									"        pm.expect(ieltsspeakingscore).to.equal(csv_speaking1);",
+									"    });",
+									"    pm.test(\"Validate Writing\", function()",
+									"    {",
+									"        pm.expect(ieltswriting).to.equal(csv_writing1);",
+									"    });",
+									"    pm.test(\"Validate Reading\", function()",
+									"    {",
+									"        pm.expect(ieltsreading).to.equal(csv_reading1);",
+									"    });",
+									"    pm.test(\"Validate Overall band score\", function()",
+									"    {",
+									"        pm.expect(ieltsoverallbandscore).to.equal(csv_overallbandscore1);",
+									"    });",
+									"    pm.test(\"Validate CEFR\", function()",
+									"    {",
+									"        pm.expect(ieltscefr).to.equal(csv_cmc_cefr1);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(csv_name);",
+									"    });",
+									"  ",
+									"  ",
+									"});",
+									"",
+									"var testsource2 = data.testsourceIELTS;",
+									"var testlocation2 = data.cmc_testlocationIELTS;",
+									"",
+									"",
+									"pm.globals.set('gieltstestscore',IELTStestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\r\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gieltsid}})\",\r\n    \"mshied_testsource\": \"{{testsourceIELTS}}\",\r\n    \"mshied_testlocation\": \"{{cmc_testlocationIELTS}}\",\r\n    \"mshied_testdate\": \"{{current_timestamp}}\",\r\n\"mshied_ieltswriting\":{{cmc_writingIELTS}},\r\n\"mshied_ieltsspeakingscore\":{{cmc_speakingIELTS}},\r\n\"mshied_ieltslistening\":{{cmc_listeningIELTS}},\r\n\"mshied_ieltsreading\":{{cmc_readingIELTS}},\r\n\"mshied_ieltsoverallbandscore\":{{cmc_overallbandscoreIELTS}},\r\n\"mshied_ieltscefr\":\"{{cmc_cefrIELTS}}\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreIELTS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var IELTStestscoreid;",
+									"var testscorevalue;",
+									"",
+									"pm.test(\"IELTS TestScore Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    IELTStestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('IELTS score id: '+IELTStestscoreid);",
+									"    ",
+									"    testscorevalue = jsonData.mshied_ieltsoverallbandscore;",
+									"    console.log('mshied_ieltsoverallbandscore: '+testscorevalue);",
+									"   ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n\r\n\"mshied_testlocation\":\"Delhi\",\r\n\"mshied_ieltsoverallbandscore\":9\r\n\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gieltstestscore}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gieltstestscore}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create GRE Testscore",
+			"item": [
+				{
+					"name": "Get GRE Test Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var greid;",
+									"var Testtypename;",
+									"",
+									"pm.test(\"GetGREID\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    greid = jsonData.value[0].mshied_testtypeid;",
+									"    Testtypename = jsonData.value[0].mshied_name;",
+									"     console.log('TesttypeID:'+greid);",
+									"    console.log('Testtype:'+Testtypename);",
+									"});",
+									"pm.globals.set('ggreid',greid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes?$select=mshied_testtypeid,mshied_name &$filter=mshied_name eq 'GRE'",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "mshied_testtypeid,mshied_name "
+								},
+								{
+									"key": "$filter",
+									"value": "mshied_name eq 'GRE'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreGRE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var GREtestscoreid;",
+									"var testscorevalue;",
+									"var quantitativereasoning;",
+									"var verbalreasoning;",
+									"var analyticalreasoning;",
+									"var tname;",
+									"pm.test(\"GRE TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    GREtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('GRE score id: '+GREtestscoreid);",
+									"    quantitativereasoning = jsonData.mshied_grequantitativereasoning;",
+									"    verbalreasoning = jsonData.mshied_greverbalreasoning;",
+									"    analyticalreasoning = jsonData.mshied_greanalyticalreasoning;",
+									"    testscorevalue = jsonData.mshied_gretotalscore;",
+									"    tname = jsonData.mshied_name;",
+									"    console.log('mshied_gretotalscore: '+testscorevalue); ",
+									"    ",
+									"    var csv_quantitativereasoning = data.cmc_quantitativereasoningGRE;",
+									"    var csv_verbalreasoning = data.cmc_verbalreasoningGRE;",
+									"    var csv_analyticalreasoning = data.cmc_analyticalreasoningGRE;",
+									"    var csv_totalscore = data.cmc_totalscoreGRE;",
+									"    var csv_name = data.cmc_GREname;",
+									"    ",
+									"    pm.test(\"Validate Quantitative Reasoning\", function()",
+									"    {",
+									"        pm.expect(quantitativereasoning).to.equal(csv_quantitativereasoning);",
+									"    });",
+									"    pm.test(\"Validate Verbal Reasoning\", function()",
+									"    {",
+									"        pm.expect(verbalreasoning).to.equal(csv_verbalreasoning);",
+									"    });",
+									"    pm.test(\"Validate Analytical Reasoning\", function()",
+									"    {",
+									"        pm.expect(analyticalreasoning).to.equal(csv_analyticalreasoning);",
+									"    });",
+									"    pm.test(\"Validate Total score\", function()",
+									"    {",
+									"        pm.expect(testscorevalue).to.equal(csv_totalscore);",
+									"    });",
+									"    pm.test(\"Validate Test Score Name\", function()",
+									"    {",
+									"        pm.expect(tname).to.equal(csv_name);",
+									"    });",
+									"});",
+									"",
+									"pm.globals.set('gGREtestscore',GREtestscoreid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{ggreid}})\",\n    \"mshied_testsource\": \"{{cmc_testsourceGRE}}\",\n    \"mshied_testlocation\": \"{{cmc_testlocationGRE}}\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_greverbalreasoning\": {{cmc_verbalreasoningGRE}},\n    \"mshied_grequantitativereasoning\": {{cmc_quantitativereasoningGRE}},\n    \"mshied_greanalyticalreasoning\": {{cmc_analyticalreasoningGRE}},\n    \"mshied_gretotalscore\": {{cmc_totalscoreGRE}},\n    \"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TestScoreGRE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var GREtestscoreid;",
+									"pm.test(\"GRE TestScore Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    GREtestscoreid = jsonData.mshied_testscoreid;",
+									"    console.log('GRE score id: '+GREtestscoreid);",
+									"    var testscorevalue = jsonData.mshied_gretotalscore;",
+									"    console.log('mshied_gretotalscore: '+testscorevalue); ",
+									"  ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n\n    \"mshied_greverbalreasoning\": 167,\n    \"mshied_gretotalscore\" : 300\n    \n   \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores({{gGREtestscore}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores({{gGREtestscore}})"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Validate upper and lower boundary",
+			"item": [
+				{
+					"name": "Create TestScoreTOEFL lower boundary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"TOEFL TestScore lower boundary validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\r\n\"mshied_testsource\":\"494280004\",\r\n\"mshied_testlocation\":\"Bangalore\",\r\n\"mshied_testdate\":\"{{current_timestamp}}\",\r\n\"mshied_toefllisteningsection\":-1,\r\n\"mshied_toeflreadingsection\":-1,\r\n\"mshied_toeflspeakingsection\":-1,\r\n\"mshied_toeflwritingsection\":-1,\r\n\"mshied_toefltotalscore\":-1,\r\n\"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gtoeflid}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreTOEFL upper boundary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"TOEFL TestScore upper boundary validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\r\n\"mshied_testsource\":\"494280004\",\r\n\"mshied_testlocation\":\"Bangalore\",\r\n\"mshied_testdate\":\"{{current_timestamp}}\",\r\n\"mshied_toefllisteningsection\":31,\r\n\"mshied_toeflreadingsection\":31,\r\n\"mshied_toeflspeakingsection\":31,\r\n\"mshied_toeflwritingsection\":31,\r\n\"mshied_toefltotalscore\":121,\r\n\"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gtoeflid}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreTOEFL field validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"TOEFL TestScore text validation for integer field\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\r\n\"mshied_testsource\":\"494280003\",\r\n\"mshied_testlocation\":\"Bangalore\",\r\n\"mshied_testdate\":\"{{current_timestamp}}\",\r\n\"mshied_toefllisteningsection\":\"a\",\r\n\"mshied_toeflreadingsection\":\"b\",\r\n\"mshied_toeflspeakingsection\":\"c\",\r\n\"mshied_toeflwritingsection\":\"d\",\r\n\"mshied_toefltotalscore\":\"e\",\r\n\"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gtoeflid}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreGMAT lower limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"GMAT TestScore lower limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\": \"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{ggmatid}})\",\n    \"mshied_testsource\": \"494280004\",\n    \"mshied_testlocation\": \"Chennai\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_gmatanalyticalwriting\": -1,\n    \"mshied_gmatintegratedreasoning\": 0,\n    \"mshied_gmatquantitativereasoning\": -1,\n    \"mshied_gmatverbalreasoning\": -1,\n    \"mshied_gmattotal\": 199\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreGMAT upper limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"GMAT TestScore upper limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\": \"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{ggmatid}})\",\n    \"mshied_testsource\": \"494280003\",\n    \"mshied_testlocation\": \"Chennai\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_gmatanalyticalwriting\": 7,\n    \"mshied_gmatintegratedreasoning\": 9,\n    \"mshied_gmatquantitativereasoning\": 61,\n    \"mshied_gmatverbalreasoning\": 61,\n    \"mshied_gmattotal\": 801\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreIELTS lower limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"IELTS TestScore lower limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\r\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gieltsid}})\",\r\n    \"mshied_testsource\": \"494280004\",\r\n    \"mshied_testlocation\": \"Bangalore\",\r\n    \"mshied_testdate\": \"{{current_timestamp}}\",\r\n    \"mshied_ieltswriting\":-1,\r\n    \"mshied_ieltsspeakingscore\":-1,\r\n    \"mshied_ieltslistening\":-1,\r\n    \"mshied_ieltsreading\":-1,\r\n    \"mshied_ieltsoverallbandscore\":-1,\r\n    \"mshied_ieltscefr\":\"494280006\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreIELTS upper limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"IELTS TestScore upper limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\r\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gieltsid}})\",\r\n    \"mshied_testsource\": \"494280003\",\r\n    \"mshied_testlocation\": \"Bangalore\",\r\n    \"mshied_testdate\": \"{{current_timestamp}}\",\r\n    \"mshied_ieltswriting\":10,\r\n    \"mshied_ieltsspeakingscore\":10,\r\n    \"mshied_ieltslistening\":10, \r\n    \"mshied_ieltsreading\":10,\r\n    \"mshied_ieltsoverallbandscore\":10,\r\n    \"mshied_ieltscefr\":\"494280006\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreGRE lower limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"GRE TestScore lower limit validation\", function() ",
+									"{",
+									"       pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{ggreid}})\",\n    \"mshied_testsource\": \"494280003\",\n    \"mshied_testlocation\": \"Bangalore\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_greverbalreasoning\": 129,\n    \"mshied_grequantitativereasoning\": 129,\n    \"mshied_greanalyticalreasoning\": -1,\n    \"mshied_gretotalscore\": -1\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreGRE Upper limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"GRE TestScore upper limit validation\", function() ",
+									"{",
+									"       pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{ggreid}})\",\n    \"mshied_testsource\": \"494280003\",\n    \"mshied_testlocation\": \"Bangalore\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_greverbalreasoning\": 171,\n    \"mshied_grequantitativereasoning\": 171,\n    \"mshied_greanalyticalreasoning\": 6.5,\n    \"mshied_gretotalscore\": 341\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScore ACT lower limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"ACT TestScore lower limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_testsource\": \"494280003\",\n    \"mshied_testlocation\": \"Mumbai\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_actmath\": 0,\n    \"mshied_actscience\": 0,\n    \"cmc_includeinscorecalculations\": true,\n    \"mshied_actstem\":0,\n    \"mshied_actenglish\": 0,\n    \"mshied_actreading\": 0,\n    \"mshied_actwriting\": 1,\n    \"mshied_actela\": 0,\n    \"mshied_actcomposite\": 0\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScore ACT Upper limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"ACT TestScore upper limit validation\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    message = jsonData.error.message;",
+									"    console.log(message);",
+									"  ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gactid}})\",\n    \"mshied_testsource\": \"494280003\",\n    \"mshied_testlocation\": \"Mumbai\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_actmath\": 37,\n    \"mshied_actscience\": 37,\n    \"cmc_includeinscorecalculations\": false,\n    \"mshied_actstem\":37,\n    \"mshied_actenglish\": 37,\n    \"mshied_actreading\": 37,\n    \"mshied_actwriting\": 13,\n    \"mshied_actela\": 37,\n    \"mshied_actcomposite\": 37\n    \n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT lower limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"SAT TestScore lower limit validation\", function() ",
+									"{",
+									"   pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  message = jsonData.error.message;",
+									"    console.log(message);",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_testsource\": \"494280003\",\n    \"mshied_testlocation\": \"Pune\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 199,\n    \"mshied_satmathsection\": 199,\n    \"mshied_satessayreading\": 1,\n    \"mshied_satessayanalysis\": 1,\n    \"mshied_satessaywriting\":1,\n    \"cmc_includeinscorecalculations\":true,\n    \"mshied_sattotalscore\":399\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT Upper limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"SAT TestScore upper limit validation\", function() ",
+									"{",
+									"   pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  message = jsonData.error.message;",
+									"    console.log(message);",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_testsource\": \"494280003\",\n    \"mshied_testlocation\": \"Pune\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 801,\n    \"mshied_satmathsection\": 801,\n    \"mshied_satessayreading\": 9,\n    \"mshied_satessayanalysis\": 9,\n    \"mshied_satessaywriting\":9,\n    \"cmc_includeinscorecalculations\":true,\n    \"mshied_sattotalscore\":1601\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create TestScoreSAT  invalid Test source",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var message;",
+									"pm.test(\"Invalid Test Source validation\", function() ",
+									"{",
+									"   pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"  message = jsonData.error.message;",
+									"    console.log(message);",
+									" ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var current_timestamp = new Date();",
+									"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mshied_StudentID@odata.bind\":\"/contacts({{gcontactid}})\",\n    \"mshied_TestTypeId@odata.bind\": \"/mshied_testtypes({{gsatid}})\",\n    \"mshied_testsource\": \"49428000\",\n    \"mshied_testlocation\": \"Pune\",\n    \"mshied_testdate\": \"{{current_timestamp}}\",\n    \"mshied_satevidencebasedreadingandwritingsection\": 400,\n    \"mshied_satmathsection\": 400,\n    \"mshied_satessayreading\": 8,\n    \"mshied_satessayanalysis\": 8,\n    \"mshied_satessaywriting\":8,\n    \"cmc_includeinscorecalculations\":true,\n    \"mshied_sattotalscore\":1600\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testscores",
+							"host": [
+								"{{Eresource_URL}}mshied_testscores"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create new Test type",
+			"item": [
+				{
+					"name": "Persona",
+					"item": [
+						{
+							"name": "GetToken_DCRM Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"postman.setGlobalVariable('gaccess_token', data.access_token);",
+											"",
+											"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+											"console.log(pm.globals.get(\"gaccess_token\"));",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{Eadmin_id}}",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "{{Eadmin_secret}}",
+											"type": "text"
+										},
+										{
+											"key": "resource",
+											"value": "{{Eresource}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+									"protocol": "https",
+									"host": [
+										"login",
+										"microsoftonline",
+										"com"
+									],
+									"path": [
+										"{{Eredirectid}}",
+										"oauth2",
+										"token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUser - DCRM Admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var userid,fullname;",
+											"pm.test(\"GetUserID\", function() ",
+											"{",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+											"    var jsonData =JSON.parse(responseBody);",
+											"    userid = jsonData.value[0].systemuserid;",
+											"    fullname=jsonData.value[0].fullname;",
+											"",
+											"    console.log(\"Application User name: \" +fullname);",
+											"    ",
+											"});",
+											"pm.globals.set('guserid2',userid);",
+											"console.log('Systemuser:'+userid);",
+											"",
+											"",
+											"",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Prefer",
+										"value": "return=representation"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{gaccess_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'admin@api.com'",
+									"host": [
+										"{{Eresource_URL}}systemusers"
+									],
+									"query": [
+										{
+											"key": "$filter",
+											"value": "internalemailaddress eq 'admin@api.com'"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Test Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testtypeid;",
+									"var tname;",
+									"pm.test(\"Get A-level id\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    testtypeid = jsonData.mshied_testtypeid;",
+									"    console.log('testtypeid: '+testtypeid);",
+									"    tname = jsonData.mshied_name;",
+									"    console.log('Test type name: '+tname);",
+									"});",
+									"pm.globals.set('gtesttypeid', testtypeid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"mshied_name\": \"A-level test data{{$randomInt}}\",\n\t\"cmc_testscoreschemaname\" : \"mshied_testscore.mshied_alevelart\",\n\t\"cmc_equivalentscoreschemaname\" : \"mshied_testscore.mshied_alevelart\",\n\t\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Testscore Conversions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var testscoreconversionid;",
+									"var tcname;",
+									"pm.test(\"Get Test Score conversion id and verifying the Test Score Conversion - Auto Name workflow\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    testscoreconversionid = jsonData.cmc_testscoreconversionid;",
+									"    console.log('testscoreconversionid: '+testscoreconversionid);",
+									"    tcname = jsonData.cmc_testscoreconversionname;",
+									"    console.log('Test score conversion name through workflow: '+tcname);",
+									"    ",
+									"    pm.test(\"Validate score conversion name\", function()",
+									"    {",
+									"        pm.expect(tcname).to.equal(\"Score Conversion Name\");",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"cmc_equivalentscore\": 16,\r\n\"cmc_maximumscore\": 3,\r\n\"cmc_minimumscore\": 1,\r\n\"cmc_testtypeId@odata.bind\": \"/mshied_testtypes({{gtesttypeid}})\",\r\n\"ownerid@odata.bind\": \"/systemusers({{gownerid}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}cmc_testscoreconversions",
+							"host": [
+								"{{Eresource_URL}}cmc_testscoreconversions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Test Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Delete A-level\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}mshied_testtypes({{gtesttypeid}})",
+							"host": [
+								"{{Eresource_URL}}mshied_testtypes({{gtesttypeid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

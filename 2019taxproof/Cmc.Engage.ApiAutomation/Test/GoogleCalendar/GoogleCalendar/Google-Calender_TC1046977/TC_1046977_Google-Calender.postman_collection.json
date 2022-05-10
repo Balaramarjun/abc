@@ -1,0 +1,866 @@
+{
+	"info": {
+		"_postman_id": "5396bbe1-66d2-4fca-88ea-f78c317d4b64",
+		"name": "TC_1046977_Google-Calender",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetToken_DCRMAPI-System Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Esystemadmin_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Esystemadmin_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser - DCRM Faculty/Instructor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid,fullname;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    fullname=jsonData.value[0].fullname;",
+							"",
+							"    console.log(\"Application User name: \" +fullname);",
+							"    ",
+							"});",
+							"pm.globals.set('guserid5',userid);",
+							"console.log('Systemuser:'+userid);",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'bill@engageuniversity.org'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq 'bill@engageuniversity.org'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EnableGoogleSyncAppointment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid;",
+							"pm.test(\"Enable Googel Sync Appointment to this Appointment Owner \", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    ",
+							"    var status=jsonData.cmc_googlesyncappointments;",
+							"    console.log(\"Googel Sync Appointment Status: \" +status);",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n\"cmc_googlesyncappointments\": true\r\n\r\n}"
+				},
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers({{guserid5}})",
+					"host": [
+						"{{Eresource_URL}}systemusers({{guserid5}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetToken_DCRM Student Advisor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setGlobalVariable('gaccess_token', data.access_token);",
+							"",
+							"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+							"console.log(pm.globals.get(\"gaccess_token\"));",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{Estudentadvisor_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{Estudentadvisor_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{Eresource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{Eredirectid}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser - DCRM Student Advisor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid,fullname;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    fullname=jsonData.value[0].fullname;",
+							"",
+							"    console.log(\"Application User name: \" +fullname);",
+							"    ",
+							"});",
+							"pm.globals.set('guserid4',userid);",
+							"console.log('Systemuser:'+userid);",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$filter=internalemailaddress eq 'studentadvisor@api.com'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq 'studentadvisor@api.com'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserID for partyid1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userid;",
+							"pm.test(\"GetUserID\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    userid = jsonData.value[0].systemuserid;",
+							"    ",
+							"});",
+							"pm.globals.set('gpartyid',userid);",
+							"console.log('Systemuser:'+userid);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{Eresource_URL}}systemusers?$select=systemuserid&$filter=internalemailaddress eq 'admin@api.com'",
+					"host": [
+						"{{Eresource_URL}}systemusers"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "systemuserid"
+						},
+						{
+							"key": "$filter",
+							"value": "internalemailaddress eq 'admin@api.com'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateAppointment in Engage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var appointmentid;",
+							"var appointmentsubject;",
+							"pm.test(\"Appointment Activity Created\", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    appointmentid = jsonData.activityid;",
+							"  ",
+							"  console.log(\"Appointment:\" ,appointmentid);",
+							"  ",
+							"   appointmentsubject = jsonData.subject;",
+							"   console.log(\"Sub:\" ,appointmentsubject);",
+							"",
+							"    appointmentlocation = jsonData.location;",
+							"    console.log(\"appointmentlocation:\" ,appointmentlocation);",
+							"",
+							"    appointmentdescription = jsonData.description;",
+							"    console.log(\"appointmentdescription:\" ,appointmentdescription);",
+							"",
+							"   scheduledend = jsonData.scheduledend;",
+							"   console.log(\"scheduledend:\" ,scheduledend);",
+							"",
+							"   scheduledstart = jsonData.scheduledstart;",
+							"   console.log(\"scheduledstart:\" ,scheduledstart);",
+							"",
+							"});",
+							"",
+							"  pm.globals.set('gappointmentid',appointmentid);",
+							"  pm.globals.set('gscheduledstart',scheduledstart);",
+							"  pm.globals.set('gscheduledend',scheduledend);",
+							"  pm.globals.set('gappointmentdescription',appointmentdescription);",
+							"  pm.globals.set('gappointmentlocation',appointmentlocation);",
+							"  pm.globals.set('gappointmentsubject',appointmentsubject);",
+							"  ",
+							"",
+							"",
+							"console.log(pm.globals.get(\"gappointmentid\"));",
+							"",
+							"  setTimeout(function(){},30000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());",
+							"",
+							"var moment = require(\"moment\");",
+							"pm.environment.set('pickUpTime', moment().add(30, 'minutes').toISOString());",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"subject\": \"BalaTestgoogleAPI{{$randomInt}}\",\r\n \"location\": \"AppointmentLoc-{{$randomCity}}\",\r\n \"description\": \"Bala Test Description{{$randomInt}}\",\r\n \"scheduledstart\": \"{{current_timestamp}}\",\r\n \"scheduledend\": \"{{pickUpTime}}\",\r\n \"ownerid@odata.bind\": \"/systemusers({{guserid5}})\",\r\n \"prioritycode\": 1,\r\n\r\n \"appointment_activity_parties\"  : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{gpartyid}})\",\r\n            \"participationtypemask\" : 5\r\n        },\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers({{gpartyid}})\",\r\n            \"participationtypemask\" : 6\r\n        }]\r\n\r\n}\r\n\r\n\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/appointments",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"appointments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get cmc_googleeventid from Engage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var googleeventid;",
+							"var appointmentsubject;",
+							"pm.test(\"Get Google Event ID \", function() ",
+							"{",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+							"    var jsonData =JSON.parse(responseBody);",
+							"    googleeventid = jsonData.cmc_googleeventid;  ",
+							"    console.log(\"googleeventid:\" ,googleeventid); ",
+							"  ",
+							"});",
+							"  pm.globals.set('ggoogleeventid',googleeventid);",
+							" ",
+							"  ",
+							"",
+							"",
+							"console.log(pm.globals.get(\"gappointmentid\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());",
+							"",
+							"",
+							"",
+							"",
+							"var moment = require(\"moment\");",
+							"",
+							"pm.environment.set('pickUpTime', moment().add(30, 'minutes').toISOString());",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Prefer",
+						"value": "return=representation"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gaccess_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"subject\": \"BalaTestgoogleAPI{{$randomInt}}\",\r\n \"location\": \"AppointmentLoc-{{$randomCity}}\",\r\n \"description\": \"Bala Test Description{{$randomInt}}\",\r\n \"scheduledstart\": \"{{current_timestamp}}\",\r\n \"scheduledend\": \"{{pickUpTime}}\",\r\n \"ownerid@odata.bind\": \"/systemusers(886754b2-4495-ea11-a811-000d3a33f70f)\",\r\n \"prioritycode\": 1,\r\n\r\n \"appointment_activity_parties\"  : [\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers(e62cde53-2d95-ea11-a811-000d3a5c0e3c)\",\r\n            \"participationtypemask\" : 5\r\n        },\r\n        {\r\n            \"partyid_systemuser@odata.bind\" : \"/systemusers(e62cde53-2d95-ea11-a811-000d3a5c0e3c)\",\r\n            \"participationtypemask\" : 6\r\n        }]\r\n\r\n}\r\n\r\n\r\n"
+				},
+				"url": {
+					"raw": "{{Eresource}}api/data/{{Eversion}}/appointments({{gappointmentid}})",
+					"host": [
+						"{{Eresource}}api"
+					],
+					"path": [
+						"data",
+						"{{Eversion}}",
+						"appointments({{gappointmentid}})"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetTokenfromGoogle",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"eval(pm.environment.get('get_google_token_script'));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"GetTokenfromGoogle\", function() \r",
+							"{\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+							"    var jsonData =JSON.parse(responseBody);\r",
+							"\r",
+							"  \r",
+							"});\r",
+							"\r",
+							"setTimeout(function(){},10000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+					"protocol": "https",
+					"host": [
+						"www",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"calendar",
+						"v3",
+						"users",
+						"me",
+						"calendarList"
+					]
+				},
+				"description": "This request creates a signed JWT using the `jwt_secret` variable and encodes the JWT data as base64. It then sets the signed and encoded JWT as `Bearer` token in the `Authorization` header."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Appointment from Google",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Calendar.Events.list(calendarId).items[0].id\r",
+							"\r",
+							"var googleeventid, summary, description, location, creator, startdate, enddate, organizer, optional;\r",
+							"\r",
+							"pm.test(\"Appointment Created in Gooogle Calender\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"  var jsonData = JSON.parse(responseBody);\r",
+							"  googleeventid = jsonData.id;\r",
+							"  summary = jsonData.summary;\r",
+							"  description = jsonData.description;\r",
+							"  location = jsonData.location;\r",
+							"  creator = jsonData.creator.email;\r",
+							"  startdate = jsonData.start.dateTime;\r",
+							"  enddate = jsonData.end.dateTime;\r",
+							"  organizer = jsonData.attendees[0].email;\r",
+							"  optional = jsonData.attendees[1].email;\r",
+							"\r",
+							"  console.log(\"googleeventid:\", googleeventid);\r",
+							"  console.log(\"summary:\", summary);\r",
+							"  console.log(\"location:\", location);\r",
+							"  console.log(\"creator:\", creator);\r",
+							"  console.log(\"startdate:\", startdate);\r",
+							"  console.log(\"enddate:\", enddate);\r",
+							"  console.log(\"organizer:\", organizer);\r",
+							"  console.log(\"optional:\", optional);\r",
+							"\r",
+							"  var gappointmentid= pm.globals.get(\"gappointmentid\");\r",
+							"  var gscheduledstart= pm.globals.get(\"gscheduledstart\");\r",
+							"  var gscheduledend =pm.globals.get(\"gscheduledend\");\r",
+							"  var gappointmentdescription=pm.globals.get(\"gappointmentdescription\");\r",
+							"  var gappointmentlocation=pm.globals.get(\"gappointmentlocation\");\r",
+							"  var gappointmentsubject=pm.globals.get(\"gappointmentsubject\");\r",
+							"  var ggoogleeventid=pm.globals.get(\"ggoogleeventid\");\r",
+							"  \r",
+							"\r",
+							"  console.log(\"Engagelocation: \" +gappointmentlocation);\r",
+							"  console.log(\"Engagedescription: \" +gappointmentdescription);\r",
+							"  console.log(\"Engagelocation :\" +gappointmentlocation);\r",
+							"  console.log(\"Engage Startdate :\" +gscheduledstart);\r",
+							"  console.log(\"Engage Enddate: \" +gscheduledend);\r",
+							"  console.log(\"EngageSubject: \" +gappointmentsubject);\r",
+							"\r",
+							"  pm.test(\"Validate Location\", function()\r",
+							"        {\r",
+							"            pm.expect(gappointmentlocation).to.equal(location);\r",
+							"        });\r",
+							"// pm.test(\"Validate Startdate\", function()\r",
+							"//         {\r",
+							"//             pm.expect(gscheduledstart).to.equal(startdate);\r",
+							"//         });\r",
+							"// pm.test(\"Validate Enddate\", function()\r",
+							"//         {\r",
+							"//             pm.expect(gscheduledend).to.equal(enddate);\r",
+							"//         });\r",
+							"pm.test(\"Validate Subject\", function()\r",
+							"        {\r",
+							"            pm.expect(gappointmentsubject).to.equal(summary);\r",
+							"        });\r",
+							"pm.test(\"Validate Description\", function()\r",
+							"        {\r",
+							"            pm.expect(gappointmentdescription).to.equal(description);\r",
+							"        });\r",
+							"pm.test(\"Validate googleeventid\", function()\r",
+							"        {\r",
+							"            pm.expect(ggoogleeventid).to.equal(googleeventid);\r",
+							"        });\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// eval(pm.environment.get('get_google_token_script'));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://www.googleapis.com/calendar/v3/calendars/primary/events/{{ggoogleeventid}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"calendar",
+						"v3",
+						"calendars",
+						"primary",
+						"events",
+						"{{ggoogleeventid}}"
+					]
+				},
+				"description": "This request creates a signed JWT using the `jwt_secret` variable and encodes the JWT data as base64. It then sets the signed and encoded JWT as `Bearer` token in the `Authorization` header."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

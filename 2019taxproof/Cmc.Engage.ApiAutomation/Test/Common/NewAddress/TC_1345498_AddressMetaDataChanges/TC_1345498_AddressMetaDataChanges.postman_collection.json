@@ -1,0 +1,3560 @@
+{
+	"info": {
+		"_postman_id": "f934502e-5cff-4f2e-ad44-b53e95f3b602",
+		"name": "TC_1345498_AddressMetaDataChanges",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Pre-requisite",
+			"item": [
+				{
+					"name": "GetToken_DCRM SystemAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setGlobalVariable('gaccess_token', data.access_token);",
+									"",
+									"//pm.environment.set(\"Eaccess_token\", data.access_token);",
+									"console.log(pm.globals.get(\"gaccess_token\"));",
+									"",
+									"//Genarate global session value",
+									"",
+									"var number = Math.floor(Math.random() * 1000);",
+									"pm.globals.set('globalsessionvalue',number)",
+									"",
+									"console.log(pm.globals.get(\"globalsessionvalue\"));",
+									"",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{Esystemadmin_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Esystemadmin_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{Eresource}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{Eredirectid}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{Eredirectid}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD AddressValidationOutputConfiguration",
+			"item": [
+				{
+					"name": "Create AddressValidationOutputConfiguration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var addressoutputconfigId,name,bingFieldMappingCode,cleanAddressFieldMappingCode,addressValidationSource,melissaFieldMappingCode,outputName;",
+									"",
+									"pm.test(\"AddressValidation Output Configuration Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    addressoutputconfigId = jsonData.anth_addressvalidationoutputconfigurationid;",
+									"    name = jsonData.anth_name;",
+									"    bingFieldMappingCode = jsonData.anth_bingfieldmappingcode;",
+									"    cleanAddressFieldMappingCode = jsonData.anth_cleanaddressfieldmappingcodes;",
+									"    addressValidationSource= jsonData.anth_addressvalidationsourcecodes;",
+									"    melissaFieldMappingCode = jsonData.anth_melissafieldmappingcode;  ",
+									"    outputName = jsonData.anth_outputname;  ",
+									"     ",
+									"    ",
+									"});",
+									" console.log(\"Address Output Configuration ID: \"+addressoutputconfigId);",
+									" console.log(\"Address Output Configuration Name: \"+name);",
+									"",
+									"pm.globals.set('gaddressoutputconfigId',addressoutputconfigId);",
+									"pm.globals.set('gname',name);",
+									"pm.globals.set('gbingFieldMappingCode',bingFieldMappingCode);",
+									"pm.globals.set('gcleanAddressFieldMappingCode',cleanAddressFieldMappingCode);",
+									"pm.globals.set('gaddressValidationSource',addressValidationSource);",
+									"pm.globals.set('gmelissaFieldMappingCode',melissaFieldMappingCode);",
+									"pm.globals.set('goutputName',outputName);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addressvalidationsourcecodes\":\"215550000\" ,\r\n    \"anth_bingfieldmappingcode\":\"215550000\" ,\r\n    \"anth_cleanaddressfieldmappingcodes\":\"215550000\" ,\r\n    \"anth_melissafieldmappingcode\": \"215550000\" ,\r\n    \"anth_name\": \"AddressValidation-API-{{$randomLastName}}\",\r\n    \"anth_outputname\":\"Address output {{$randomInt}}\" \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addressvalidationoutputconfigurations",
+							"host": [
+								"{{Eresource_URL}}anth_addressvalidationoutputconfigurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update AddressValidationOutputConfiguration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var addressoutputconfigId,name,bingFieldMappingCode,cleanAddressFieldMappingCode,addressValidationSource,melissaFieldMappingCode,outputName;",
+									"",
+									"var oldname=pm.globals.get('gname');",
+									"var oldbingFieldMappingCode=pm.globals.get('gbingFieldMappingCode');",
+									"var oldcleanAddressFieldMappingCode=pm.globals.get('gcleanAddressFieldMappingCode');",
+									"var oldaddressValidationSource=pm.globals.get('gaddressValidationSource');",
+									"var oldmelissaFieldMappingCode=pm.globals.get('gmelissaFieldMappingCode');",
+									"var oldoutputName=pm.globals.get('goutputName');",
+									"",
+									"pm.test(\"AddressValidation Output Configuration Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    addressoutputconfigId = jsonData.anth_addressvalidationoutputconfigurationId;",
+									"    name = jsonData.anth_name;",
+									"    bingFieldMappingCode = jsonData.anth_bingfieldmappingcode;",
+									"    cleanAddressFieldMappingCode = jsonData.anth_cleanaddressfieldmappingcode;",
+									"    addressValidationSource= jsonData.anth_addressvalidationsourcecode;",
+									"    melissaFieldMappingCode = jsonData.anth_melissafieldmappingcode;  ",
+									"    outputName = jsonData.anth_outputname;  ",
+									"});",
+									"",
+									"pm.test(\"name\", function()",
+									"        {",
+									"            pm.expect(oldname).not.eql(name);",
+									"        });",
+									"",
+									"pm.test(\"bingFieldMappingCode\", function()",
+									"        {",
+									"            pm.expect(oldbingFieldMappingCode).not.eql(bingFieldMappingCode);",
+									"        });",
+									"",
+									"pm.test(\"cleanAddressFieldMappingCode\", function()",
+									"        {",
+									"            pm.expect(oldcleanAddressFieldMappingCode).not.eql(cleanAddressFieldMappingCode);",
+									"        });",
+									"",
+									"pm.test(\"addressValidationSource\", function()",
+									"        {",
+									"            pm.expect(oldaddressValidationSource).not.eql(addressValidationSource);",
+									"        });",
+									"",
+									"pm.test(\"melissaFieldMappingCode\", function()",
+									"        {",
+									"            pm.expect(oldmelissaFieldMappingCode).not.eql(melissaFieldMappingCode);",
+									"        });",
+									"",
+									"pm.test(\"outputName\", function()",
+									"        {",
+									"            pm.expect(oldoutputName).not.eql(outputName);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addressvalidationsourcecodes\":\"215550001\" ,\r\n    \"anth_bingfieldmappingcode\":\"215550001\" ,\r\n    \"anth_cleanaddressfieldmappingcodes\":\"215550001\" ,\r\n    \"anth_melissafieldmappingcode\": \"215550001\" ,\r\n    \"anth_name\": \"AddressValidationUpdate-API-{{$randomLastName}}\",\r\n    \"anth_outputname\":\"Address output update {{$randomInt}}\" \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addressvalidationoutputconfigurations({{gaddressoutputconfigId}})",
+							"host": [
+								"{{Eresource_URL}}anth_addressvalidationoutputconfigurations({{gaddressoutputconfigId}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD AddressSettings",
+			"item": [
+				{
+					"name": "Create AddressSettings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var addresssettingsid,addressValidationSourceCode,bingAPIKey,cleanAddressURL,contactDetailsUse,melissalicense;",
+									"",
+									"",
+									"pm.test(\"Address Settings Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    addresssettingsid = jsonData.anth_addresssettingsid;",
+									"    addressValidationSourceCode = jsonData.anth_addressvalidationsourcecode;",
+									"    bingAPIKey = jsonData.anth_bingapikey;",
+									"    cleanAddressURL = jsonData.anth_cleanaddressurl;",
+									"    contactDetailsUse = jsonData.anth_usereferencefields;",
+									"    melissalicense= jsonData.anth_melissalicensekey;",
+									"    ",
+									"    console.log(\"Address Settings ID: \"+addresssettingsid);",
+									"});",
+									" ",
+									"pm.globals.set('gaddresssettingsid',addresssettingsid);",
+									"pm.globals.set('gaddressValidationSourceCode',addressValidationSourceCode);",
+									"pm.globals.set('gbingAPIKey',bingAPIKey);",
+									"pm.globals.set('gcleanAddressURL',cleanAddressURL);",
+									"pm.globals.set('gcontactDetailsUse',contactDetailsUse);",
+									"pm.globals.set('gmelissalicense',melissalicense);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addressvalidationsourcecode\":\"215550000\" ,\r\n    \"anth_bingapikey\":\"Bing API Key {{$randomInt}}\" ,\r\n    \"anth_cleanaddressurl\":\"Clean address API {{$randomInt}}\" ,\r\n    \"anth_usereferencefields\":true,\r\n    \"anth_melissalicensekey\": \"Melissalicense key {{$randomInt}} \"\r\n    \r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addresssettingses",
+							"host": [
+								"{{Eresource_URL}}anth_addresssettingses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update AddressSettings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var addresssettingsid,addressValidationSourceCode,bingAPIKey,cleanAddressURL,contactDetailsUse,melissalicense;",
+									"",
+									"var addressID=pm.globals.get('gaddresssettingsid');",
+									"var oldaddressValidationSourceCode=pm.globals.get('gaddressValidationSourceCode');",
+									"var oldbingAPIKey=pm.globals.get('gbingAPIKey');",
+									"var oldcleanAddressURL=pm.globals.get('gcleanAddressURL');",
+									"var oldcontactDetailsUse=pm.globals.get('gcontactDetailsUse');",
+									"var oldmelissalicense=pm.globals.get('gmelissalicense');",
+									"",
+									"",
+									"pm.test(\"Address Settings Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    addresssettingsid = jsonData.anth_addresssettingsid;",
+									"    addressValidationSourceCode = jsonData.anth_addressvalidationsourcecode;",
+									"    bingAPIKey = jsonData.anth_bingapikey;",
+									"    cleanAddressURL = jsonData.anth_cleanaddressurl;",
+									"    contactDetailsUse = jsonData.anth_usereferencefields;",
+									"    melissalicense= jsonData.anth_melissalicensekey;",
+									"",
+									"});",
+									"",
+									"pm.test(\"addressValidationSourceCode\", function()",
+									"        {",
+									"            pm.expect(oldaddressValidationSourceCode).not.eql(addressValidationSourceCode);",
+									"        });",
+									"",
+									"pm.test(\"bingAPIKey\", function()",
+									"        {",
+									"            pm.expect(oldbingAPIKey).not.eql(bingAPIKey);",
+									"        });",
+									"",
+									"pm.test(\"cleanAddressURL\", function()",
+									"        {",
+									"            pm.expect(oldcleanAddressURL).not.eql(cleanAddressURL);",
+									"        });",
+									"",
+									"pm.test(\"contactDetailsUse\", function()",
+									"        {",
+									"            pm.expect(oldcontactDetailsUse).not.eql(contactDetailsUse);",
+									"        });",
+									"",
+									"pm.test(\"melissalicense\", function()",
+									"        {",
+									"            pm.expect(oldmelissalicense).not.eql(melissalicense);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addressvalidationsourcecode\":\"215550001\" ,\r\n    \"anth_bingapikey\":\"Bing API Key Update{{$randomInt}}\" ,\r\n    \"anth_cleanaddressurl\":\"Clean address API update {{$randomInt}}\" ,\r\n    \"anth_usereferencefields\":false,\r\n    \"anth_melissalicensekey\": \"Melissalicense key update {{$randomInt}} \"\r\n    \r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addresssettingses({{gaddresssettingsid}})",
+							"host": [
+								"{{Eresource_URL}}anth_addresssettingses({{gaddresssettingsid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD AddressValidationFieldMap",
+			"item": [
+				{
+					"name": "Create AddressValidationFieldMap",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var addressfieldmap,name,addressTypeCode,addressValidationOutput,addressValidationSource,attributelogicalName,attributeName,attributeNameHolder,attributeSchemaName,entityCollection,entityLogicalName,entityName,entityNameCode,foundationSettingsId,lookupAttributeDisplayName,lookupAttributeLogicalName,lookupAttributeNameHolder,lookupEntityLogicalName,lookupEntityPrimaryName,outputData;",
+									"",
+									"pm.test(\"AddressValidation Field Map Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    addressfieldmap = jsonData.anth_addressvalidationfieldmapid;",
+									"    name = jsonData.anth_name;",
+									"    addressTypeCode = jsonData.anth_addresstypecode;",
+									"    addressValidationOutput = jsonData.anth_addressvalidationoutputconfigurationid;",
+									"    addressValidationSource= jsonData.anth_addressvalidationsourcecode;",
+									"    attributelogicalName = jsonData.anth_attributelogicalname;  ",
+									"    attributeName = jsonData.anth_attributename;  ",
+									"    attributeNameHolder = jsonData.anth_attributenameholdercode;  ",
+									"    attributeSchemaName = jsonData.anth_attributeschemaname;  ",
+									"    entityCollection = jsonData.anth_entitycollectionname;  ",
+									"    entityLogicalName = jsonData.anth_entitylogicalname;  ",
+									"    entityName = jsonData.anth_entityname;  ",
+									"    entityNameCode = jsonData.anth_entitynamecode;  ",
+									"    foundationSettingsId = jsonData.anth_foundationsettingsid;  ",
+									"    lookupAttributeDisplayName = jsonData.anth_lookupattributedisplayname;  ",
+									"    lookupAttributeLogicalName = jsonData.anth_lookupattributelogicalname;  ",
+									"    lookupAttributeNameHolder = jsonData.anth_lookupattributenameholdercode;  ",
+									"    lookupEntityLogicalName = jsonData.anth_lookupentitylogicalname; ",
+									"    lookupEntityPrimaryName = jsonData.anth_lookupentityprimarynameattribute; ",
+									"    outputData = jsonData.anth_outputdatatypecode; ",
+									"",
+									"});",
+									" ",
+									"  ",
+									"    console.log(\"Addressfieldmap ID: \"+addressfieldmap);",
+									"    console.log(\"Addressfieldmap Name: \"+name);",
+									"",
+									"pm.globals.set('gaddressfieldmap',addressfieldmap);",
+									"pm.globals.set('gname',name);",
+									"pm.globals.set('gaddressTypeCode',addressTypeCode);",
+									"pm.globals.set('gaddressValidationOutput',addressValidationOutput);",
+									"pm.globals.set('gaddressValidationSource',addressValidationSource);",
+									"pm.globals.set('gattributelogicalName',attributelogicalName);",
+									"pm.globals.set('gattributeName',attributeName);",
+									"pm.globals.set('gattributeNameHolder',attributeNameHolder);",
+									"pm.globals.set('gattributeSchemaName',attributeSchemaName);",
+									"pm.globals.set('gentityCollection',entityCollection);",
+									"pm.globals.set('gentityLogicalName',entityLogicalName);",
+									"pm.globals.set('gentityName',entityName);",
+									"pm.globals.set('gentityNameCode',entityNameCode);",
+									"pm.globals.set('gfoundationSettingsId',foundationSettingsId);",
+									"pm.globals.set('glookupAttributeDisplayName',lookupAttributeDisplayName);",
+									"pm.globals.set('glookupAttributeLogicalName',lookupAttributeLogicalName);",
+									"pm.globals.set('glookupAttributeNameHolder',lookupAttributeNameHolder);",
+									"pm.globals.set('glookupEntityLogicalName',lookupEntityLogicalName);",
+									"pm.globals.set('glookupEntityPrimaryName',lookupEntityPrimaryName);",
+									"pm.globals.set('goutputData',outputData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addresstypecode\": \"215550000\",\r\n    \"anth_addressvalidationoutputconfigurationid@odata.bind\":\"/anth_addressvalidationoutputconfigurations({{gaddressoutputconfigId}})\",\r\n    \"anth_addressvalidationsourcecode\": \"215550000\",\r\n    \"anth_attributelogicalname\":\"logicalName API {{$randomInt}}\"  ,\r\n    \"anth_attributename\":\"AttributeName API {{$randomInt}}\" ,\r\n    \"anth_attributenameholdercode\":null ,\r\n    \"anth_attributeschemaname\": \"AttributeSchemaName API {{$randomInt}}\",\r\n    \"anth_entitycollectionname\":\"EntityCollectionName API {{$randomInt}}\" ,\r\n    \"anth_entitylogicalname\": \"EntityLogicalName API {{$randomInt}}\",\r\n    \"anth_entityname\":\"EntityName API {{$randomInt}}\" ,\r\n    \"anth_entitynamecode\":\"215550000\" ,\r\n    \"anth_addresssettingsid@odata.bind\":\"/anth_addresssettingses({{gaddresssettingsid}})\" ,\r\n    \"anth_lookupattributedisplayname\":\"lookupAttributeDisplay API {{$randomInt}}\" ,\r\n    \"anth_lookupattributelogicalname\":\"lookupAttributeLogical API {{$randomInt}}\" ,\r\n    \"anth_lookupattributenameholdercode\":null ,\r\n    \"anth_lookupentitylogicalname\":\"lookupentitylogicalName API {{$randomInt}}\" ,\r\n    \"anth_lookupentityprimarynameattribute\":\"lookupentityprimaryName API {{$randomInt}}\" ,\r\n    \"anth_name\": \"AddressValidationName API {{$randomLastName}}\",\r\n    \"anth_outputdatatypecode\": \"215550000\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addressvalidationfieldmaps",
+							"host": [
+								"{{Eresource_URL}}anth_addressvalidationfieldmaps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update AddressValidationFieldMap",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var addressfieldmap,name,addressTypeCode,addressValidationOutput,addressValidationSource,attributelogicalName,attributeName,attributeNameHolder,attributeSchemaName,entityCollection,entityLogicalName,entityName,entityNameCode,foundationSettingsId,lookupAttributeDisplayName,lookupAttributeLogicalName,lookupAttributeNameHolder,lookupEntityLogicalName,lookupEntityPrimaryName,outputData;",
+									"",
+									"var oldname=pm.globals.get('gname');",
+									"var oldaddressTypeCode=pm.globals.get('gaddressTypeCode');",
+									"var oldaddressValidationOutput=pm.globals.get('gaddressValidationOutput');",
+									"var oldaddressValidationSource=pm.globals.get('gaddressValidationSource');",
+									"var oldattributelogicalName=pm.globals.get('gattributelogicalName');",
+									"var oldattributeName=pm.globals.get('gattributeName');",
+									"var oldattributeNameHolder=pm.globals.get('gattributeNameHolder');",
+									"var oldattributeSchemaName=pm.globals.get('gattributeSchemaName');",
+									"var oldentityCollection=pm.globals.get('gentityCollection');",
+									"var oldentityLogicalName=pm.globals.get('gentityLogicalName');",
+									"var oldentityName=pm.globals.get('gentityName');",
+									"var oldentityNameCode=pm.globals.get('gentityNameCode');",
+									"var oldfoundationSettingsId=pm.globals.get('gfoundationSettingsId');",
+									"var oldlookupAttributeDisplayName=pm.globals.get('glookupAttributeDisplayName');",
+									"var oldlookupAttributeLogicalName=pm.globals.get('glookupAttributeLogicalName');",
+									"var oldlookupAttributeNameHolder=pm.globals.get('glookupAttributeNameHolder');",
+									"var oldlookupEntityLogicalName=pm.globals.get('glookupEntityLogicalName');",
+									"var oldlookupEntityPrimaryName=pm.globals.get('glookupEntityPrimaryName');",
+									"var oldoutputData=pm.globals.get('goutputData');",
+									"",
+									"pm.test(\"AddressValidation Field Map Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    addressfieldmap = jsonData.anth_addressvalidationfieldmapid;",
+									"    name = jsonData.anth_name;",
+									"    addressTypeCode = jsonData.anth_addresstypecode;",
+									"    addressValidationOutput = jsonData.anth_addressvalidationoutputconfigurationid;",
+									"    addressValidationSource= jsonData.anth_addressvalidationsourcecode;",
+									"    attributelogicalName = jsonData.anth_attributelogicalname;  ",
+									"    attributeName = jsonData.anth_attributename;  ",
+									"    attributeNameHolder = jsonData.anth_attributenameholdercode;  ",
+									"    attributeSchemaName = jsonData.anth_attributeschemaname;  ",
+									"    entityCollection = jsonData.anth_entitycollectionname;  ",
+									"    entityLogicalName = jsonData.anth_entitylogicalname;  ",
+									"    entityName = jsonData.anth_entityname;  ",
+									"    entityNameCode = jsonData.anth_entitynamecode;  ",
+									"    foundationSettingsId = jsonData.anth_foundationsettingsid;  ",
+									"    lookupAttributeDisplayName = jsonData.anth_lookupattributedisplayname;  ",
+									"    lookupAttributeLogicalName = jsonData.anth_lookupattributelogicalname;  ",
+									"    lookupAttributeNameHolder = jsonData.anth_lookupattributenameholdercode;  ",
+									"    lookupEntityLogicalName = jsonData.anth_lookupentitylogicalname; ",
+									"    lookupEntityPrimaryName = jsonData.anth_lookupentityprimarynameattribute; ",
+									"    outputData = jsonData.anth_outputdatatypecode;  ",
+									"",
+									"});",
+									"",
+									"pm.test(\"name\", function()",
+									"        {",
+									"            pm.expect(oldname).not.eql(name);",
+									"        });",
+									"",
+									"pm.test(\"addressTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldaddressTypeCode).not.eql(addressTypeCode);",
+									"        });",
+									"",
+									"pm.test(\"addressValidationOutput\", function()",
+									"        {",
+									"            pm.expect(oldaddressValidationOutput).not.eql(addressValidationOutput);",
+									"        });",
+									"",
+									"pm.test(\"addressValidationSource\", function()",
+									"        {",
+									"            pm.expect(oldaddressValidationSource).not.eql(addressValidationSource);",
+									"        });",
+									"",
+									"pm.test(\"attributelogicalName\", function()",
+									"        {",
+									"            pm.expect(oldattributelogicalName).not.eql(attributelogicalName);",
+									"        });",
+									"",
+									"pm.test(\"attributeName\", function()",
+									"        {",
+									"            pm.expect(oldattributeName).not.eql(attributeName);",
+									"        });",
+									"",
+									"pm.test(\"attributeNameHolder\", function()",
+									"        {",
+									"            pm.expect(oldattributeNameHolder).not.eql(attributeNameHolder);",
+									"        });",
+									"",
+									"pm.test(\"attributeSchemaName\", function()",
+									"        {",
+									"            pm.expect(oldattributeSchemaName).not.eql(attributeSchemaName);",
+									"        });",
+									"",
+									"pm.test(\"entityCollection\", function()",
+									"        {",
+									"            pm.expect(oldentityCollection).not.eql(entityCollection);",
+									"        });",
+									"pm.test(\"entityLogicalName\", function()",
+									"        {",
+									"            pm.expect(oldentityLogicalName).not.eql(entityLogicalName);",
+									"        });",
+									"pm.test(\"entityName\", function()",
+									"        {",
+									"            pm.expect(oldentityName).not.eql(entityName);",
+									"        });",
+									"pm.test(\"entityNameCode\", function()",
+									"        {",
+									"            pm.expect(oldentityNameCode).not.eql(entityNameCode);",
+									"        });",
+									"pm.test(\"foundationSettingsId\", function()",
+									"        {",
+									"            pm.expect(oldfoundationSettingsId).not.eql(foundationSettingsId);",
+									"        });",
+									"pm.test(\"lookupAttributeDisplayName\", function()",
+									"        {",
+									"            pm.expect(oldlookupAttributeDisplayName).not.eql(lookupAttributeDisplayName);",
+									"        });",
+									"pm.test(\"lookupAttributeLogicalName\", function()",
+									"        {",
+									"            pm.expect(oldlookupAttributeLogicalName).not.eql(lookupAttributeLogicalName);",
+									"        });",
+									"pm.test(\"lookupAttributeNameHolder\", function()",
+									"        {",
+									"            pm.expect(oldlookupAttributeNameHolder).not.eql(lookupAttributeNameHolder);",
+									"        });",
+									"pm.test(\"lookupEntityLogicalName\", function()",
+									"        {",
+									"            pm.expect(oldlookupEntityLogicalName).not.eql(lookupEntityLogicalName);",
+									"        });",
+									"pm.test(\"lookupEntityPrimaryName\", function()",
+									"        {",
+									"            pm.expect(oldlookupEntityPrimaryName).not.eql(lookupEntityPrimaryName);",
+									"        });",
+									"pm.test(\"outputData\", function()",
+									"        {",
+									"            pm.expect(oldoutputData).not.eql(outputData);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addresstypecode\": \"215550001\",\r\n    \"anth_addressvalidationoutputconfigurationid@odata.bind\":null,\r\n    \"anth_addressvalidationsourcecode\": \"215550001\",\r\n    \"anth_attributelogicalname\":\"logicalName API update {{$randomInt}}\"  ,\r\n    \"anth_attributename\":\"AttributeName API update{{$randomInt}}\" ,\r\n    \"anth_attributenameholdercode\":null ,\r\n    \"anth_attributeschemaname\": \"AttributeSchemaName API update {{$randomInt}}\",\r\n    \"anth_entitycollectionname\":\"EntityCollectionName API update {{$randomInt}}\" ,\r\n    \"anth_entitylogicalname\": \"EntityLogicalName API update {{$randomInt}}\",\r\n    \"anth_entityname\":\"EntityName API update {{$randomInt}}\" ,\r\n    \"anth_entitynamecode\":\"215550001\" ,\r\n    \"anth_addresssettingsid@odata.bind\":null ,\r\n    \"anth_lookupattributedisplayname\":\"lookupAttributeDisplay API update{{$randomInt}}\" ,\r\n    \"anth_lookupattributelogicalname\":\"lookupAttributeLogical API update {{$randomInt}}\" ,\r\n    \"anth_lookupattributenameholdercode\":null ,\r\n    \"anth_lookupentitylogicalname\":\"lookupentitylogicalName API update {{$randomInt}}\" ,\r\n    \"anth_lookupentityprimarynameattribute\":\"lookupentityprimaryName API update{{$randomInt}}\" ,\r\n    \"anth_name\": \"AddressValidationName API update {{$randomLastName}}\",\r\n    \"anth_outputdatatypecode\": \"215550001\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addressvalidationfieldmaps({{gaddressfieldmap}})",
+							"host": [
+								"{{Eresource_URL}}anth_addressvalidationfieldmaps({{gaddressfieldmap}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD Country",
+			"item": [
+				{
+					"name": "Create Country",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var countryid,isoCode,name,postalCode,stateOrProvince;",
+									"",
+									"pm.test(\"Country Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    countryid = jsonData.anth_countryid;",
+									"    isoCode = jsonData.anth_isocode;",
+									"    name= jsonData.anth_name;",
+									"    postalCode= jsonData.anth_postalcodelabel;",
+									"    stateOrProvince= jsonData.anth_stateorprovincelabel;",
+									"    console.log(\"Country ID: \"+countryid);",
+									"    console.log(\"Country Name: \"+name);",
+									"   ",
+									"});",
+									"",
+									" ",
+									"pm.globals.set('gcountryid1a',countryid);",
+									"pm.globals.set('gisoCode1a',isoCode);",
+									"pm.globals.set('gname1a',name);",
+									"pm.globals.set('gpostalCode1a',postalCode);",
+									"pm.globals.set('gstateOrProvince1a',stateOrProvince);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_isocode\":\"isocode API {{$randomInt}}\" ,\r\n    \"anth_name\": \"countryname API {{$randomLastName}}\",\r\n    \"anth_postalcodelabel\":\"postalcode API {{$randomInt}}\" ,\r\n    \"anth_stateorprovincelabel\": \"postalcode API {{$randomInt}}\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_countries",
+							"host": [
+								"{{Eresource_URL}}anth_countries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Country",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var countryid,isoCode,name,postalCode,stateOrProvince;",
+									"",
+									"var oldisoCode=pm.globals.get('gisoCode1a');",
+									"var oldname=pm.globals.get('gname1a');",
+									"var oldpostalCode=pm.globals.get('gpostalCode1a');",
+									"var oldstateOrProvince=pm.globals.get('gstateOrProvince1a');",
+									"",
+									"pm.test(\"Country Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    countryid = jsonData.anth_countryid;",
+									"    isoCode = jsonData.anth_isocode;",
+									"    name= jsonData.anth_name;",
+									"    postalCode= jsonData.anth_postalcodelabel;",
+									"    stateOrProvince= jsonData.anth_stateorprovincelabel;",
+									"    ",
+									"    console.log(\"Country ID: \"+countryid);",
+									"    console.log(\"Country Name: \"+name);",
+									"});",
+									"",
+									"pm.test(\"isoCode\", function()",
+									"        {",
+									"            pm.expect(oldisoCode).not.eql(isoCode);",
+									"        });",
+									"",
+									"pm.test(\"name\", function()",
+									"        {",
+									"            pm.expect(oldname).not.eql(name);",
+									"        });",
+									"pm.test(\"postalCode\", function()",
+									"        {",
+									"            pm.expect(oldpostalCode).not.eql(postalCode);",
+									"        });",
+									"pm.test(\"stateOrProvince\", function()",
+									"        {",
+									"            pm.expect(oldstateOrProvince).not.eql(stateOrProvince);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_isocode\":\"isocode API update {{$randomInt}}\" ,\r\n    \"anth_name\": \"countryname API update {{$randomLastName}}\",\r\n    \"anth_postalcodelabel\":\"postalcode API update {{$randomInt}}\" ,\r\n    \"anth_stateorprovincelabel\": \"postalcode API update {{$randomInt}}\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_countries({{gcountryid1a}})",
+							"host": [
+								"{{Eresource_URL}}anth_countries({{gcountryid1a}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD StateOrProvince",
+			"item": [
+				{
+					"name": "Create StateOrProvince",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var countryid,isoCode,name,stateOrProvinceId;",
+									"",
+									"pm.test(\"State Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    stateOrProvinceId= jsonData.anth_stateorprovinceid;",
+									"    countryid = jsonData.anth_countryid;",
+									"    isoCode = jsonData.anth_isocode;",
+									"    name= jsonData.anth_name;  ",
+									"  ",
+									"    console.log(\"StateOrProvince ID: \"+stateOrProvinceId);",
+									"    console.log(\"StateOrProvince Name: \"+name);",
+									"});",
+									" ",
+									"pm.globals.set('gstateOrProvinceId1',stateOrProvinceId);",
+									"pm.globals.set('gcountryid1',countryid);",
+									"pm.globals.set('gisoCode1',isoCode);",
+									"pm.globals.set('gname1',name);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_isocode\":\"isocode API {{$randomInt}}\" ,\r\n    \"anth_name\": \"statename API {{$randomLastName}}\",\r\n    \"anth_countryid@odata.bind\":\"/anth_countries({{gcountryid1a}})\" \r\n\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_stateorprovinces",
+							"host": [
+								"{{Eresource_URL}}anth_stateorprovinces"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update StateOrProvince",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var countryid,isoCode,name,stateOrProvinceId;",
+									"",
+									"var oldisoCode=pm.globals.get('gisoCode1');",
+									"var oldname=pm.globals.get('gname1');",
+									"var oldcountryid=pm.globals.get('gcountryid1');",
+									"",
+									"pm.test(\"State Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    stateOrProvinceId= jsonData.anth_stateorprovinceid;",
+									"    countryid = jsonData.anth_countryid;",
+									"    isoCode = jsonData.anth_isocode;",
+									"    name= jsonData.anth_name;  ",
+									"  ",
+									"    console.log(\"StateOrProvince ID: \"+stateOrProvinceId);",
+									"    console.log(\"StateOrProvince Name: \"+name);",
+									"",
+									"});",
+									"",
+									"pm.test(\"isoCode\", function()",
+									"        {",
+									"            pm.expect(oldisoCode).not.eql(isoCode);",
+									"        });",
+									"",
+									"pm.test(\"name\", function()",
+									"        {",
+									"            pm.expect(oldname).not.eql(name);",
+									"        });",
+									"",
+									"pm.test(\"countryid\", function()",
+									"        {",
+									"            pm.expect(oldcountryid).not.eql(countryid);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_isocode\":\"isocode API update {{$randomInt}}\" ,\r\n    \"anth_name\": \"statename API update {{$randomLastName}}\",\r\n    \"anth_countryid@odata.bind\": null\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_stateorprovinces({{gstateOrProvinceId1}})",
+							"host": [
+								"{{Eresource_URL}}anth_stateorprovinces({{gstateOrProvinceId1}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD County",
+			"item": [
+				{
+					"name": "Create County",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var countyId,countryid,name,fips,stateid;",
+									"",
+									"pm.test(\"County Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    countyId= jsonData.anth_countyid;",
+									"    countryid = jsonData.anth_countryid;",
+									"    fips = jsonData.anth_fips;",
+									"    name= jsonData.anth_name;",
+									"    stateid = jsonData.anth_stateid;  ",
+									"  ",
+									"    console.log(\"County ID: \"+countyId);",
+									"    console.log(\"County Name: \"+name);",
+									"});",
+									" ",
+									"pm.globals.set('gcountyId',countyId);",
+									"pm.globals.set('gcountryid',countryid);",
+									"pm.globals.set('gstateid',stateid);",
+									"pm.globals.set('gfips',fips);",
+									"pm.globals.set('gname',name);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_fips\":\"County fips API {{$randomInt}}\" ,\r\n    \"anth_name\": \"Countyname API {{$randomLastName}}\",\r\n    \"anth_stateid@odata.bind\":\"/anth_stateorprovinces({{gstateOrProvinceId1}})\",\r\n    \"anth_countryid@odata.bind\":\"/anth_countries({{gcountryid1a}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_counties",
+							"host": [
+								"{{Eresource_URL}}anth_counties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update County",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var countyId,countryid,name,fips,stateid;",
+									"",
+									"var oldstateid=pm.globals.get('gstateid');",
+									"var oldname=pm.globals.get('gname');",
+									"var oldcountryid=pm.globals.get('gcountryid');",
+									"var oldfips=pm.globals.get('gfips');",
+									"",
+									"pm.test(\"County Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    countyId= jsonData.anth_countyid;",
+									"    countryid = jsonData.anth_countryid;",
+									"    fips = jsonData.anth_fips;",
+									"    name= jsonData.anth_name;",
+									"    stateid = jsonData.anth_stateid;  ",
+									"  ",
+									"    console.log(\"County ID: \"+countyId);",
+									"    console.log(\"County Name: \"+name);",
+									"",
+									"});",
+									"",
+									"pm.test(\"fips\", function()",
+									"        {",
+									"            pm.expect(oldfips).not.eql(fips);",
+									"        });",
+									"",
+									"pm.test(\"name\", function()",
+									"        {",
+									"            pm.expect(oldname).not.eql(name);",
+									"        });",
+									"",
+									"pm.test(\"countryid\", function()",
+									"        {",
+									"            pm.expect(oldcountryid).not.eql(countryid);",
+									"        });",
+									"pm.test(\"stateid\", function()",
+									"        {",
+									"            pm.expect(oldstateid).not.eql(stateid);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_fips\":\"County fips API update {{$randomInt}}\" ,\r\n    \"anth_name\": \"Countyname API update {{$randomLastName}}\",\r\n    \"anth_stateid@odata.bind\":null ,\r\n    \"anth_countryid@odata.bind\": null \r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_counties({{gcountyId}})",
+							"host": [
+								"{{Eresource_URL}}anth_counties({{gcountyId}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD Account",
+			"item": [
+				{
+					"name": "Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var accountid,accountName,countryid1,line1,stateid1,countryid2,line2,stateid2,addressTypeCode,emailTypeCode,phoneTypeCode;",
+									"",
+									"pm.test(\"Account Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    accountid = jsonData.accountid;",
+									"    accountName = jsonData.name;",
+									"    countryid1 = jsonData.anth_address1_countryid;",
+									"    line1 = jsonData.anth_address1_line4;",
+									"    stateid1= jsonData.anth_address1_stateorprovinceid;",
+									"    countryid2 = jsonData.anth_address2_countryid;  ",
+									"    line2 = jsonData.anth_address2_line4;  ",
+									"    stateid2 = jsonData.anth_address2_stateorprovinceid;  ",
+									"    addressTypeCode = jsonData.anth_preferredaddresstypecode;  ",
+									"    emailTypeCode = jsonData.anth_preferredemailtypecode;  ",
+									"    phoneTypeCode = jsonData.anth_preferredphonetypecode;  ",
+									"  ",
+									"    console.log(\"Account ID: \"+accountid);",
+									"    console.log(\"Account Name: \"+accountName);",
+									"});",
+									" ",
+									"pm.globals.set('gaccountid',accountid);",
+									"pm.globals.set('gaccountName',accountName);",
+									"pm.globals.set('gcountryid1',countryid1);",
+									"pm.globals.set('gline1',line1);",
+									"pm.globals.set('gstateid1',stateid1);",
+									"pm.globals.set('gcountryid2',countryid2);",
+									"pm.globals.set('gline2',line2);",
+									"pm.globals.set('gstateid2',stateid2);",
+									"pm.globals.set('gaddressTypeCode',addressTypeCode);",
+									"pm.globals.set('gemailTypeCode',emailTypeCode);",
+									"pm.globals.set('gphoneTypeCode',phoneTypeCode);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_address1_countryid@odata.bind\":\"/anth_countries({{gcountryid1a}})\",\r\n    \"anth_address1_countyid@odata.bind\": \"/anth_counties({{gcountyId}})\" ,\r\n    \"anth_address1_line4\": \"Street 1 API {{$randomInt}}\",\r\n    \"anth_address1_stateorprovinceid@odata.bind\":\"/anth_stateorprovinces({{gstateOrProvinceId1}})\",\r\n    \"anth_address2_countryid@odata.bind\": \"/anth_countries({{gcountryid1a}})\",\r\n    \"anth_anth_address2_countyid@odata.bind\": \"/anth_counties({{gcountyId}})\" ,\r\n    \"anth_address2_line4\":\"Street 2 API {{$randomInt}}\" ,\r\n    \"anth_address2_stateorprovinceid@odata.bind\":\"/anth_stateorprovinces({{gstateOrProvinceId1}})\" ,\r\n    \"anth_preferredaddresstypecode\": \"215550000\",\r\n    \"anth_preferredemailtypecode\": \"215550000\",\r\n    \"anth_preferredphonetypecode\": \"215550000\"\r\n\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}accounts",
+							"host": [
+								"{{Eresource_URL}}accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var accountid,accountName,countryid1,line1,stateid1,countryid2,line2,stateid2,addressTypeCode,emailTypeCode,phoneTypeCode;",
+									"",
+									"var oldcountryid1=pm.globals.get('gcountryid1');",
+									"var oldline1=pm.globals.get('gline1');",
+									"var oldstateid1=pm.globals.get('gstateid1');",
+									"var oldcountryid2=pm.globals.get('gcountryid2');",
+									"var oldline2=pm.globals.get('gline2');",
+									"var oldstateid2=pm.globals.get('gstateid2');",
+									"var oldaddressTypeCode=pm.globals.get('gaddressTypeCode');",
+									"var oldemailTypeCode=pm.globals.get('gemailTypeCode');",
+									"var oldphoneTypeCode=pm.globals.get('gphoneTypeCode');",
+									"",
+									"pm.test(\"Account Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    accountid = jsonData.accountid;",
+									"    accountName = jsonData.name;",
+									"    countryid1 = jsonData.anth_address1_countryid;",
+									"    line1 = jsonData.anth_address1_line4;",
+									"    stateid1= jsonData.anth_address1_stateorprovinceid;",
+									"    countryid2 = jsonData.anth_address2_countryid;  ",
+									"    line2 = jsonData.anth_address2_line4;  ",
+									"    stateid2 = jsonData.anth_address2_stateorprovinceid;  ",
+									"    addressTypeCode = jsonData.anth_preferredaddresstypecode;  ",
+									"    emailTypeCode = jsonData.anth_preferredemailtypecode;  ",
+									"    phoneTypeCode = jsonData.anth_preferredphonetypecode;   ",
+									"  ",
+									"    console.log(\"Account ID: \"+accountid);",
+									"    console.log(\"Account Name: \"+accountName);  ",
+									"",
+									"});",
+									"",
+									"pm.test(\"countryid1\", function()",
+									"        {",
+									"            pm.expect(oldcountryid1).not.eql(countryid1);",
+									"        });",
+									"",
+									"pm.test(\"line1\", function()",
+									"        {",
+									"            pm.expect(oldline1).not.eql(line1);",
+									"        });",
+									"",
+									"pm.test(\"stateid1\", function()",
+									"        {",
+									"            pm.expect(oldstateid1).not.eql(stateid1);",
+									"        });",
+									"",
+									"pm.test(\"countryid2\", function()",
+									"        {",
+									"            pm.expect(oldcountryid2).not.eql(countryid2);",
+									"        });",
+									"",
+									"pm.test(\"line2\", function()",
+									"        {",
+									"            pm.expect(oldline2).not.eql(line2);",
+									"        });",
+									"",
+									"pm.test(\"stateid2\", function()",
+									"        {",
+									"            pm.expect(oldstateid2).not.eql(stateid2);",
+									"        });",
+									"",
+									"pm.test(\"addressTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldaddressTypeCode).not.eql(addressTypeCode);",
+									"        });",
+									"",
+									"pm.test(\"emailTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldemailTypeCode).not.eql(emailTypeCode);",
+									"        });",
+									"",
+									"pm.test(\"phoneTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldphoneTypeCode).not.eql(phoneTypeCode);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_address1_countryid@odata.bind\":null ,\r\n    \"anth_address1_countyid@odata.bind\": null,\r\n    \"anth_address1_line4\": \"Street 1 API update {{$randomInt}}\",\r\n    \"anth_address1_stateorprovinceid@odata.bind\": null,\r\n    \"anth_address2_countryid@odata.bind\": null,\r\n    \"anth_anth_address2_countyid@odata.bind\": null,\r\n    \"anth_address2_line4\":\"Street 2 API update {{$randomInt}}\" ,\r\n    \"anth_address2_stateorprovinceid@odata.bind\":null ,\r\n    \"anth_preferredaddresstypecode\": \"215550001\",\r\n    \"anth_preferredemailtypecode\": \"215550001\",\r\n    \"anth_preferredphonetypecode\": \"215550001\"\r\n\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}accounts({{gaccountid}})",
+							"host": [
+								"{{Eresource_URL}}accounts({{gaccountid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD Contact",
+			"item": [
+				{
+					"name": "Create Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName,countryid1,line1,stateid1,countryid2,line2,stateid2,countryid3,line3,stateid3,addressTypeCode,emailTypeCode,phoneTypeCode;",
+									"",
+									"pm.test(\"Contact Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contactid = jsonData.contactid;",
+									"    contactName = jsonData.fullname;",
+									"    countryid1 = jsonData.anth_Address1_countryid;",
+									"    line1 = jsonData.anth_address1_line4;",
+									"    stateid1= jsonData.anth_address1_stateorprovinceid;",
+									"    countryid2 = jsonData.anth_address2_countryid;  ",
+									"    line2 = jsonData.anth_address2_line4;  ",
+									"    stateid2 = jsonData.anth_address2_stateorprovinceid;  ",
+									"    countryid3 = jsonData.anth_address3_countryid;  ",
+									"    line3 = jsonData.anth_address3_line4;  ",
+									"    stateid3 = jsonData.anth_address3_stateorprovinceid;  ",
+									"    addressTypeCode = jsonData.anth_preferredaddresstypecode;  ",
+									"    emailTypeCode = jsonData.anth_preferredemailtypecode;  ",
+									"    phoneTypeCode = jsonData.anth_preferredphonetypecode;  ",
+									"  ",
+									"    console.log(\"Contact ID: \"+contactid);",
+									"    console.log(\"Contact Name: \"+contactName);",
+									"});",
+									" ",
+									"pm.globals.set('gcontactid',contactid);",
+									"pm.globals.set('gcontactName',contactName);",
+									"pm.globals.set('gcountryid1',countryid1);",
+									"pm.globals.set('gline1',line1);",
+									"pm.globals.set('gstateid1',stateid1);",
+									"pm.globals.set('gcountryid2',countryid2);",
+									"pm.globals.set('gline2',line2);",
+									"pm.globals.set('gstateid2',stateid2);",
+									"pm.globals.set('gcountryid3',countryid3);",
+									"pm.globals.set('gline3',line3);",
+									"pm.globals.set('gstateid3',stateid3);",
+									"pm.globals.set('gaddressTypeCode',addressTypeCode);",
+									"pm.globals.set('gemailTypeCode',emailTypeCode);",
+									"pm.globals.set('gphoneTypeCode',phoneTypeCode);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_address1_countryid@odata.bind\": \"/anth_countries({{gcountryid1a}})\",\r\n    \"anth_address1_countyid@odata.bind\": \"/anth_counties({{gcountyId}})\" ,\r\n    \"anth_address1_line4\":\"Street 1 API {{$randomInt}}\" ,\r\n    \"anth_address1_stateorprovinceid@odata.bind\":\"/anth_stateorprovinces({{gstateOrProvinceId1}})\",\r\n    \"anth_address2_countryid@odata.bind\": \"/anth_countries({{gcountryid1a}})\",\r\n    \"anth_address2_countyid@odata.bind\": \"/anth_counties({{gcountyId}})\" ,\r\n    \"anth_address2_line4\": \"Street 2 API {{$randomInt}}\",\r\n    \"anth_address2_stateorprovinceid@odata.bind\":\"/anth_stateorprovinces({{gstateOrProvinceId1}})\",\r\n    \"anth_address3_countryid@odata.bind\":\"/anth_countries({{gcountryid1a}})\",\r\n    \"anth_address3_countyid@odata.bind\":\"/anth_counties({{gcountyId}})\" ,\r\n    \"anth_address3_line4\":\"Street 3 API {{$randomInt}}\" ,\r\n    \"anth_address3_stateorprovinceid@odata.bind\":\"/anth_stateorprovinces({{gstateOrProvinceId1}})\",\r\n    \"anth_preferredaddresstypecode\":\"215550000\" ,\r\n    \"anth_preferredemailtypecode\":\"215550000\" ,\r\n    \"anth_preferredphonetypecode\":\"215550000\" \r\n\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts",
+							"host": [
+								"{{Eresource_URL}}contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var contactid,contactName,countryid1,line1,stateid1,countryid2,line2,stateid2,countryid3,line3,stateid3,addressTypeCode,emailTypeCode,phoneTypeCode;",
+									"",
+									"var oldcountryid1=pm.globals.get('gcountryid1');",
+									"var oldline1=pm.globals.get('gline1');",
+									"var oldstateid1=pm.globals.get('gstateid1');",
+									"var oldcountryid2=pm.globals.get('gcountryid2');",
+									"var oldline2=pm.globals.get('gline2');",
+									"var oldstateid2=pm.globals.get('gstateid2');",
+									"var oldcountryid3=pm.globals.get('gcountryid3');",
+									"var oldline3=pm.globals.get('gline3');",
+									"var oldstateid3=pm.globals.get('gstateid3');",
+									"var oldaddressTypeCode=pm.globals.get('gaddressTypeCode');",
+									"var oldemailTypeCode=pm.globals.get('gemailTypeCode');",
+									"var oldphoneTypeCode=pm.globals.get('gphoneTypeCode');",
+									"",
+									"pm.test(\"Contact Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    contactid = jsonData.contactid;",
+									"    contactName = jsonData.fullname;",
+									"    countryid1 = jsonData.anth_Address1_countryid;",
+									"    line1 = jsonData.anth_address1_line4;",
+									"    stateid1= jsonData.anth_address1_stateorprovinceid;",
+									"    countryid2 = jsonData.anth_address2_countryid;  ",
+									"    line2 = jsonData.anth_address2_line4;  ",
+									"    stateid2 = jsonData.anth_address2_stateorprovinceid;  ",
+									"    countryid3 = jsonData.anth_address3_countryid;  ",
+									"    line3 = jsonData.anth_address3_line4;  ",
+									"    stateid3 = jsonData.anth_address3_stateorprovinceid;  ",
+									"    addressTypeCode = jsonData.anth_preferredaddresstypecode;  ",
+									"    emailTypeCode = jsonData.anth_preferredemailtypecode;  ",
+									"    phoneTypeCode = jsonData.anth_preferredphonetypecode;    ",
+									"",
+									"});",
+									"",
+									"pm.test(\"countryid1\", function()",
+									"        {",
+									"            pm.expect(oldcountryid1).not.eql(countryid1);",
+									"        });",
+									"",
+									"pm.test(\"line1\", function()",
+									"        {",
+									"            pm.expect(oldline1).not.eql(line1);",
+									"        });",
+									"",
+									"pm.test(\"stateid1\", function()",
+									"        {",
+									"            pm.expect(oldstateid1).not.eql(stateid1);",
+									"        });",
+									"",
+									"pm.test(\"countryid2\", function()",
+									"        {",
+									"            pm.expect(oldcountryid2).not.eql(countryid2);",
+									"        });",
+									"",
+									"pm.test(\"line2\", function()",
+									"        {",
+									"            pm.expect(oldline2).not.eql(line2);",
+									"        });",
+									"",
+									"pm.test(\"stateid2\", function()",
+									"        {",
+									"            pm.expect(oldstateid2).not.eql(stateid2);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"countryid3\", function()",
+									"        {",
+									"            pm.expect(oldcountryid3).not.eql(countryid3);",
+									"        });",
+									"",
+									"pm.test(\"line3\", function()",
+									"        {",
+									"            pm.expect(oldline3).not.eql(line3);",
+									"        });",
+									"",
+									"pm.test(\"stateid3\", function()",
+									"        {",
+									"            pm.expect(oldstateid3).not.eql(stateid3);",
+									"        });",
+									"",
+									"pm.test(\"addressTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldaddressTypeCode).not.eql(addressTypeCode);",
+									"        });",
+									"",
+									"pm.test(\"emailTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldemailTypeCode).not.eql(emailTypeCode);",
+									"        });",
+									"",
+									"pm.test(\"phoneTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldphoneTypeCode).not.eql(phoneTypeCode);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_address1_countryid@odata.bind\": null,\r\n    \"anth_address1_countyid@odata.bind\": null,\r\n    \"anth_address1_line4\":\"Street 1 API update {{$randomInt}}\" ,\r\n    \"anth_address1_stateorprovinceid@odata.bind\":null ,\r\n    \"anth_address2_countryid@odata.bind\": null,\r\n    \"anth_address2_countyid@odata.bind\": null,\r\n    \"anth_address2_line4\": \"Street 2 API update {{$randomInt}}\",\r\n    \"anth_address2_stateorprovinceid@odata.bind\":null ,\r\n    \"anth_address3_countryid@odata.bind\":null ,\r\n    \"anth_address3_countyid@odata.bind\":null ,\r\n    \"anth_address3_line4\":\"Street 3 API update {{$randomInt}}\" ,\r\n    \"anth_address3_stateorprovinceid@odata.bind\":null ,\r\n    \"anth_preferredaddresstypecode\":\"215550001\" ,\r\n    \"anth_preferredemailtypecode\":\"215550001\" ,\r\n    \"anth_preferredphonetypecode\":\"215550001\" \r\n\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD CorrespondenceDetailSyncRule",
+			"item": [
+				{
+					"name": "Create CorrespondenceDetailSyncRule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var correspondenceDetailSyncRuleid,correspondenceDetailSyncRuleName,addressTypeCode,addressTypeCodeName,emailTypeCode,emailTypeCodeName,entityCode,entityCodeName,foundationSettingsId,foundationSettingsIdName,phoneTypeCode,phoneTypeCodeName,syncField,typeCode,typeCodeName;",
+									"",
+									"pm.test(\"CorrespondenceDetailSyncRule Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    correspondenceDetailSyncRuleid = jsonData.anth_correspondencedetailsyncruleid;",
+									"    correspondenceDetailSyncRuleName = jsonData.anth_name;",
+									"    addressTypeCode = jsonData.anth_addresstypecode;",
+									"    emailTypeCode = jsonData.anth_emailtypecode;",
+									"    entityCode = jsonData.anth_entitycode;",
+									"    foundationSettingsId = jsonData.anth_addresssettingsid;",
+									"    phoneTypeCode = jsonData.anth_phonetypecode;",
+									"    syncField = jsonData.anth_syncfield;",
+									"    typeCode = jsonData.anth_typecode;",
+									"   ",
+									"",
+									"    console.log(\"Correspondence Details Sync Rule ID: \"+correspondenceDetailSyncRuleid);",
+									"    console.log(\"Correspondence Details Sync Rule Name: \"+correspondenceDetailSyncRuleName);",
+									"});",
+									" ",
+									"pm.globals.set('gcorrespondenceDetailSyncRuleid',correspondenceDetailSyncRuleid);",
+									"pm.globals.set('gaddressTypeCode',addressTypeCode);",
+									"pm.globals.set('gemailTypeCode',emailTypeCode);",
+									"pm.globals.set('gentityCode',entityCode);",
+									"pm.globals.set('gfoundationSettingsId',foundationSettingsId);",
+									"pm.globals.set('gphoneTypeCode',phoneTypeCode);",
+									"pm.globals.set('gsyncField',syncField);",
+									"pm.globals.set('gtypeCode',typeCode);",
+									"pm.globals.set('gcorrespondenceDetailSyncRuleName',correspondenceDetailSyncRuleName);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addresstypecode\": \"215550000\",\r\n    \"anth_emailtypecode\": \"215550000\",\r\n    \"anth_entitycode\": \"215550000\",\r\n    \"anth_addresssettingsid@odata.bind\":\"/anth_addresssettingses({{gaddresssettingsid}})\" ,\r\n    \"anth_name\" : \"correspondencesyncrule API {{$randomInt}}\",\r\n    \"anth_phonetypecode\": \"215550000\",\r\n    \"anth_syncfield\" :\"Sync API {{$randomInt}}\",\r\n    \"anth_typecode\" : \"215550000\"\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_correspondencedetailsyncrules",
+							"host": [
+								"{{Eresource_URL}}anth_correspondencedetailsyncrules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update CorrespondenceDetailSyncRule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var correspondenceDetailSyncRuleid,correspondenceDetailSyncRuleName,addressTypeCode,addressTypeCodeName,emailTypeCode,emailTypeCodeName,entityCode,entityCodeName,foundationSettingsId,foundationSettingsIdName,phoneTypeCode,phoneTypeCodeName,syncField,typeCode,typeCodeName;",
+									"",
+									"var correspondenceDetailSyncID=pm.globals.get('gcorrespondenceDetailSyncRuleid');",
+									"var oldaddressTypeCode=pm.globals.get('gaddressTypeCode');",
+									"var oldemailTypeCode=pm.globals.get('gemailTypeCode');",
+									"var oldentityCode=pm.globals.get('gentityCode');",
+									"var oldfoundationSettingsId=pm.globals.get('gfoundationSettingsId');",
+									"var oldgphoneTypeCode=pm.globals.get('gphoneTypeCode');",
+									"var oldsyncField=pm.globals.get('gsyncField');",
+									"var oldtypeCodee=pm.globals.get('gtypeCode');",
+									"var oldcorrespondenceDetailSyncRuleName=pm.globals.get('gcorrespondenceDetailSyncRuleName');",
+									"",
+									"",
+									"pm.test(\"CorrespondenceDetail Sync Rule Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    correspondenceDetailSyncRuleid = jsonData.anth_correspondencedetailsyncruleid;",
+									"    correspondenceDetailSyncRuleName = jsonData.anth_name;",
+									"    addressTypeCode = jsonData.anth_addresstypecode;",
+									"    emailTypeCode = jsonData.anth_emailtypecode;",
+									"    entityCode = jsonData.anth_entitycode;",
+									"    foundationSettingsId = jsonData.anth_addresssettingsid;",
+									"    phoneTypeCode = jsonData.anth_phonetypecode;",
+									"    syncField = jsonData.anth_syncfield;",
+									"    typeCode = jsonData.anth_typecode;",
+									"",
+									"    console.log(\"Correspondence Details Sync Rule ID: \"+correspondenceDetailSyncRuleid);",
+									"    console.log(\"Correspondence Details Sync Rule Name: \"+correspondenceDetailSyncRuleName);",
+									"});",
+									"",
+									"pm.test(\"Correspondence Sync Rule Name\", function()",
+									"        {",
+									"            pm.expect(oldcorrespondenceDetailSyncRuleName).not.eql(correspondenceDetailSyncRuleName);",
+									"        });",
+									"",
+									"pm.test(\"addressTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldaddressTypeCode).not.eql(addressTypeCode);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"emailTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldemailTypeCode).not.eql(emailTypeCode);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"entityCode\", function()",
+									"        {",
+									"            pm.expect(oldentityCode).not.eql(entityCode);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"foundationSettingsId\", function()",
+									"        {",
+									"            pm.expect(oldfoundationSettingsId).not.eql(foundationSettingsId);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"phoneTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldgphoneTypeCode).not.eql(phoneTypeCode);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"syncField\", function()",
+									"        {",
+									"            pm.expect(oldsyncField).not.eql(syncField);",
+									"        });",
+									"",
+									"pm.test(\"typeCode\", function()",
+									"        {",
+									"            pm.expect(oldtypeCodee).not.eql(typeCode);",
+									"        });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_addresstypecode\": \"215550001\",\r\n    \"anth_emailtypecode\": \"215550001\",\r\n    \"anth_entitycode\": \"215550001\",\r\n    \"anth_addresssettingsid@odata.bind\" : null,\r\n    \"anth_name\" : \"correspondencesyncrule API update {{$randomInt}}\",\r\n    \"anth_phonetypecode\": \"215550001\",\r\n    \"anth_syncfield\" :\"Sync API update{{$randomInt}}\",\r\n    \"anth_typecode\" : \"215550001\"\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_correspondencedetailsyncrules({{gcorrespondenceDetailSyncRuleid}})",
+							"host": [
+								"{{Eresource_URL}}anth_correspondencedetailsyncrules({{gcorrespondenceDetailSyncRuleid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD CorrespondenceDetail",
+			"item": [
+				{
+					"name": "Create CorrespondenceDetail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var correspondenceDetailsid,aprilName,augustName,decemberName,febName,isprimary,janName,julName,junName,marName,mayName,novName,octName,overrideAddressValidation,sepName,updateSpouseAddress,dataValidationOn,primaryToggleEndDate,primaryToggleStartDate,purchaseDate,saleDate,willBecomePrimaryOn, latitudeValue,longitudeValue,countryId,employmentId,institutionalUnitId,stateOrProvinceId, comment, description,countyAssessedValueAmount,countyassessedvalueamount_Base,marketValueAmount,marketvalueamount_Base,purchaseAmount,purchaseamount_Base,saleAmount,saleamount_Base,addressTypeCodes,dataSourceCode,emailTypeCodes,phoneTypeCodes,primalityScheduleTypeCode,primaryToggleTypeCode,typeCode,attention,city,country,countyCode,emailAddress,line1,line2,line3,line4,parcelNumber,phoneNumber,stateOrProvince,zip,correspondenceDetailsName ;",
+									"",
+									"pm.test(\"CorrespondenceDetails Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    correspondenceDetailsid = jsonData.anth_correspondencedetailid;",
+									"    correspondenceDetailsName = jsonData.anth_name;",
+									"    aprilName = jsonData.anth_april;",
+									"    augustName = jsonData.anth_august;",
+									"    decemberName = jsonData.anth_december;",
+									"    febName = jsonData.anth_february;",
+									"    isprimary = jsonData.anth_isprimary;",
+									"    janName = jsonData.anth_january;",
+									"    julName = jsonData.anth_july;",
+									"    junName = jsonData.anth_june;",
+									"    marName = jsonData.anth_march;",
+									"    mayName = jsonData.anth_may;",
+									"    novName = jsonData.anth_november;",
+									"    octName = jsonData.anth_october;",
+									"    overrideAddressValidation = jsonData.anth_overrideaddressvalidation;",
+									"    sepName = jsonData.anth_september;",
+									"    updateSpouseAddress = jsonData.anth_updatespousematchingaddress;",
+									"    dataValidationOn = jsonData.anth_datavalidatedon;",
+									"    primaryToggleEndDate = jsonData.anth_seasonalscheduleenddate;",
+									"    primaryToggleStartDate = jsonData.anth_seasonalschedulestartdate;",
+									"    willBecomePrimaryOn = jsonData.anth_willbecomeprimaryon;",
+									"    latitudeValue = jsonData.anth_latitude;",
+									"    longitudeValue = jsonData.anth_longitude;",
+									"    countryId = jsonData.anth_countryid;",
+									"    stateOrProvinceId = jsonData.anth_stateorprovinceid;",
+									"    comment = jsonData.anth_comment;",
+									"    description = jsonData.anth_description;",
+									"    addressTypeCodes = jsonData.anth_addresstypecodes;",
+									"    dataSourceCode = jsonData.anth_datasourcecode;",
+									"    emailTypeCodes = jsonData.anth_emailtypecodes;",
+									"    phoneTypeCodes = jsonData.anth_phonetypecodes;",
+									"    primalityScheduleTypeCode = jsonData.anth_primalityscheduletypecode;",
+									"    primaryToggleTypeCode = jsonData.anth_primarytoggletypecode;",
+									"    typeCode = jsonData.anth_typecode;",
+									"    city = jsonData.anth_city;",
+									"    country = jsonData.anth_country;",
+									"    emailAddress = jsonData.anth_emailaddress;",
+									"    line1 = jsonData.anth_line1;",
+									"    line2 = jsonData.anth_line2;",
+									"    line3 = jsonData.anth_line3;",
+									"    line4 = jsonData.anth_line4;",
+									"    phoneNumber = jsonData.anth_phonenumber;",
+									"    stateOrProvince = jsonData.anth_stateorprovince;",
+									"    zip = jsonData.anth_zip;",
+									"    ",
+									"",
+									"    console.log(\"Correspondence Details ID: \"+correspondenceDetailsid);",
+									"    console.log(\"Correspondence Details Name: \"+correspondenceDetailsName);",
+									"});",
+									" ",
+									"pm.globals.set('gcorrespondenceDetailsid',correspondenceDetailsid);",
+									"pm.globals.set('gaprilName',aprilName);",
+									"pm.globals.set('gaugustName',augustName);",
+									"pm.globals.set('gdecemberName',decemberName);",
+									"pm.globals.set('gfebName',febName);",
+									"pm.globals.set('gisprimary',isprimary);",
+									"pm.globals.set('gjanName',janName);",
+									"pm.globals.set('gjulName',julName);",
+									"pm.globals.set('gjunName',junName);",
+									"pm.globals.set('gmarName',marName);",
+									"pm.globals.set('gmayName',mayName);",
+									"pm.globals.set('gnovName',novName);",
+									"pm.globals.set('goctName',octName);",
+									"pm.globals.set('goverrideAddressValidation',overrideAddressValidation);",
+									"pm.globals.set('gsepName',sepName);",
+									"pm.globals.set('gupdateSpouseAddress',updateSpouseAddress);",
+									"pm.globals.set('gdataValidationOn',dataValidationOn);",
+									"pm.globals.set('gprimaryToggleEndDate',primaryToggleEndDate);",
+									"pm.globals.set('gprimaryToggleStartDate',primaryToggleStartDate);",
+									"pm.globals.set('gwillBecomePrimaryOn',willBecomePrimaryOn);",
+									"pm.globals.set('glatitudeValue',latitudeValue);",
+									"pm.globals.set('glongitudeValue',longitudeValue);",
+									"pm.globals.set('gcountryId',countryId);",
+									"pm.globals.set('gstateOrProvinceId',stateOrProvinceId);",
+									"pm.globals.set('gcomment',comment);",
+									"pm.globals.set('gdescription',description);",
+									"pm.globals.set('gaddressTypeCodes',addressTypeCodes);",
+									"pm.globals.set('gdataSourceCode',dataSourceCode);",
+									"pm.globals.set('gemailTypeCodes',emailTypeCodes);",
+									"pm.globals.set('gphoneTypeCodes',phoneTypeCodes);",
+									"pm.globals.set('gprimalityScheduleTypeCode',primalityScheduleTypeCode);",
+									"pm.globals.set('gprimaryToggleTypeCode',primaryToggleTypeCode);",
+									"pm.globals.set('gtypeCode',typeCode);",
+									"pm.globals.set('gcity',city);",
+									"pm.globals.set('gcountry',country);",
+									"pm.globals.set('gemailAddress',emailAddress);",
+									"pm.globals.set('gline1',line1);",
+									"pm.globals.set('gline2',line2);",
+									"pm.globals.set('gline3',line3);",
+									"pm.globals.set('gline4',line4);",
+									"pm.globals.set('gparcelNumber',parcelNumber);",
+									"pm.globals.set('gphoneNumber',phoneNumber);",
+									"pm.globals.set('gstateOrProvince',stateOrProvince);",
+									"pm.globals.set('gzip',zip);",
+									"pm.globals.set('gcorrespondenceDetailsName',correspondenceDetailsName);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(1, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_april\": false,\r\n    \"anth_august\": false,\r\n    \"anth_december\": false,\r\n    \"anth_february\": false,\r\n    \"anth_isprimary\": true,\r\n    \"anth_january\" : true,\r\n    \"anth_july\" : true,\r\n    \"anth_june\" : true,\r\n    \"anth_march\" : true,\r\n    \"anth_may\": false,\r\n    \"anth_november\": false,\r\n    \"anth_october\" : false,\r\n    \"anth_overrideaddressvalidation\" : false,\r\n    \"anth_september\" : false, \r\n    \"anth_updatespousematchingaddress\" : false,\r\n    \"anth_datavalidatedon\": \"{{timestamp}}\",\r\n    \"anth_seasonalscheduleenddate\": \"{{timestamp}}\",\r\n    \"anth_seasonalschedulestartdate\": \"{{timestamp}}\",\r\n    \"anth_willbecomeprimaryon\": \"{{timestamp}}\",\r\n    \"anth_latitude\" : \"12323.76\",\r\n    \"anth_longitude\" : \"12334.23\",\r\n    \"anth_countryid@odata.bind\":\"/anth_countries({{gcountryid1a}})\",\r\n    \"anth_stateorprovinceid@odata.bind\":\"/anth_stateorprovinces({{gstateOrProvinceId1}})\",\r\n    \"anth_comment\": \"Test comment {{$randomInt}}\",\r\n    \"anth_attention\":\"Test attention {{$randomInt}}\",\r\n    \"anth_description\": \"Test description {{$randomInt}}\",\r\n    \"anth_addresstypecode\" : \"215550000\",\r\n    \"anth_datasourcecode\" : \"215550000\",\r\n    \"anth_emailtypecode\" : \"215550000\",\r\n    \"anth_phonetypecode\" : \"215550000\",\r\n    \"anth_seasonalscheduletype\" : \"215550000\",\r\n    \"anth_simplescheduletype\" : \"215550000\",\r\n    \"anth_typecode\" : \"215550000\",\r\n    \"anth_city\" : \"Bangalore {{$randomInt}}\",\r\n    \"anth_country\" : \"India {{$randomInt}}\",\r\n    \"anth_county\" : \"Kengeri {{$randomInt}}\",\r\n    \"anth_emailaddress\" : \"1{{$randomEmail}}\",\r\n    \"anth_line1\" : \"Street1{{$randomInt}} \",\r\n    \"anth_line2\" : \"Street2{{$randomInt}} \",\r\n    \"anth_line3\" : \"Street3{{$randomInt}} \",\r\n    \"anth_line4\" : \"Street4{{$randomInt}} \",\r\n    \"anth_name\" : \"CorrespondenceDetail name {{$randomLastName}} \",\r\n    \"anth_phonenumber\" : \"{{$randomPhoneNumber}}\",\r\n    \"anth_stateorprovince\" : \"Karnataka API {{$randomInt}} \",\r\n    \"anth_zip\" : \"56{{$randomInt}}\",\r\n    \"anth_parentrecordid_account@odata.bind\":\"/accounts({{gaccountid}})\"\r\n\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_correspondencedetails",
+							"host": [
+								"{{Eresource_URL}}anth_correspondencedetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update CorrespondenceDetail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var correspondenceDetailsid,aprilName,augustName,decemberName,febName,isprimary,janName,julName,junName,marName,mayName,novName,octName,overrideAddressValidation,sepName,updateSpouseAddress,dataValidationOn,primaryToggleEndDate,primaryToggleStartDate,purchaseDate,saleDate,willBecomePrimaryOn, latitudeValue,longitudeValue,countryId,employmentId,institutionalUnitId,stateOrProvinceId, comment, description,countyAssessedValueAmount,countyassessedvalueamount_Base,marketValueAmount,marketvalueamount_Base,purchaseAmount,purchaseamount_Base,saleAmount,saleamount_Base,addressTypeCodes,dataSourceCode,emailTypeCodes,phoneTypeCodes,primalityScheduleTypeCode,primaryToggleTypeCode,typeCode,attention,city,country,countyCode,emailAddress,line1,line2,line3,line4,parcelNumber,phoneNumber,stateOrProvince,zip,correspondenceDetailsName ;",
+									"",
+									"var correspondenceDetailID=pm.globals.get('gcorrespondenceDetailsid');",
+									"var oldAprilName=pm.globals.get('gaprilName');",
+									"var oldAugustName=pm.globals.get('gaugustName');",
+									"var oldDecemberName=pm.globals.get('gdecemberName');",
+									"var oldFebName=pm.globals.get('gfebName');",
+									"var oldisPrimary=pm.globals.get('gisprimary');",
+									"var oldJanName=pm.globals.get('gjanName');",
+									"var oldJulName=pm.globals.get('gjulName');",
+									"var oldJunName=pm.globals.get('gjunName');",
+									"var oldMarName=pm.globals.get('gmarName');",
+									"var oldMayName=pm.globals.get('gmayName');",
+									"var oldNovName=pm.globals.get('gnovName');",
+									"var oldOctName=pm.globals.get('goctName');",
+									"var oldOverrideAddressValidation=pm.globals.get('goverrideAddressValidation');",
+									"var oldSepName=pm.globals.get('gsepName');",
+									"var oldUpdateSpouseAddress=pm.globals.get('gupdateSpouseAddress');",
+									"var oldDataValidationOn=pm.globals.get('gdataValidationOn');",
+									"var oldPrimaryToggleEndDate=pm.globals.get('gprimaryToggleEndDate');",
+									"var oldPrimaryToggleStartDate=pm.globals.get('gprimaryToggleStartDate');",
+									"var oldWillBecomePrimaryOn=pm.globals.get('gwillBecomePrimaryOn');",
+									"var oldLatitudeValue=pm.globals.get('glatitudeValue');",
+									"var oldLongitudeValue=pm.globals.get('glongitudeValue');",
+									"var oldCountryId=pm.globals.get('gcountryId');",
+									"var oldStateOrProvinceId=pm.globals.get('gstateOrProvinceId');",
+									"var oldComment=pm.globals.get('gcomment');",
+									"var oldDescription=pm.globals.get('gdescription');",
+									"var oldAddressTypeCodes=pm.globals.get('gaddressTypeCodes');",
+									"var oldDataSourceCode=pm.globals.get('gdataSourceCode');",
+									"var oldEmailTypeCodes=pm.globals.get('gemailTypeCodes');",
+									"var oldPhoneTypeCodes=pm.globals.get('gphoneTypeCodes');",
+									"var oldPrimalityScheduleTypeCode=pm.globals.get('gprimalityScheduleTypeCode');",
+									"var oldPrimaryToggleTypeCode=pm.globals.get('gprimaryToggleTypeCode');",
+									"var oldTypeCode=pm.globals.get('gtypeCode');",
+									"var oldCity=pm.globals.get('gcity');",
+									"var oldCountry=pm.globals.get('gcountry');",
+									"var oldCountyCode=pm.globals.get('gcountyCode');",
+									"var oldEmailAddress=pm.globals.get('gemailAddress');",
+									"var oldLine1=pm.globals.get('gline1');",
+									"var oldLine2=pm.globals.get('gline2');",
+									"var oldLine3=pm.globals.get('gline3');",
+									"var oldLine4=pm.globals.get('gline4');",
+									"var oldParcelNumber=pm.globals.get('gparcelNumber');",
+									"var oldPhoneNumber=pm.globals.get('gphoneNumber');",
+									"var oldStateOrProvince=pm.globals.get('gstateOrProvince');",
+									"var oldZip=pm.globals.get('gzip');",
+									"var oldcorrespondenceName=pm.globals.get('gcorrespondenceDetailsName');",
+									"",
+									"pm.test(\"CorrespondenceDetails Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    correspondenceDetailsid = jsonData.anth_correspondencedetailid;",
+									"    correspondenceDetailsName = jsonData.anth_name;",
+									"    aprilName = jsonData.anth_april;",
+									"    augustName = jsonData.anth_august;",
+									"    decemberName = jsonData.anth_december;",
+									"    febName = jsonData.anth_february;",
+									"    isprimary = jsonData.anth_isprimary;",
+									"    janName = jsonData.anth_january;",
+									"    julName = jsonData.anth_july;",
+									"    junName = jsonData.anth_june;",
+									"    marName = jsonData.anth_march;",
+									"    mayName = jsonData.anth_may;",
+									"    novName = jsonData.anth_november;",
+									"    octName = jsonData.anth_october;",
+									"    overrideAddressValidation = jsonData.anth_overrideaddressvalidation;",
+									"    sepName = jsonData.anth_september;",
+									"    updateSpouseAddress = jsonData.anth_updatespousematchingaddress;",
+									"    dataValidationOn = jsonData.anth_datavalidatedon;",
+									"    primaryToggleEndDate = jsonData.anth_seasonalscheduleenddate;",
+									"    primaryToggleStartDate = jsonData.anth_seasonalschedulestartdate;",
+									"    willBecomePrimaryOn = jsonData.anth_willbecomeprimaryon;",
+									"    latitudeValue = jsonData.anth_latitude;",
+									"    longitudeValue = jsonData.anth_longitude;",
+									"    countryId = jsonData.anth_countryid;",
+									"    stateOrProvinceId = jsonData.anth_stateorprovinceid;",
+									"    comment = jsonData.anth_comment;",
+									"    description = jsonData.anth_description;",
+									"    addressTypeCodes = jsonData.anth_addresstypecodes;",
+									"    dataSourceCode = jsonData.anth_datasourcecode;",
+									"    emailTypeCodes = jsonData.anth_emailtypecodes;",
+									"    phoneTypeCodes = jsonData.anth_phonetypecodes;",
+									"    primalityScheduleTypeCode = jsonData.anth_primalityscheduletypecode;",
+									"    primaryToggleTypeCode = jsonData.anth_primarytoggletypecode;",
+									"    typeCode = jsonData.anth_typecode;",
+									"    city = jsonData.anth_city;",
+									"    country = jsonData.anth_country;",
+									"    emailAddress = jsonData.anth_emailaddress;",
+									"    line1 = jsonData.anth_line1;",
+									"    line2 = jsonData.anth_line2;",
+									"    line3 = jsonData.anth_line3;",
+									"    line4 = jsonData.anth_line4;",
+									"    phoneNumber = jsonData.anth_phonenumber;",
+									"    stateOrProvince = jsonData.anth_stateorprovince;",
+									"    zip = jsonData.anth_zip;",
+									"",
+									"    console.log(\"Correspondence Details ID: \"+correspondenceDetailsid);",
+									"    console.log(\"Correspondence Details Name: \"+correspondenceDetailsName);",
+									"});",
+									"",
+									"pm.test(\"Correspondence Detail Name\", function()",
+									"        {",
+									"            pm.expect(oldcorrespondenceName).not.eql(correspondenceDetailsName);",
+									"        });",
+									"",
+									"pm.test(\"April Name\", function()",
+									"        {",
+									"            pm.expect(oldAprilName).not.eql(aprilName);",
+									"        });",
+									"",
+									"pm.test(\"augustName\", function()",
+									"        {",
+									"            pm.expect(oldAugustName).not.eql(augustName);",
+									"        });",
+									"",
+									"pm.test(\"decemberName\", function()",
+									"        {",
+									"            pm.expect(oldDecemberName).not.eql(decemberName);",
+									"        });",
+									"",
+									"pm.test(\"febName\", function()",
+									"        {",
+									"            pm.expect(oldFebName).not.eql(febName);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"isprimary\", function()",
+									"        {",
+									"            pm.expect(oldisPrimary).not.eql(isprimary);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"janName\", function()",
+									"        {",
+									"            pm.expect(oldJanName).not.eql(janName);",
+									"        });",
+									"",
+									"pm.test(\"julName\", function()",
+									"        {",
+									"            pm.expect(oldJulName).not.eql(julName);",
+									"        });",
+									"",
+									"pm.test(\"junName\", function()",
+									"        {",
+									"            pm.expect(oldJunName).not.eql(junName);",
+									"        });",
+									"",
+									"pm.test(\"marName\", function()",
+									"        {",
+									"            pm.expect(oldMarName).not.eql(marName);",
+									"        });",
+									"",
+									"pm.test(\"mayName\", function()",
+									"        {",
+									"            pm.expect(oldMayName).not.eql(mayName);",
+									"        });",
+									"",
+									"",
+									"pm.test(\"novName\", function()",
+									"        {",
+									"            pm.expect(oldNovName).not.eql(novName);",
+									"        });",
+									"",
+									"pm.test(\"octName\", function()",
+									"        {",
+									"            pm.expect(oldOctName).not.eql(octName);",
+									"        });",
+									"",
+									"pm.test(\"overrideAddressValidation\", function()",
+									"        {",
+									"            pm.expect(oldOverrideAddressValidation).not.eql(overrideAddressValidation);",
+									"        });",
+									"",
+									"pm.test(\"sepName\", function()",
+									"        {",
+									"            pm.expect(oldSepName).not.eql(sepName);",
+									"        });",
+									"",
+									"pm.test(\"updateSpouseAddress\", function()",
+									"        {",
+									"            pm.expect(oldUpdateSpouseAddress).not.eql(updateSpouseAddress);",
+									"        });",
+									"",
+									"pm.test(\"dataValidationOn\", function()",
+									"        {",
+									"            pm.expect(oldDataValidationOn).not.eql(dataValidationOn);",
+									"        });",
+									"",
+									"pm.test(\"primaryToggleEndDate\", function()",
+									"        {",
+									"            pm.expect(oldPrimaryToggleEndDate).not.eql(primaryToggleEndDate);",
+									"        });",
+									"",
+									"pm.test(\"primaryToggleStartDate\", function()",
+									"        {",
+									"            pm.expect(oldPrimaryToggleStartDate).not.eql(primaryToggleStartDate);",
+									"        });",
+									"",
+									"pm.test(\"willBecomePrimaryOn\", function()",
+									"        {",
+									"            pm.expect(oldWillBecomePrimaryOn).not.eql(willBecomePrimaryOn);",
+									"        });",
+									"",
+									"pm.test(\"latitudeValue\", function()",
+									"        {",
+									"            pm.expect(oldLatitudeValue).not.eql(latitudeValue);",
+									"        });",
+									"",
+									"pm.test(\"longitudeValue\", function()",
+									"        {",
+									"            pm.expect(oldLongitudeValue).not.eql(longitudeValue);",
+									"        });",
+									"",
+									"pm.test(\"countryId\", function()",
+									"        {",
+									"            pm.expect(oldCountryId).not.eql(countryId);",
+									"        });",
+									"",
+									"pm.test(\"stateOrProvinceId\", function()",
+									"        {",
+									"            pm.expect(oldStateOrProvinceId).not.eql(stateOrProvinceId);",
+									"        });",
+									"",
+									"pm.test(\"comment\", function()",
+									"        {",
+									"            pm.expect(oldComment).not.eql(comment);",
+									"        });",
+									"",
+									"pm.test(\"description\", function()",
+									"        {",
+									"            pm.expect(oldDescription).not.eql(description);",
+									"        });",
+									"",
+									"pm.test(\"Correspondence Detail Name\", function()",
+									"        {",
+									"            pm.expect(oldcorrespondenceName).not.eql(correspondenceDetailsName);",
+									"        });",
+									"",
+									"pm.test(\"addressTypeCodes\", function()",
+									"        {",
+									"            pm.expect(oldAddressTypeCodes).not.eql(addressTypeCodes);",
+									"        });",
+									"",
+									"pm.test(\"dataSourceCode\", function()",
+									"        {",
+									"            pm.expect(oldDataSourceCode).not.eql(dataSourceCode);",
+									"        });",
+									"",
+									"pm.test(\"emailTypeCodes\", function()",
+									"        {",
+									"            pm.expect(oldEmailTypeCodes).not.eql(emailTypeCodes);",
+									"        });",
+									"",
+									"pm.test(\"phoneTypeCodes\", function()",
+									"        {",
+									"            pm.expect(oldPhoneTypeCodes).not.eql(phoneTypeCodes);",
+									"        });",
+									"",
+									"pm.test(\"primalityScheduleTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldPrimalityScheduleTypeCode).not.eql(primalityScheduleTypeCode);",
+									"        });",
+									"",
+									"pm.test(\"primaryToggleTypeCode\", function()",
+									"        {",
+									"            pm.expect(oldPrimaryToggleTypeCode).not.eql(primaryToggleTypeCode);",
+									"        });",
+									"pm.test(\"typeCode\", function()",
+									"        {",
+									"            pm.expect(oldTypeCode).not.eql(typeCode);",
+									"        });",
+									"",
+									"pm.test(\"city\", function()",
+									"        {",
+									"            pm.expect(oldCity).not.eql(city);",
+									"        });",
+									"pm.test(\"country\", function()",
+									"        {",
+									"            pm.expect(oldCountry).not.eql(country);",
+									"        });",
+									"pm.test(\"emailAddress\", function()",
+									"        {",
+									"            pm.expect(oldEmailAddress).not.eql(emailAddress);",
+									"        });",
+									"pm.test(\"line1\", function()",
+									"        {",
+									"            pm.expect(oldLine1).not.eql(line1);",
+									"        });",
+									"pm.test(\"line2\", function()",
+									"        {",
+									"            pm.expect(oldLine2).not.eql(line2);",
+									"        });",
+									"pm.test(\"line3\", function()",
+									"        {",
+									"            pm.expect(oldLine3).not.eql(line3);",
+									"        });",
+									"pm.test(\"line4\", function()",
+									"        {",
+									"            pm.expect(oldLine4).not.eql(line4);",
+									"        });",
+									"pm.test(\"phoneNumber\", function()",
+									"        {",
+									"            pm.expect(oldPhoneNumber).not.eql(phoneNumber);",
+									"        });",
+									"pm.test(\"stateOrProvince\", function()",
+									"        {",
+									"            pm.expect(oldStateOrProvince).not.eql(stateOrProvince);",
+									"        });",
+									"pm.test(\"zip\", function()",
+									"        {",
+									"            pm.expect(oldZip).not.eql(zip);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(100, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_april\": true,\r\n    \"anth_august\": true,\r\n    \"anth_december\": true,\r\n    \"anth_february\": true,\r\n    \"anth_isprimary\": false,\r\n    \"anth_january\" : false,\r\n    \"anth_july\" : false,\r\n    \"anth_june\" : false,\r\n    \"anth_march\" : false,\r\n    \"anth_may\": true,\r\n    \"anth_november\": true,\r\n    \"anth_october\" : true,\r\n    \"anth_overrideaddressvalidation\" : true,\r\n    \"anth_september\" : true, \r\n    \"anth_updatespousematchingaddress\" : true,\r\n    \"anth_datavalidatedon\": \"{{timestamp}}\",\r\n    \"anth_seasonalscheduleenddate\": \"{{timestamp}}\",\r\n    \"anth_seasonalschedulestartdate\": \"{{timestamp}}\",\r\n    \"anth_willbecomeprimaryon\": \"{{timestamp}}\",\r\n    \"anth_latitude\" : \"12323.75\",\r\n    \"anth_longitude\" : \"12334.25\",\r\n    \"anth_countryid@odata.bind\": null,\r\n    \"anth_stateorprovinceid@odata.bind\": null,\r\n    \"anth_comment\": \"Test comment update {{$randomInt}}\",\r\n    \"anth_attention\":\"Test attention update{{$randomInt}}\",\r\n    \"anth_description\": \"Test description update{{$randomInt}}\",\r\n    \"anth_addresstypecode\" : \"215550001\",\r\n    \"anth_datasourcecode\" : \"215550001\",\r\n    \"anth_emailtypecode\" : \"215550001\",\r\n    \"anth_phonetypecode\" : \"215550001\",\r\n    \"anth_seasonalscheduletype\" : \"215550001\",\r\n    \"anth_simplescheduletype\" : \"215550001\",\r\n    \"anth_typecode\" : \"215550001\",\r\n    \"anth_city\" : \"Bangalore update{{$randomInt}}\",\r\n    \"anth_country\" : \"India update{{$randomInt}}\",\r\n    \"anth_county\" : \"Kengeri update{{$randomInt}}\",\r\n    \"anth_emailaddress\" : \"1update{{$randomEmail}}\",\r\n    \"anth_line1\" : \"Street1 update{{$randomInt}} \",\r\n    \"anth_line2\" : \"Street2 update{{$randomInt}} \",\r\n    \"anth_line3\" : \"Street3 update{{$randomInt}} \",\r\n    \"anth_line4\" : \"Street4 update{{$randomInt}} \",\r\n    \"anth_name\" : \"CorrespondenceDetail name update{{$randomLastName}} \",\r\n    \"anth_phonenumber\" : \"{{$randomPhoneNumber}}\",\r\n    \"anth_stateorprovince\" : \"Karnataka API update{{$randomInt}} \",\r\n    \"anth_zip\" : \"56{{$randomInt}}\",\r\n    \"anth_parentrecordid_account@odata.bind\":null\r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_correspondencedetails({{gcorrespondenceDetailsid}})",
+							"host": [
+								"{{Eresource_URL}}anth_correspondencedetails({{gcorrespondenceDetailsid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD SeasonalSchedule",
+			"item": [
+				{
+					"name": "Create SeasonalSchedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var seasonalScheduleid,contactDetailId,endDay,endMonthCode,endYear,name,startDay,startMonthCode,startYear;",
+									"",
+									"",
+									"pm.test(\"Seasonal Schedule Created\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    seasonalScheduleid = jsonData.anth_seasonalscheduleid;",
+									"    contactDetailId = jsonData.anth_correspondencedetailid;",
+									"    endDay = jsonData.anth_endday;",
+									"    endMonthCode = jsonData.anth_endmonthcode;",
+									"    endYear = jsonData.anth_endyear;",
+									"    name= jsonData.anth_name;",
+									"    startDay= jsonData.anth_startday;",
+									"    startMonthCode= jsonData.anth_startmonthcode;",
+									"    startYear= jsonData.anth_startyear;",
+									"    ",
+									"    console.log(\"Seasonal Schedule ID: \"+seasonalScheduleid);",
+									"    console.log(\"Seasonal Schedule Name: \"+name);",
+									"});",
+									" ",
+									"pm.globals.set('gseasonalScheduleid',seasonalScheduleid);",
+									"pm.globals.set('gcontactDetailId',contactDetailId);",
+									"pm.globals.set('gendDay',endDay);",
+									"pm.globals.set('gendMonthCode',endMonthCode);",
+									"pm.globals.set('gendYear',endYear);",
+									"pm.globals.set('gname',name);",
+									"pm.globals.set('gstartDay',startDay);",
+									"pm.globals.set('gstartMonthCode',startMonthCode);",
+									"pm.globals.set('gstartYear',startYear);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_correspondencedetailid@odata.bind\":\"/anth_correspondencedetails({{gcorrespondenceDetailsid}})\",\r\n    \"anth_endday\": \"123123\",\r\n    \"anth_endmonthcode\": \"1\",\r\n    \"anth_endyear\": \"Test endYear {{$randomInt}}\",\r\n    \"anth_name\": \"seasonalschedule name {{$randomLastName}}\",\r\n    \"anth_startday\": \"232312\" ,\r\n    \"anth_startmonth\": \"1\",\r\n    \"anth_startyear\": \"Test startYear {{$randomInt}}\"\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_seasonalschedules",
+							"host": [
+								"{{Eresource_URL}}anth_seasonalschedules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update SeasonalSchedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var seasonalScheduleid,contactDetailId,endDay,endMonthCode,endYear,name,startDay,startMonthCode,startYear;",
+									"",
+									"",
+									"var seasonalSchID=pm.globals.get('gseasonalScheduleid');",
+									"var oldcontactDetailId=pm.globals.get('gcontactDetailId');",
+									"var oldendDay=pm.globals.get('gendDay');",
+									"var oldendMonthCode=pm.globals.get('gendMonthCode');",
+									"var oldendYear=pm.globals.get('gendYear');",
+									"var oldname=pm.globals.get('gname');",
+									"var oldstartDay=pm.globals.get('gstartDay');",
+									"var oldstartMonthCode=pm.globals.get('gstartMonthCode');",
+									"var oldstartYear=pm.globals.get('gstartYear');",
+									"",
+									"",
+									"pm.test(\"Seasonal Schedule Updated\", function() ",
+									"{",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+									"    var jsonData =JSON.parse(responseBody);",
+									"    seasonalScheduleid = jsonData.anth_seasonalscheduleid;",
+									"    contactDetailId = jsonData.anth_correspondencedetailid;",
+									"    endDay = jsonData.anth_endday;",
+									"    endMonthCode = jsonData.anth_endmonthcode;",
+									"    endYear = jsonData.anth_endyear;",
+									"    name= jsonData.anth_name;",
+									"    startDay= jsonData.anth_startday;",
+									"    startMonthCode= jsonData.anth_startmonthcode;",
+									"    startYear= jsonData.anth_startyear;",
+									"    ",
+									"    console.log(\"Seasonal Schedule ID: \"+seasonalScheduleid);",
+									"    console.log(\"Seasonal Schedule Name: \"+name);",
+									"",
+									"});",
+									"",
+									"pm.test(\"contactDetailId\", function()",
+									"        {",
+									"            pm.expect(oldcontactDetailId).not.eql(contactDetailId);",
+									"        });",
+									"",
+									"pm.test(\"endDay\", function()",
+									"        {",
+									"            pm.expect(oldendDay).not.eql(endDay);",
+									"        });",
+									"",
+									"pm.test(\"endMonthCode\", function()",
+									"        {",
+									"            pm.expect(oldendMonthCode).not.eql(endMonthCode);",
+									"        });",
+									"",
+									"pm.test(\"endYear\", function()",
+									"        {",
+									"            pm.expect(oldendYear).not.eql(endYear);",
+									"        });",
+									"",
+									"pm.test(\"name\", function()",
+									"        {",
+									"            pm.expect(oldname).not.eql(name);",
+									"        });",
+									"pm.test(\"startDay\", function()",
+									"        {",
+									"            pm.expect(oldstartDay).not.eql(startDay);",
+									"        });",
+									"pm.test(\"startMonthCode\", function()",
+									"        {",
+									"            pm.expect(oldstartMonthCode).not.eql(startMonthCode);",
+									"        });",
+									"pm.test(\"startYear\", function()",
+									"        {",
+									"            pm.expect(oldstartYear).not.eql(startYear);",
+									"        });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.environment.set(\"timestamp\", moment().add(2, 'days').format(\"YYYY-MM-DD\"));\r",
+									"pm.environment.set(\"timestampEndDate\", moment().add(102, 'days').format(\"YYYY-MM-DD\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							},
+							{
+								"key": "OData-Version",
+								"value": "4.0"
+							},
+							{
+								"key": "OData-MaxVersion",
+								"value": "4.0"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"anth_correspondencedetailid@odata.bind\": null,\r\n    \"anth_endday\": \"123124\",\r\n    \"anth_endmonthcode\": \"2\",\r\n    \"anth_endyear\": \"Test endYear update {{$randomInt}}\",\r\n    \"anth_name\": \"seasonalschedule name  update{{$randomLastName}}\",\r\n    \"anth_startday\": \"232314\" ,\r\n    \"anth_startmonth\": \"2\",\r\n    \"anth_startyear\": \"Test startYear update {{$randomInt}}\"\r\n    \r\n}"
+						},
+						"url": {
+							"raw": "{{Eresource_URL}}anth_seasonalschedules({{gseasonalScheduleid}})",
+							"host": [
+								"{{Eresource_URL}}anth_seasonalschedules({{gseasonalScheduleid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete all the records",
+			"item": [
+				{
+					"name": "Delete AddressValidationOutputConfiguration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete AddressValidation Output Configuration\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addressvalidationoutputconfigurations({{gaddressoutputconfigId}})",
+							"host": [
+								"{{Eresource_URL}}anth_addressvalidationoutputconfigurations({{gaddressoutputconfigId}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete AddressSettings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Address Settings\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addresssettingses({{gaddresssettingsid}})",
+							"host": [
+								"{{Eresource_URL}}anth_addresssettingses({{gaddresssettingsid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete AddressValidationFieldMap",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Address Validation Field Maps\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_addressvalidationfieldmaps({{gaddressfieldmap}})",
+							"host": [
+								"{{Eresource_URL}}anth_addressvalidationfieldmaps({{gaddressfieldmap}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Country",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Country\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_countries({{gcountryid1a}})",
+							"host": [
+								"{{Eresource_URL}}anth_countries({{gcountryid1a}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete StateOrProvince",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete StateOrProvince\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_stateorprovinces({{gstateOrProvinceId1}})",
+							"host": [
+								"{{Eresource_URL}}anth_stateorprovinces({{gstateOrProvinceId1}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete County",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete County\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_counties({{gcountyId}})",
+							"host": [
+								"{{Eresource_URL}}anth_counties({{gcountyId}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Account\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}accounts({{gaccountid}})",
+							"host": [
+								"{{Eresource_URL}}accounts({{gaccountid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Contact\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}contacts({{gcontactid}})",
+							"host": [
+								"{{Eresource_URL}}contacts({{gcontactid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete CorrespondenceDetailSyncRule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Correspondence Detail Sync Rule\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_correspondencedetailsyncrules({{gcorrespondenceDetailSyncRuleid}})",
+							"host": [
+								"{{Eresource_URL}}anth_correspondencedetailsyncrules({{gcorrespondenceDetailSyncRuleid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete CorrespondenceDetails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Correspondence Details\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_correspondencedetails({{gcorrespondenceDetailsid}})",
+							"host": [
+								"{{Eresource_URL}}anth_correspondencedetails({{gcorrespondenceDetailsid}})"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete SeasonalSchedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Seasonal Schedule\",function()",
+									"{",
+									"pm.expect(pm.response.code).to.be.oneOf([200,201,202,204]);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Prefer",
+								"value": "return=representation"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{gaccess_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{Eresource_URL}}anth_seasonalschedules({{gseasonalScheduleid}})",
+							"host": [
+								"{{Eresource_URL}}anth_seasonalschedules({{gseasonalScheduleid}})"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
